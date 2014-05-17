@@ -1,0 +1,53 @@
+.form_builder_form_list {
+  width: 698px;
+}
+.form_builder_form_list .header_row .col2 {
+  width: 150px;
+  padding-left: 0px;
+}
+.form_builder_form_list .col2 {
+  padding-left: 2px;
+  width: 148px;
+}
+.form_builder_form_list .header_row .col3 {
+	width: 130px;
+	padding-left: 0px;
+}
+.form_builder_form_list .col3 {
+	width: 128px;
+	padding-left: 2px;
+}
+.form_builder_form_list .col4 {
+	width: 70px;
+  text-align: center;
+}
+.form_builder_form_list .col5 {
+  width: 70px;
+  text-align:center;
+}
+.form_builder_form_list .header_row .col6 {
+  width: 182px;
+  padding-left: 0px;
+}
+.form_builder_form_list .col6 {
+  width: 180px;
+  padding-left: 2px;
+}
+.form_builder_form_list .col6 .empty {
+  text-align: center;
+}
+div.published_form_url {
+	width: 156px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space:nowrap;
+}
+.publish_tab_offline_date {
+	background: transparent url(../../../../global/images/clock.png) center center no-repeat;
+	width: 16px;
+	height: 20px;
+	margin-left: 3px;
+	display:inline-block;
+	text-indent: -9999px;
+	cursor: pointer;
+}
