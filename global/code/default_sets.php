@@ -459,7 +459,7 @@ h3 a:hover {
 
 $g_default_sets[] = array(
   "set_name"    => "ProSimple",
-  "version"     => "1.1",
+  "version"     => "1.2",
   "description" => "A simple, professional-looking and attractive grey-themed Template Set without a header. It contains placeholders to let you choose the highlight colour, font and font size. Labels are placed directly above the fields to provide clear identification.",
   "is_complete" => "yes",
   "list_order"  => 2,
@@ -489,7 +489,7 @@ $g_default_sets[] = array(
     array(
       "template_type" => "review_page",
       "template_name" => "Review Page",
-      "content"       => "{{navigation}}\n\n{{form_builder_edit_link}}\n\n<h2>{{\$review_page_title}}</h2>\n\n<p>\n  Please review the information below to confirm it is correct. If you need to edit any\n  values, just click the EDIT link at the top right of the section.\n</p>\n\n<form action=\"{{\$page_url}}\" method=\"post\" enctype=\"multipart/form-data\">\n{{foreach from=\$grouped_fields item=curr_group}}\n  {{assign var=group value=\$curr_group.group}}\n  {{assign var=fields value=\$curr_group.fields}}\n\n  {{if \$fields|@count > 0}}\n  <h3><a href=\"?page={{\$group.custom_data|default:1}}#s{{\$group.group_id}}\">EDIT</a>{{\$group.group_name|upper}}</h3>\n \n    <table class=\"ts_review_table\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n  {{/if}}\n\n  {{foreach from=\$fields item=curr_field}}\n    {{assign var=field_id value=\$field.field_id}}\n    <tr>\n      <td valign=\"top\" width=\"200\">{{\$curr_field.field_title}}</td>\n      <td valign=\"top\">\n        {{display_custom_field form_id=\$form_id view_id=\$view_id submission_id=\$submission_id\n          value=\$curr_field.submission_value field_info=\$curr_field field_types=\$field_types\n          settings=\$settings}}\n      </td>\n    </tr>\n  {{/foreach}}\n\n  {{if \$fields|@count > 0}}\n    </table>\n    \n    <br />\n  {{/if}}\n{{/foreach}}\n\n{{continue_block}}\n\n</form>\n"
+      "content"       => "{{navigation}}\n\n{{form_builder_edit_link}}\n\n<h2>{{\$review_page_title}}</h2>\n\n<p>\n  Please review the information below to confirm it is correct. If you need to edit any\n  values, just click the EDIT link at the top right of the section.\n</p>\n\n<form action=\"{{\$page_url}}\" method=\"post\" enctype=\"multipart/form-data\">\n{{foreach from=\$grouped_fields item=curr_group}}\n  {{assign var=group value=\$curr_group.group}}\n  {{assign var=fields value=\$curr_group.fields}}\n\n  {{if \$fields|@count > 0}}\n  <h3><a href=\"?page={{\$group.custom_data|default:1}}#s{{\$group.group_id}}\">EDIT</a>{{\$group.group_name|upper}}</h3>\n \n    <table class=\"ts_review_table\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n  {{/if}}\n\n  {{foreach from=\$fields item=curr_field}}\n    {{assign var=field_id value=\$field.field_id}}\n    <tr>\n      <td valign=\"top\" width=\"200\">{{\$curr_field.field_title}}</td>\n      <td valign=\"top\">\n        {{edit_custom_field form_id=\$form_id submission_id=\$submission_id\n          field_info=\$curr_field field_types=\$field_types settings=\$settings}}\n      </td>\n    </tr>\n  {{/foreach}}\n\n  {{if \$fields|@count > 0}}\n    </table>\n    \n    <br />\n  {{/if}}\n{{/foreach}}\n\n{{continue_block}}\n\n</form>\n"
     ),
     array(
       "template_type" => "thankyou_page",

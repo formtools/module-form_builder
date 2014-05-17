@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @copyright Encore Web Studios 2011
- * @author Encore Web Studios <formtools@encorewebstudios.com>
+ * @copyright Benjamin Keen 2012
+ * @author Benjamin Keen <ben.keen@gmail.com>
  */
 
 // -------------------------------------------------------------------------------------------------
