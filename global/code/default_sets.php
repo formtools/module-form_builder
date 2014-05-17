@@ -10,7 +10,6 @@
  * So in the meantime....
  */
 
-
 $g_default_sets = array();
 
 $g_default_sets[] = array(
@@ -266,10 +265,10 @@ $g_default_sets[] = array(
 
 $g_default_sets[] = array(
   "set_name"    => "Conformist",
-  "version"     => "1.0",
+  "version"     => "1.1",
   "description" => "A clean blue Template Set with delicate CSS3 gradients and tab-like, top-row page navigation.",
   "is_complete" => "yes",
-  "list_order"  => 3,
+  "list_order"  => 1,
 
   // templates
   "templates" => array(
@@ -311,7 +310,7 @@ $g_default_sets[] = array(
     array(
       "template_type" => "form_offline_page",
       "template_name" => "Form Offline Page",
-      "content"       => "{{\$form_offline_page_content}}"
+      "content"       => "<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n    {{\$form_offline_page_content}}\n  </div>\n</div>\n"
     ),
     array(
       "template_type" => "continue_block",
@@ -326,7 +325,7 @@ $g_default_sets[] = array(
     array(
       "template_type" => "navigation",
       "template_name" => "Navigation - Arrows",
-      "content"       => "<ul id=\"css_nav\" class=\"nav_{{\$nav_pages|@count}}_pages\">\n  {{foreach from=\$nav_pages item=page_info name=row}}\n    {{assign var=i value=\$smarty.foreach.row.iteration}}\n    {{assign var=a value=\" &raquo;\"}}\n    {{if \$smarty.foreach.row.last}}\n      {{assign var=a value=\"\"}}\n    {{/if}}\n    {{if \$current_page > \$i && \$current_page != \$num_pages}}\n      <li class=\"completed_page\"><a href=\"{{\$filename}}?page={{\$i}}\">{{\$page_info.page_name}}{{\$a}}</a></li>\n    {{elseif \$i != \$current_page && \$current_page == \$num_pages}}\n      <li class=\"completed_page\"><span>{{\$page_info.page_name}}{{\$a}}</span></li>\n    {{elseif \$current_page == \$i || \$current_page == \$num_pages}}\n      <li class=\"css_nav_current_page\">{{\$page_info.page_name}}{{\$a}}</li>\n    {{else}}\n      <li>{{\$page_info.page_name}}{{\$a}}</li>\n    {{/if}}\n  {{/foreach}}\n</ul>"
+      "content"       => "<ul id=\"css_nav\" class=\"nav_{{\$nav_pages|@count}}_pages\">\n  {{foreach from=\$nav_pages item=page_info name=row}}\n    {{assign var=i value=\$smarty.foreach.row.iteration}}\n    {{assign var=a value=\" È\"}}\n    {{if \$smarty.foreach.row.last}}\n      {{assign var=a value=\"\"}}\n    {{/if}}\n    {{if \$current_page > \$i && \$current_page != \$num_pages}}\n      <li class=\"completed_page\"><a href=\"{{\$filename}}?page={{\$i}}\">{{\$page_info.page_name}}{{\$a}}</a></li>\n    {{elseif \$i != \$current_page && \$current_page == \$num_pages}}\n      <li class=\"completed_page\"><span>{{\$page_info.page_name}}{{\$a}}</span></li>\n    {{elseif \$current_page == \$i || \$current_page == \$num_pages}}\n      <li class=\"css_nav_current_page\">{{\$page_info.page_name}}{{\$a}}</li>\n    {{else}}\n      <li>{{\$page_info.page_name}}{{\$a}}</li>\n    {{/if}}\n  {{/foreach}}\n</ul>"
     ),
     array(
       "template_type" => "navigation",
@@ -351,7 +350,306 @@ $g_default_sets[] = array(
       "resource_type" => "css",
       "resource_name" => "General Styles",
       "placeholder"   => "styles",
-      "content"       => "html {\n  height: 100%; \n}\nbody {\n  height: 100%;\n  text-align: center;\n  padding: 0px;\n  margin: 0px;\n  background: rgb(106,147,184);\n  background: -moz-linear-gradient(top,  rgba(106,147,184,1) 0%, rgba(115,151,183,1) 100%);\n  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(106,147,184,1)), color-stop(100%,rgba(115,151,183,1)));\n  background: -webkit-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);\n  background: -o-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);\n  background: -ms-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);\n  background: linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);\n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6a93b8', endColorstr='#7397b7',GradientType=0 );\n  background-repeat: no-repeat;\n  background-attachment: fixed;\n}\ntd, th, p, input, textarea, select,ul,li,div, span {\n  font-family: \"Lucida Grande\",\"Lucida Sans Unicode\", Tahoma, sans-serif;\n  font-size: 12px;\n  color: #555555;\n}\ntd, th, p, textarea, ul, li, div {\n  line-height: 22px;\n}\na:link, a:visited {\n  color: #336699;\n}\ntable {\n  empty-cells: show;\n}\n\n/* page sections */\n.ts_page:after {\n  -moz-transform: translate(0pt, 0pt);\n  background: none repeat scroll 0 0 transparent;\n  border-radius: 20px 20px 20px 20px;\n  box-shadow: 15px 0 30px rgba(0, 0, 0, 0.2);\n  content: \"\";\n  left: 0;\n  position: absolute;\n  width: 100%;\n  z-index: -2;\n}\n.ts_page {\n  margin: 40px auto;\n  position: relative;\n  text-align: left;\n}\n.ts_header h1 {\n  margin: 0px 0px 42px 20px;\n  padding: 0px;\n  font-size: {{\$P.font_size}};\n  color: white;\n  font-family: \"{{\$P.font}}\", \"Lucida Grande\", Arial;\n  font-weight: normal;\n}\n.ts_footer {\n  background: rgb(64,86,107);\n  background: -moz-linear-gradient(top,  rgb(64,86,107) 0%, rgb(44,61,76) 100%);\n  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(64,86,107)), color-stop(100%,rgb(44,61,76)));\n  background: -webkit-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);\n  background: -o-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);\n  background: -ms-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);\n  background: linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);\n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40566b', endColorstr='#2c3d4c',GradientType=0 );\n  -webkit-border-bottom-left-radius: 6px;\n  -webkit-border-bottom-right-radius: 6px;\n  -moz-border-radius-bottomleft: 6px;\n  -moz-border-radius-bottomright: 6px;\n  border-bottom-left-radius: 6px;\n  border-bottom-right-radius: 6px;\n  padding: 10px 0px;\n  text-align: center;\n  color: #dddddd;\n  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);\n  height: 5px;\n}\n.ts_content {\n  background-color: white;\n  border: 1px solid #777777;\n  border-top: 0px;\n  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);\n  padding: 25px 50px;\n}\n.ts_continue_block {\n  margin-top: 16px;\n  background-color: #ffffdd;\n  padding: 8px;\n  box-shadow: 1px 2px 2px #878787;\n}\n.ts_continue_block input {\n  float: right;\n}\n.ts_continue_button {\n  margin-top: 12px;\n}\n.light_grey {\n  color: #999999;\n}\nh2 {\n  font-size: 20px;  \n}\n.ts_heading {\n  font-size: 20px;  \n}\n\nh3 {\n  border-top-left-radius: 4px;\n  border-top-right-radius: 4px;\n  -webkit-border-top-left-radius: 4px;\n  -webkit-border-top-right-radius: 4px;\n  -moz-border-radius-topleft: 4px;\n  -moz-border-radius-topright: 4px;\n  font-size: 12px;\n  font-weight: normal;\n  margin-bottom: 0;\n  margin-right: 1px;\n  padding: 1px 0 0 5px;\n  width: 792px;\n  background-color: #36485a;\n  color: white;\n  height: 22px;\n}\nh3 a:link, h3 a:visited {\n  background-color: white;\n  -webkit-border-radius: 2px;\n  -moz-border-radius: 2px;\n  border-radius: 2px;\n  color: black;\n  float: right;\n  line-height: 17px;\n  margin-right: 3px;\n  margin-top: 2px;\n  padding: 0 8px;\n  text-decoration: none;\n}\nh3 a:hover {\n  -webkit-border-radius: 2px;\n  -moz-border-radius: 2px;\n  border-radius: 2px;\n}\n\n/* navigation */\nul#css_nav {\n  clear: both;\n  margin: 0px;\n  padding: 0px 40px;\n  overflow: hidden;\n  background: rgb(64,86,107);\n  background: -moz-linear-gradient(top,  rgb(64,86,107) 0%, rgb(44,61,76) 100%);\n  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(64,86,107)), color-stop(100%,rgb(44,61,76)));\n  background: -webkit-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);\n  background: -o-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);\n  background: -ms-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);\n  background: linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);\n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40566b', endColorstr='#2c3d4c',GradientType=0 );\n  -webkit-border-top-left-radius: 6px;\n  -webkit-border-top-right-radius: 6px;\n  -moz-border-radius-topleft: 6px;\n  -moz-border-radius-topright: 6px;\n  border-top-left-radius: 6px;\n  border-top-right-radius: 6px;\n  height: 38px;\n}\nul#css_nav li {\n  float: left;\n  list-style: none;\n  text-align:center;\n  color: #dddddd;\n  font-size: 11px;\n  padding: 8px 0px;\n}\nul#css_nav li span {\n  font-size: 11px;\n}\n\nul#css_nav li.completed_page {\n  padding: 0px;\n}\nul#css_nav li.css_nav_current_page {\n  background: rgb(249,249,249);\n  background: -moz-linear-gradient(top, rgba(249,249,249,1) 0%, rgba(255,255,255,1) 100%);\n  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(249,249,249,1)), color-stop(100%,rgba(255,255,255,1)));\n  background: -webkit-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);\n  background: -o-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);\n  background: -ms-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);\n  background: linear-gradient(top,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);\n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f9f9', endColorstr='#ffffff',GradientType=0 );\n  color: #000000;\n}\nul#css_nav li a:link, ul#css_nav li a:visited, ul#css_nav li span {\n  display: block;\n  text-decoration: none;\n  color: white;\n  background-color: #333333;\n  padding: 8px 0px;\n  opacity: 0.5;\n  filter: alpha(opacity=50);  \n}\n ul#css_nav li a:hover {\n  background-color: #222222;\n  opacity: 0.9;\n  filter: alpha(opacity=90);\n}\n\n.nav_1_pages li {\n  width: 150px;\n}\n.nav_2_pages li {\n  width: 150px;\n}\n.nav_3_pages li {\n  width: 150px;\n}\n.nav_4_pages li {\n  width: 150px;\n}\n.nav_5_pages li {\n  width: 150px;\n}\n.nav_6_pages li {\n  width: 136px;\n}\n.nav_7_pages li {\n  width: 116px;\n}\n.nav_8_pages li {\n  width: 102px;\n}\n\n\n/* notifications */\n.notify {\n  border: 1px solid #336699;\n  background-color: #ffffee;\n  color: #336699;\n  padding: 8px;\n  width: 400px;\n}\n.notify li { color: #336699; }\n.error {\n  font-size: 8pt;\n  border: 1px solid #cc0000;\n  background-color: #ffffee;\n  color: #cc0000;\n  padding: 8px;\n  width: 550px;\n}\n.error span {\n  color: #cc0000;\n  font-weight: bold;\n  margin-bottom: 4px;\n}\n\n/* forms */\ntable.table_1 > tbody > tr > td {\n  border-bottom: 1px solid #dddddd;\n}\n.table_1_bg td {\n  padding: 1px;\n  padding-left: 1px;\n  background-color: #336699;\n  border-bottom: 1px solid #cccccc;\n}\ntd.answer {\n  background-color: #efefef;\n}\n.pad_left {\n  padding-left: 4px;\n}\n.req {\n  color: #aa0000;  \n}\n.fb_error {\n  border: 1px solid #990000;\n  padding: 8px; \n  background-color: #ffefef;\n}\n\n/* for the code / markup editor */\n.editor {\n  background-color: white;\n  border: 1px solid #999999;\n  padding: 3px;\n}\n#form_builder__edit_link {\n  position: absolute;\n  right: 5px;\n  top: 0px;\n  text-decoration: none;\n}\n#form_builder__edit_link:hover {\n  color: #990000;\n  text-decoration: underline;\n}\n\n",
+      "content"       => "html {
+  height: 100%;
+}
+body {
+  height: 100%;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  background: rgb(106,147,184);
+  background: -moz-linear-gradient(top,  rgba(106,147,184,1) 0%, rgba(115,151,183,1) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(106,147,184,1)), color-stop(100%,rgba(115,151,183,1)));
+  background: -webkit-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
+  background: -o-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
+  background: -ms-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
+  background: linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6a93b8', endColorstr='#7397b7',GradientType=0 );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+td, th, p, input, textarea, select,ul,li,div, span {
+  font-family: \"Lucida Grande\",\"Lucida Sans Unicode\", Tahoma, sans-serif;
+  font-size: 12px;
+  color: #555555;
+}
+td, th, p, textarea, ul, li, div {
+  line-height: 22px;
+}
+a:link, a:visited {
+  color: #336699;
+}
+table {
+  empty-cells: show;
+}
+
+/* page sections */
+.ts_page:after {
+  -moz-transform: translate(0pt, 0pt);
+  background: none repeat scroll 0 0 transparent;
+  border-radius: 20px 20px 20px 20px;
+  box-shadow: 15px 0 30px rgba(0, 0, 0, 0.2);
+  content: \"\";
+  left: 0;
+  position: absolute;
+  width: 100%;
+  z-index: -2;
+}
+.ts_page {
+  margin: 40px auto;
+  position: relative;
+  text-align: left;
+}
+.ts_header h1 {
+  margin: 0px 0px 42px 20px;
+  padding: 0px;
+  font-size: {{\$P.font_size}};
+  color: white;
+  font-family: \"{{\$P.font}}\", \"Lucida Grande\", Arial;
+  font-weight: normal;
+}
+.ts_footer {
+  background: rgb(64,86,107);
+  background: -moz-linear-gradient(top,  rgb(64,86,107) 0%, rgb(44,61,76) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(64,86,107)), color-stop(100%,rgb(44,61,76)));
+  background: -webkit-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: -o-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: -ms-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40566b', endColorstr='#2c3d4c',GradientType=0 );
+  -webkit-border-bottom-left-radius: 6px;
+  -webkit-border-bottom-right-radius: 6px;
+  -moz-border-radius-bottomleft: 6px;
+  -moz-border-radius-bottomright: 6px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  padding: 10px 0px;
+  text-align: center;
+  color: #dddddd;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+  height: 5px;
+}
+.ts_content {
+  background-color: white;
+  border: 1px solid #777777;
+  border-top: 0px;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+  padding: 25px 50px;
+}
+.ts_continue_block {
+  margin-top: 16px;
+  background-color: #ffffdd;
+  padding: 8px;
+  box-shadow: 1px 2px 2px #878787;
+}
+.ts_continue_block input {
+  float: right;
+}
+.ts_continue_button {
+  margin-top: 12px;
+}
+.light_grey {
+  color: #999999;
+}
+h2 {
+  font-size: 20px;
+}
+.ts_heading {
+  font-size: 20px;
+}
+
+h3 {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  -webkit-border-top-left-radius: 4px;
+  -webkit-border-top-right-radius: 4px;
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-topright: 4px;
+  font-size: 12px;
+  font-weight: normal;
+  margin-bottom: 0;
+  margin-right: 1px;
+  padding: 1px 0 0 5px;
+  width: 792px;
+  background-color: #36485a;
+  color: white;
+  height: 22px;
+}
+h3 a:link, h3 a:visited {
+  background-color: white;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  color: black;
+  float: right;
+  line-height: 17px;
+  margin-right: 3px;
+  margin-top: 2px;
+  padding: 0 8px;
+  text-decoration: none;
+}
+h3 a:hover {
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}
+
+/* navigation */
+ul#css_nav {
+  clear: both;
+  margin: 0px;
+  padding: 0px 40px;
+  overflow: hidden;
+  background: rgb(64,86,107);
+  background: -moz-linear-gradient(top,  rgb(64,86,107) 0%, rgb(44,61,76) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(64,86,107)), color-stop(100%,rgb(44,61,76)));
+  background: -webkit-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: -o-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: -ms-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40566b', endColorstr='#2c3d4c',GradientType=0 );
+  -webkit-border-top-left-radius: 6px;
+  -webkit-border-top-right-radius: 6px;
+  -moz-border-radius-topleft: 6px;
+  -moz-border-radius-topright: 6px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  height: 38px;
+}
+ul#css_nav li {
+  float: left;
+  list-style: none;
+  text-align:center;
+  color: #dddddd;
+  font-size: 11px;
+  padding: 8px 0px;
+}
+ul#css_nav li span {
+  font-size: 11px;
+}
+
+ul#css_nav li.completed_page {
+  padding: 0px;
+}
+ul#css_nav li.css_nav_current_page {
+  background: rgb(249,249,249);
+  background: -moz-linear-gradient(top, rgba(249,249,249,1) 0%, rgba(255,255,255,1) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(249,249,249,1)), color-stop(100%,rgba(255,255,255,1)));
+  background: -webkit-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
+  background: -o-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
+  background: -ms-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
+  background: linear-gradient(top,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f9f9', endColorstr='#ffffff',GradientType=0 );
+  color: #000000;
+}
+ul#css_nav li a:link, ul#css_nav li a:visited, ul#css_nav li span {
+  display: block;
+  text-decoration: none;
+  color: white;
+  background-color: #333333;
+  padding: 8px 0px;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+ ul#css_nav li a:hover {
+  background-color: #222222;
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+}
+
+.nav_1_pages li {
+  width: 150px;
+}
+.nav_2_pages li {
+  width: 150px;
+}
+.nav_3_pages li {
+  width: 150px;
+}
+.nav_4_pages li {
+  width: 150px;
+}
+.nav_5_pages li {
+  width: 150px;
+}
+.nav_6_pages li {
+  width: 136px;
+}
+.nav_7_pages li {
+  width: 116px;
+}
+.nav_8_pages li {
+  width: 102px;
+}
+
+
+/* notifications */
+.notify {
+  border: 1px solid #336699;
+  background-color: #ffffee;
+  color: #336699;
+  padding: 8px;
+  width: 400px;
+}
+.notify li { color: #336699; }
+.error {
+  font-size: 8pt;
+  border: 1px solid #cc0000;
+  background-color: #ffffee;
+  color: #cc0000;
+  padding: 8px;
+  width: 550px;
+}
+.error span {
+  color: #cc0000;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+/* forms */
+table.table_1 > tbody > tr > td {
+  border-bottom: 1px solid #dddddd;
+}
+.table_1_bg td {
+  padding: 1px;
+  padding-left: 1px;
+  background-color: #336699;
+  border-bottom: 1px solid #cccccc;
+}
+td.answer {
+  background-color: #efefef;
+}
+.pad_left {
+  padding-left: 4px;
+}
+.req {
+  color: #aa0000;
+}
+.fb_error {
+  border: 1px solid #990000;
+  padding: 8px;
+  background-color: #ffefef;
+}
+
+/* for the code / markup editor */
+.editor {
+  background-color: white;
+  border: 1px solid #999999;
+  padding: 3px;
+}
+#form_builder__edit_link {
+  position: absolute;
+  right: 5px;
+  top: 0px;
+  text-decoration: none;
+}
+#form_builder__edit_link:hover {
+  color: #990000;
+  text-decoration: underline;
+}
+
+",
       "last_updated"  => "2012-02-03 17:42:30"
     )
   ),
@@ -411,14 +709,6 @@ $g_default_sets[] = array(
         array("option_text" => "58px"),
         array("option_text" => "60px")
       )
-    ),
-    array(
-      "placeholder_label" => "Footer HTML",
-      "placeholder"       => "footer_html",
-      "field_type"        => "textarea",
-      "field_orientation" => "horizontal",
-      "default_value"     => "yoursite.com",
-      "options" => array()
     )
   )
 );

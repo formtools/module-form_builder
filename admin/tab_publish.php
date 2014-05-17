@@ -62,19 +62,19 @@ $page_vars["head_js"] =<<< END
 $(function() {
   var dialog = null;
   $("#publish_new_form").bind("click", function() {
-    if (dialog != null) {
-      dialog.focus();
-    } else {
+    if (dialog == null || dialog.closed) {
       var dialog = window.open("$g_root_url/modules/form_builder/preview.php?form_id=$form_id", "preview", "status=0,toolbar=0,location=0,menubar=0,height=$height,width=$width");
+    } else {
+      dialog.focus();
     }
   });
 
   $("#form_builder_form_list .edit").bind("click", function() {
-    if (dialog != null) {
-      dialog.focus();
-    } else {
+    if (dialog == null || dialog.closed) {
       var published_form_id = $(this).closest(".row_group").find(".sr_order").val();
       dialog = window.open("$g_root_url/modules/form_builder/preview.php?form_id=$form_id&published_form_id=" + published_form_id, "preview", "status=0,toolbar=0,location=0,menubar=0,height=$height,width=$width");
+    } else {
+      dialog.focus();
     }
   });
 
