@@ -54,7 +54,7 @@ function fb_add_placeholder($set_id, $info)
         continue;
 
       mysql_query("
-        INSERT INTO {$g_table_prefix}module_form_builder_template_set_placeholder_options (placeholder_id, option_text, field_order)
+        INSERT INTO {$g_table_prefix}module_form_builder_template_set_placeholder_opts (placeholder_id, option_text, field_order)
         VALUES ($placeholder_id, '$option', $field_order)
           ");
       $field_order++;
@@ -83,7 +83,7 @@ function fb_delete_placeholder($placeholder_id)
 
   if (mysql_affected_rows() > 0)
   {
-  	$result = mysql_query("DELETE FROM {$g_table_prefix}module_form_builder_template_set_placeholder_options WHERE placeholder_id = $placeholder_id");
+  	$result = mysql_query("DELETE FROM {$g_table_prefix}module_form_builder_template_set_placeholder_opts WHERE placeholder_id = $placeholder_id");
 
   	if (!empty($placeholder_info) && isset($placeholder_info["set_id"]))
       fb_update_placeholder_order($placeholder_info["set_id"]);
@@ -131,7 +131,7 @@ function fb_update_placeholder($placeholder_id, $info)
   // if this field had multiple options, add them too
   $placeholder_options = isset($info["placeholder_options"]) ? $info["placeholder_options"] : array();
   mysql_query("
-    DELETE FROM {$g_table_prefix}module_form_builder_template_set_placeholder_options
+    DELETE FROM {$g_table_prefix}module_form_builder_template_set_placeholder_opts
     WHERE placeholder_id = $placeholder_id
   ");
 
@@ -144,7 +144,7 @@ function fb_update_placeholder($placeholder_id, $info)
         continue;
 
       mysql_query("
-        INSERT INTO {$g_table_prefix}module_form_builder_template_set_placeholder_options (placeholder_id, option_text, field_order)
+        INSERT INTO {$g_table_prefix}module_form_builder_template_set_placeholder_opts (placeholder_id, option_text, field_order)
         VALUES ($placeholder_id, '$option', $field_order)
           ");
       $field_order++;
@@ -169,7 +169,7 @@ function fb_get_placeholder($placeholder_id)
 
 	$options_query = mysql_query("
 	  SELECT *
-	  FROM   {$g_table_prefix}module_form_builder_template_set_placeholder_options
+	  FROM   {$g_table_prefix}module_form_builder_template_set_placeholder_opts
 	  WHERE  placeholder_id = $placeholder_id
 	  ORDER BY field_order
 	");
@@ -206,7 +206,7 @@ function fb_get_placeholders($set_id)
 
   	$options_query = mysql_query("
   	  SELECT *
-  	  FROM   {$g_table_prefix}module_form_builder_template_set_placeholder_options
+  	  FROM   {$g_table_prefix}module_form_builder_template_set_placeholder_opts
   	  WHERE  placeholder_id = $placeholder_id
   	  ORDER BY field_order
   	");
@@ -244,7 +244,7 @@ function fb_update_placeholders($info)
   	  WHERE placeholder_id IN ($deleted_placeholder_ids_str)
   	");
   	mysql_query("
-      DELETE FROM {$g_table_prefix}module_form_builder_template_set_placeholder_options
+      DELETE FROM {$g_table_prefix}module_form_builder_template_set_placeholder_opts
       WHERE placeholder_id IN ($deleted_placeholder_ids_str)
     ");
   }

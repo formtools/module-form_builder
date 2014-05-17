@@ -257,7 +257,7 @@ function fb_create_new_template_set($template_set_name, $original_set_id)
             $field_order = $option_info["field_order"];
 
             $query = mysql_query("
-              INSERT INTO {$g_table_prefix}module_form_builder_template_set_placeholder_options (placeholder_id,
+              INSERT INTO {$g_table_prefix}module_form_builder_template_set_placeholder_opts (placeholder_id,
                 option_text, field_order)
               VALUES ($new_placeholder_id, '$option_text', $field_order)
             ") or die(mysql_error());
@@ -292,7 +292,7 @@ function fb_rollback_new_template_set($set_id)
   @mysql_query("DELETE FROM {$g_table_prefix}module_form_builder_templates WHERE set_id = $set_id");
   @mysql_query("DELETE FROM {$g_table_prefix}module_form_builder_template_sets WHERE set_id = $set_id");
   @mysql_query("DELETE FROM {$g_table_prefix}module_form_builder_template_set_placeholders WHERE set_id = $set_id");
-  @mysql_query("DELETE FROM {$g_table_prefix}module_form_builder_template_set_placeholder_options WHERE set_id = $set_id");
+  @mysql_query("DELETE FROM {$g_table_prefix}module_form_builder_template_set_placeholder_opts WHERE set_id = $set_id");
   @mysql_query("DELETE FROM {$g_table_prefix}module_form_builder_template_set_resources WHERE set_id = $set_id");
 }
 
@@ -832,7 +832,7 @@ function fb_import_template_set_data($template_sets)
     	foreach ($placeholder_info["options"] as $option_info)
     	{
     		mysql_query("
-    		  INSERT INTO {$g_table_prefix}module_form_builder_template_set_placeholder_options (placeholder_id,
+    		  INSERT INTO {$g_table_prefix}module_form_builder_template_set_placeholder_opts (placeholder_id,
     		    option_text, field_order)
     		  VALUES ($placeholder_id, '{$option_info["option_text"]}', $option_order)
     		");

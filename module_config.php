@@ -500,7 +500,7 @@ $STRUCTURE["tables"]["module_form_builder_template_set_placeholders"] = array(
     "Default" => ""
   )
 );
-$STRUCTURE["tables"]["module_form_builder_template_set_placeholder_options"] = array(
+$STRUCTURE["tables"]["module_form_builder_template_set_placeholder_opts"] = array(
   array(
     "Field"   => "placeholder_id",
     "Type"    => "mediumint(9)",

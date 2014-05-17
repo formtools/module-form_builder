@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * Our main installation function.
  *
@@ -107,7 +108,7 @@ function form_builder__install($module_id)
       ) DEFAULT CHARSET=utf8
         ";
 
-    $table7 = $g_table_prefix . "module_form_builder_template_set_placeholder_options";
+    $table7 = $g_table_prefix . "module_form_builder_template_set_placeholder_opts";
     $queries[] = "
       CREATE TABLE $table7 (
         placeholder_id mediumint(9) NOT NULL,
@@ -194,6 +195,26 @@ function form_builder__uninstall($module_id)
 
 function form_builder__update($old_version_info, $new_version_info)
 {
+	global $g_table_prefix;
+
+	$old_version_num = $old_version_info["version"];
+
+	// normally we do a date comparison, but the dates got messed up in 1.0.5, so we have to do a workaround by
+	// converting the version number to a number
+	$old_version_int = preg_replace("/\D/", "", $old_version_num);
+	if ($old_version_int <= 105)
+	{
+		$old_table_name = $g_table_prefix . "module_form_builder_template_set_placeholder_options";
+		$new_table_name = $g_table_prefix . "module_form_builder_template_set_placeholder_opts";
+    $update_query = mysql_query("
+      RENAME TABLE $old_table_name TO $new_table_name
+    ");
+    if (!$update_query)
+    {
+    	return array(false, "There was a problem renaming your module_form_builder_template_set_placeholder_options table to module_form_builder_template_set_placeholder_opts.");
+    }
+	}
+
   fb_reset_hooks();
   return array(true, "");
 }
@@ -225,7 +246,7 @@ function fb_delete_tables()
   $table6 = $g_table_prefix . "module_form_builder_template_set_placeholders";
   @mysql_query("DROP TABLE $table6");
 
-  $table7 = $g_table_prefix . "module_form_builder_template_set_placeholder_options";
+  $table7 = $g_table_prefix . "module_form_builder_template_set_placeholder_opts";
   @mysql_query("DROP TABLE $table7");
 
   $table8 = $g_table_prefix . "module_form_builder_template_set_resources";
