@@ -34,13 +34,23 @@ $smarty = fb_create_new_smarty_instance();
 $P = array();
 if ($source == "sessions")
 {
+  if ($g_session_type == "database")
+  {
+    $sess = new SessionManager();
+  }
+  if (!empty($g_session_save_path))
+    session_save_path($g_session_save_path);
+
   session_start();
+  header("Cache-control: private");
+  header("Content-Type: text/html; charset=utf-8");
+
   $placeholder_id_to_values = $_SESSION["ft"]["form_builder"]["placeholders"];
 
   while (list($placeholder_id, $value) = each($placeholder_id_to_values))
   {
-	  if (!isset($placeholder_hash[$placeholder_id]))
-	    continue;
+    if (!isset($placeholder_hash[$placeholder_id]))
+      continue;
 
     $placeholder = $placeholder_hash[$placeholder_id];
 
@@ -51,18 +61,18 @@ if ($source == "sessions")
 else
 {
   $config = fb_get_form_configuration($_GET["published_form_id"]);
-	foreach ($config["placeholders"] as $placeholder_info)
-	{
-	  $curr_placeholder_id = $placeholder_info["placeholder_id"];
-	  $val = $placeholder_info["placeholder_value"];
+  foreach ($config["placeholders"] as $placeholder_info)
+  {
+    $curr_placeholder_id = $placeholder_info["placeholder_id"];
+    $val = $placeholder_info["placeholder_value"];
 
-	  if (!isset($placeholder_hash[$curr_placeholder_id]))
-	    continue;
+    if (!isset($placeholder_hash[$curr_placeholder_id]))
+      continue;
 
-	  $placeholder = $placeholder_hash[$curr_placeholder_id];
+    $placeholder = $placeholder_hash[$curr_placeholder_id];
 
-	  $P[$placeholder] = $val;
-	}
+    $P[$placeholder] = $val;
+  }
 }
 
 $smarty->assign("P", $P);
