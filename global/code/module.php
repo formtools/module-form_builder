@@ -1,60 +1,228 @@
 <?php
 
+
+function form_builder__install($module_id)
+{
+	global $g_table_prefix, $g_root_dir, $g_root_url, $LANG;
+
+	$queries = array();
+	$queries[] = "
+		CREATE TABLE {$g_table_prefix}module_form_builder_forms (
+			published_form_id mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+			is_online enum('yes','no') NOT NULL,
+			is_published enum('yes','no') NOT NULL,
+			form_id mediumint(9) NOT NULL,
+			view_id mediumint(9) NOT NULL,
+			set_id mediumint(9) NOT NULL,
+			publish_date datetime DEFAULT NULL,
+			filename varchar(255) NOT NULL,
+			folder_path mediumtext NOT NULL,
+			folder_url mediumtext NOT NULL,
+			include_review_page enum('yes','no') NOT NULL,
+			include_thanks_page_in_nav enum('yes','no') NOT NULL,
+			thankyou_page_content mediumtext,
+			form_offline_page_content mediumtext,
+			review_page_title varchar(255) DEFAULT NULL,
+			thankyou_page_title varchar(255) DEFAULT NULL,
+			offline_date datetime NOT NULL,
+			list_order smallint(6) NOT NULL,
+			PRIMARY KEY (published_form_id)
+		) DEFAULT CHARSET=utf8
+	";
+
+	$queries[] = "
+		CREATE TABLE {$g_table_prefix}module_form_builder_form_placeholders (
+			published_form_id mediumint(9) NOT NULL,
+			placeholder_id mediumint(9) NOT NULL,
+			placeholder_value mediumtext NOT NULL,
+			UNIQUE KEY published_form_id (published_form_id, placeholder_id)
+		) DEFAULT CHARSET=utf8
+	";
+
+	$queries[] = "
+		CREATE TABLE {$g_table_prefix}module_form_builder_form_templates (
+			published_form_id mediumint(9) NOT NULL,
+			template_type varchar(30) NOT NULL,
+			template_id mediumint(9) NOT NULL,
+			PRIMARY KEY (published_form_id,template_type)
+		) DEFAULT CHARSET=utf8
+	";
+
+	$queries[] = "
+		CREATE TABLE {$g_table_prefix}module_form_builder_templates (
+			template_id mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+			set_id mediumint(9) NOT NULL,
+			template_type varchar(30) NOT NULL,
+			template_name varchar(255) NOT NULL,
+			content mediumtext,
+			list_order smallint(6) NOT NULL,
+			PRIMARY KEY (template_id)
+		) DEFAULT CHARSET=utf8
+	";
+
+	$queries[] = "
+		CREATE TABLE {$g_table_prefix}module_form_builder_template_sets (
+			set_id mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+			set_name varchar(255) NOT NULL,
+			version varchar(20) NOT NULL,
+			description mediumtext,
+			is_complete enum('yes','no') NOT NULL,
+			list_order smallint(6) NOT NULL,
+			PRIMARY KEY (set_id)
+		) DEFAULT CHARSET=utf8
+	";
+
+	$queries[] = "
+		CREATE TABLE {$g_table_prefix}module_form_builder_template_set_placeholders (
+			placeholder_id mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+			set_id mediumint(9) NOT NULL,
+			placeholder_label varchar(255) NOT NULL,
+			placeholder varchar(255) NOT NULL,
+			field_type enum('textbox','textarea','password','radios','checkboxes','select','multi-select') NOT NULL,
+			field_orientation enum('horizontal','vertical','na') NOT NULL,
+			default_value varchar(255) DEFAULT NULL,
+			field_order smallint(6) NOT NULL,
+			PRIMARY KEY (placeholder_id)
+		) DEFAULT CHARSET=utf8
+	";
+
+	$queries[] = "
+		CREATE TABLE {$g_table_prefix}module_form_builder_template_set_placeholder_opts (
+			placeholder_id mediumint(9) NOT NULL,
+			option_text varchar(255) NOT NULL,
+			field_order smallint(6) NOT NULL,
+			PRIMARY KEY (placeholder_id,field_order)
+		) DEFAULT CHARSET=utf8
+	";
+
+	$queries[] = "
+		CREATE TABLE {$g_table_prefix}module_form_builder_template_set_resources (
+			resource_id mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+			resource_type enum('css','js') NOT NULL,
+			template_set_id mediumint(8) unsigned NOT NULL,
+			resource_name varchar(255) NOT NULL,
+			placeholder varchar(100) NOT NULL,
+			content mediumtext NOT NULL,
+			last_updated datetime NOT NULL,
+			list_order SMALLINT NOT NULL,
+			PRIMARY KEY (resource_id)
+		) DEFAULT CHARSET=utf8
+	";
+
+	foreach ($queries as $query)
+	{
+		$result = mysql_query($query);
+		if (!$result)
+		{
+			$last_error = mysql_error();
+			fb_delete_tables();
+			return array(false, $LANG["form_builder"]["notify_installation_problem_c"] . " <b>$last_error</b>");
+		}
+	}
+
+	// populate the database with the default template sets
+	fb_populate_default_template_sets();
+
+	// now add the settings
+	$default_published_folder_path = $g_root_dir . "/modules/form_builder/published";
+	$default_published_folder_url  = $g_root_url . "/modules/form_builder/published";
+	$settings = array(
+		"default_form_offline_page_content" => "<h2 class=\"ts_heading\">Sorry!</h2>\n\n<p>\n  The form is currently offline.\n</p>",
+		"scheduled_offline_form_behaviour"  => "allow_completion",
+		"default_thankyou_page_content"     => "<h2 class=\"ts_heading\">Thanks!</h2>\n\n<p>\n  Your form has been processed. Thanks for submitting the form.\n</p>\n\n<p>\n  <a href=\"?page=1\">Click here</a> to put through another submission.\n</p>",
+		"default_published_folder_path"     => $default_published_folder_path,
+		"default_published_folder_url"      => $default_published_folder_url,
+		"review_page_title"                 => "Review",
+		"thankyou_page_title"               => "Thankyou",
+		"form_builder_width"                => 1000,
+		"form_builder_height"               => 700,
+		"phrase_edit_in_form_builder_link_action" => "same_window",
+		"demo_mode"                         => "off"
+	);
+	ft_set_settings($settings, "form_builder");
+
+	// initialize the hooks
+	fb_reset_hooks();
+
+	return array(true, "");
+}
+
+
 /**
- * According to the Terms of Service, this file may not be de-obfuscated or edited.
- * http://modules.formtools.org/license_agreement.php
- *
- * @copyright Encore Web Studios 2012
+ * This completely uninstalls the Form Builder module. Any forms marked as Form Builder forms will be changed
+ * to Internal forms.
  */
-function form_builder__install($module_id){global $g_table_prefix, $g_root_dir, $g_root_url, $LANG;$success = "";$message = "";$encrypted_key = isset($_POST["\x65\153"]) ? $_POST["\x65\x6b"] : "";$module_key= isset($_POST["k"]) ? $_POST["k"] : "";if (empty($encrypted_key) || empty($module_key) || $encrypted_key != crypt($module_key, "\141z")){$success = false;}else{$success = true;$queries = array();$table1 = $g_table_prefix . "\x6d\x6fd\x75\x6c\x65_\146\x6fr\x6d\x5f\x62u\x69lde\x72\137\146o\162\155\163";$queries[] = "\x0d
- \040\x20   \103RE\101\x54\105\040\124A\x42\x4c\x45\x20$table1 \050\x0d
- \040\040\x20\040 \040\x20\x70\x75b\154i\163\x68\x65d\137\x66\157\x72\x6d\x5fid\040\x6ded\151\165\155i\156\x74\x28\x38)\040\x75ns\x69\x67\156e\x64 N\117\124 NUL\114\040\101\x55T\117_\x49NC\x52\x45\115\105\x4eT\054\015\x0a  \x20\040\040  \040i\x73\x5f\x6fn\154\151\x6e\145\040e\x6eu\x6d('y\145s'\054'\156o'\x29\x20N\x4f\124\x20\116U\114\114\054\015\x0a\x20\040\x20\040 \040\x20\040\151s\137\160\x75\142\x6c\151s\x68\x65\x64\040\x65\156\x75\x6d\x28'\x79e\163','\156\157') N\117T N\x55\114L\x2c\015\x0a  \040\040 \040\x20\x20\x66\x6f\x72m_id \155\x65\144\151\165\155\151\156\x74\0509\051\040\116\117\x54\x20N\125\x4cL\x2c\015\012\x20\x20\x20\x20  \x20 v\x69\145\x77\x5f\151d\x20\155\x65d\x69\165m\151\x6et\x28\071\051\x20NO\124\040\116UL\x4c\054\015
-\040\040\040\040 \x20\040\040s\145\x74_i\x64\040\x6d\145\144\x69\x75\155\x69\156\164\0509) \x4e\117\x54 N\125\114\114\054
-\012\040\x20 \040\040 \x20\x20\160\x75\142\x6c\151\163\150_da\x74\145\040\x64\x61\x74\x65t\151me \x44\105\106A\x55\114\124\040\x4e\x55LL,\x0d
-\040 \x20\x20\x20\x20\x20\040\146\151l\x65n\141m\145\040varch\x61\162\050255\x29 NOT N\x55\114\114,\x0d\x0a\x20\040    \x20\040f\x6f\154d\145r\137\x70\x61th\040m\x65d\151um\164e\x78\x74 \116\117T\040\x4e\x55\x4c\x4c\x2c
- \x20\040\x20\040\040\040\040f\157l\x64\145r_\x75\162\x6c \155e\x64\151\x75m\164ext\040N\x4fT\040\x4e\x55\x4cL\x2c
-\040\040\x20    \x20\x69\x6e\143\x6c\165\x64\x65\x5f\x72\x65v\x69\145w_p\141\x67\145\040e\156\x75m\x28'\171\145\x73'\x2c'n\157'\x29\x20\116\117\x54 N\x55\x4c\x4c\054
-\x0a\x20\x20 \x20\040\x20\x20\x20\151n\x63\x6c\165\x64e_t\150\x61n\x6bs_\160a\x67e\x5f\x69\x6e_na\x76\x20e\x6e\x75\x6d\x28'\x79es'\x2c'\156\157')\x20NO\x54\x20\x4eU\x4c\x4c\x2c
-\012\x20\x20\040\x20\x20\040\040\x20\164\150\141n\153\x79\x6fu\x5fp\x61g\145_co\156te\x6e\164 \x6d\145\144\x69\165m\x74\x65\170t\054\015\012 \040\040\x20\x20\x20\x20\040\x66o\162\x6d\x5f\157f\146\x6c\151n\x65\137\x70age\x5fc\157\156t\145n\164\040m\145\144\x69\165\155\164e\x78\x74\x2c\x0d
-\x20\040\040 \040\040 \x20\162e\x76\151\145\x77\137p\141\x67e_\164itl\145 v\141r\x63h\141r(2\x355\x29\040DEF\x41\x55LT\x20\116\x55\114\114,\x0d\x0a\x20  \040 \x20\x20\040t\x68\141\x6eky\157\165\137pa\x67\145_\164\151\x74\x6ce\x20\166\141\162c\x68a\162(\06255)\040\x44\105\x46A\x55\114T NULL\054\015\x0a \040\040\040\x20\040\x20 \157\146f\154\x69n\x65\137\x64\x61t\145\x20da\x74\145tim\x65 N\x4f\x54\x20\x4e\x55\x4cL\054\015\012\040\040\x20\x20\040 \x20\x20l\x69s\164\137or\x64\145r\x20\163mal\154int(\066)\040\116\x4fT \x4e\125\x4c\x4c\x2c\015\x0a\040\040 \x20\040 \x20\x20\x50\x52I\x4d\x41RY\040\113\x45\131 \x28\160u\142\x6ci\x73\150ed\137\x66\157\x72m\x5f\x69d\x29\x0d\x0a\x20    \040\051 \x44\105\x46\101\x55\x4c\x54\040\x43H\101R\123\x45\x54\x3du\x74\x66\x38\x0d\x0a \x20\040\x20\040\x20 \040";$table2 = $g_table_prefix . "\155\x6fd\x75\154\145\x5f\146or\x6d\x5f\142u\x69lde\162\137\146\x6fr\155_\160la\143e\150\x6f\x6cd\145\x72\x73";$queries[] = "\015
- \x20\x20 \040 \x43\x52E\x41\124E\040\x54\x41\102\114\105\x20$table2\040\050\x0d\012\040   \x20\x20  \160\165b\154\151\163\x68\145\x64\x5f\146orm\x5f\x69\144\x20me\x64\x69\165\155\151nt(\071\x29\x20\x4e\117T N\125\114\x4c\054
-\x0a\x20 \x20 \x20\040 \x20\x70\154\x61\x63\x65h\x6f\154der\137\x69d\040\155\145\144\x69\x75\155\x69n\164\0509) \116O\124\x20\x4eU\x4c\x4c\054\015
-\040 \x20    \040\x70\154\141\x63\x65\x68o\154\144\x65r\x5f\166\141lu\145\x20m\x65\144i\x75mt\145\x78\164\040\x4e\117\124 \x4e\125\x4c\114,
-\x0a\x20 \040\040\x20\x20\040 U\116\111QU\x45 \x4b\x45\131\x20\x70\x75\142l\151\163\x68e\x64\x5ff\x6f\x72\x6d\137\x69\144\040\050p\x75b\154\x69\163h\145d_f\157rm_\x69\x64\x2c\x70\x6ca\143\x65ho\154\144\145r\137\x69d\051\x0d\012\x20 \x20 \040\x20\051\040\104E\106\101U\114T \103H\101\x52\123\x45\124=u\x74\x66\070\x0d
-\x20  \x20\040\x20\x20 ";$table3 = $g_table_prefix . "\155\x6f\x64u\x6c\x65_\x66\157\x72m\x5fbu\x69l\x64e\x72_\146o\162\155\x5ft\145\x6dp\x6c\x61\x74es";$queries[] = "
-\040\040 \x20  \x43\x52E\101\124\x45\x20TA\102\114\x45 $table3\x20(
-\012\040\x20\040\x20\040\x20\040 \x70\x75bl\x69\163\x68\x65\x64\137\146o\x72m\x5f\151\x64\x20\155\145\x64i\x75m\x69\156\164\x28\x39\x29\x20\116\x4fT\040\x4e\125\x4c\x4c,\x0d
-\x20\040 \x20\040 \x20\040\164e\155\160\x6ca\x74\x65\x5f\164y\x70\145\x20\166\141rc\150a\162(3\x30\x29\x20NOT N\x55\x4c\x4c\x2c
- \040\040\x20\040  \x20\x74\145m\x70\x6c\141\x74\145\x5fid\040m\x65\x64\x69\165\x6dint(9\x29\x20N\x4fT\040\x4e\125\114\x4c\x2c\x0d\x0a\x20\x20\040\040\x20\040\040\x20\x50\x52I\115\x41\x52Y\x20\113\105Y (p\x75bli\163\150\x65d\137fo\x72m\x5f\151\144,\164\x65m\x70\x6c\141t\145_\x74ype)\015
-\x20\040\x20  \040) \104\x45\106A\125LT\x20\103\x48A\x52SE\124=\x75\x74\x66\070\015\012\x20\x20\x20\x20\x20 \x20\x20";$table4 = $g_table_prefix . "mod\165\154e\137\146o\162\155_\142\x75\x69\x6c\144e\162_\164e\155p\x6ca\164\145s";$queries[] = "\015
-  \040\040\x20\040CR\105\x41TE\x20T\101\102\114\105 $table4\040\050
-\012\040\x20 \x20\x20 \040\040\x74\x65\x6d\160la\164\145_\151\144\040\x6d\145\144\x69\165\155\x69\x6et\050\070\x29 \x75n\163\151\147\x6e\145\144\x20\x4e\x4fT \x4e\x55\114\x4c\x20\x41UT\117_IN\x43\x52E\x4d\x45NT\054
-\012 \x20\040 \040\040\x20\040s\145\x74\137\x69\x64\x20\155\145\x64\x69u\x6d\151\156\164\x28\071) \116OT \116\x55\x4c\x4c,\015\012   \040  \040\x20\x74\x65\x6d\x70\x6c\141\164\145\137\x74\x79p\x65\040\x76\141\x72\143h\x61\x72\x28\x33\x30\x29\040\116\x4f\124 N\x55\114\114,\015
- \040 \040 \x20\x20 t\145m\160l\141\x74\x65\137\x6e\141me v\141\162\143\150ar\x28\x32\x35\065\x29\040\x4e\x4f\124\040\x4eU\x4c\114\054\x0d
-\040\040\040 \x20\x20\x20\040c\157\156\x74\x65\156\164\x20\155\145d\151\x75\155\164\145x\x74\x2c
-\012\040\040\x20\x20    \154\151s\x74\137\157\162\x64\145\x72\040\x73\x6d\141\x6c\154\151\x6e\x74(\066\x29\040NO\x54\040\x4e\125\114L\054\x0d
-\040\040   \040\x20\040\x50\122\x49MA\x52Y \113\x45\x59\x20\x28\164e\155p\154\x61\164\145\x5f\x69\x64\051
-\x0a\040    \040\x29\040D\105\x46\x41UL\x54\x20CH\101\122\123\x45T\075\x75\x74\x668\x0d\012 \x20\x20 \x20\040 \x20";$table5 = $g_table_prefix . "\x6d\157\144u\x6ce_f\x6f\162\155\137bu\x69\x6c\144e\162_\x74\x65m\160\154\x61\164e\x5f\x73\145\164\163";$queries[] = "\x0d\012\x20\x20\x20 \040\040C\x52E\101\124E T\101\102\x4c\x45 $table5\x20\050\015\012\x20 \040\x20\040\x20 \x20\163e\164\137\151d \x6de\144\151\x75\x6d\151\x6e\x74\x288\x29 \165ns\151\147\156\145d\040NOT\040\116\125\114\114 \101\x55T\117\137\x49\x4e\x43\122\105\115E\116\124,\015\x0a\040  \x20 \x20\x20 \x73\145\x74\x5fna\x6d\145\040\166ar\143\150\141r\050\x325\x35\x29\x20\x4eOT\x20\x4e\125L\x4c,
-\x0a  \040\040  \x20\x20\x76\x65\162\163\x69\157\x6e\x20\166\141\x72c\x68\141r\x28\062\060\051\x20\116O\x54\x20\x4e\125\114\114\054\015\x0a\x20   \040\040\x20 \x64esc\x72\151p\164\151\x6f\x6e me\x64\x69\x75\155\164e\x78\164\054
-\040 \040\040\040\x20\x20\x20\151\x73\x5fco\x6dpl\145t\145 \x65\x6e\165\155\x28'y\x65\x73'\x2c'n\x6f'\x29\x20\116\117\124 NU\114\114\054\015\x0a\040 \040\040 \x20\x20 l\x69\x73t\x5f\157rde\162\040\x73m\x61\154\154\x69\x6e\164\050\066) N\x4fT\040\x4e\x55L\114\x2c
- \040\x20\x20\040\x20\040 \x50R\111MA\122\x59\x20KEY\x20(set_\151\144\x29
-\040\x20\x20 \x20\x20\x29\x20\104\105\106\101\x55L\x54\040\103H\101R\123\105\x54=u\x74\x66\070\015
-\040 \x20\x20\x20\x20\x20\040";$table6 = $g_table_prefix . "\155odul\145_f\157\x72\155_\142u\x69\154d\145\162\x5ft\x65mpla\x74e\x5fs\145\x74\x5f\x70\154\x61\x63e\150\x6flder\163";$queries[] = "\x0d\012\x20   \x20 \x43\x52\x45\101\x54E\x20\124\101\102L\x45 $table6\040(\x0d\012\x20 \x20\x20\x20   \160l\141\x63eh\157\154\x64\145\162\137\151\x64 \x6d\x65\x64\x69\x75\x6di\x6e\164\050\x38\051\x20\165ns\151g\x6ee\144 \116\x4fT\x20\x4e\x55\x4c\114 AU\124\x4f\137I\116\103\122\x45M\105N\x54\054\x0d\012 \040 \040 \x20\040 \163\145t\x5f\151\144 \x6de\144\151\x75\155\x69n\x74\050\071\051\040\116\x4fT\x20N\125L\x4c\054\015
- \040\x20\040\x20 \x20\x20\160la\143eho\154de\x72_\154a\142\x65\154\040\166\141\162c\150\141r\0502\065\065)\040\x4e\x4f\x54\x20\116\x55LL\054\x0d\x0a \040\040\040 \x20\x20\x20\x70l\x61\143e\x68\157\154d\145\162\040\x76a\x72\x63\150\x61r(\06255\051\x20\x4e\117T \116U\x4c\x4c,\x0d
-\x20\x20 \x20\040\x20  \146\x69el\144_\x74y\160\145 \x65n\x75m('\164ext\x62o\170','\x74\x65\x78t\141rea'\x2c'\x70as\163w\x6f\x72\x64'\054'\x72\141d\x69o\x73','ch\x65c\153\x62oxe\163','\x73e\x6c\145c\164'\x2c'\155\x75lt\151-s\145l\x65\143\x74')\x20\x4e\117\124\040\116\x55L\x4c\x2c\015\012\040    \x20\040 \x66ie\154\x64_\157rie\x6e\x74a\x74i\x6f\156\x20enum\050'\150\x6f\162iz\157\x6e\164\x61\154'\054'\x76e\x72\x74\151\143\x61\x6c','\x6e\141'\051\040\116\117\124\x20\116\x55\114L\054\015\012\x20 \040 \x20\x20\x20\040\144efau\x6c\x74\137\x76alue v\x61\x72\x63\150\141\162\050\x325\065\x29\040D\105FA\125L\124\x20\x4eUL\x4c\054\015\012\040\040\x20 \040\x20 \x20f\x69\x65\x6c\144\137\x6f\x72\144\x65\162\x20\163\155\141\x6c\x6c\x69n\164(6\051\x20\x4eO\x54\040NULL,
-\012 \040\040 \x20\x20 \x20\120\122IMA\122\x59\x20K\105Y\040(pl\x61\143\x65\150o\154\x64er\x5f\x69\144\051\015
-\x20 \040\040\x20 \051\040\104\x45\x46\x41U\x4cT\x20C\110\101\122\x53\105\124=\x75tf8\x0d
-\040\x20\040\x20\040\x20\040\040";$table7 = $g_table_prefix . "\155o\144\x75l\145_\x66\157r\x6d_b\165\151\154der\x5ft\145m\160\154\x61t\x65\x5f\163et_\x70l\141\143\145\x68\157\154\x64e\162\x5f\157\160\x74s";$queries[] = "\015\x0a\040 \040\040\040 \x43\122E\x41T\x45\040TAB\x4cE $table7\040(\015\012\x20 \040 \040   pl\x61\x63\x65h\157\x6cde\162_\x69\x64 \x6d\x65\144iu\x6d\151n\164(9) \116\117\x54\x20\x4e\125\114\x4c\x2c\x0d
-   \x20 \040  \157p\x74\151o\x6e_t\145\x78\164 \166\x61\x72\x63h\141\x72\x28\062\x355)\x20N\x4f\x54\040N\x55\x4c\x4c,\015\012\040\040\040 \040\x20  fi\145\x6cd\x5f\x6f\x72d\145\162\040\x73\x6d\x61l\x6c\151\156t\x286)\x20NO\124\040\116UL\114\054\015
-\040\x20\x20\040 \x20\x20\040\x50\122I\x4d\101RY \x4b\105Y\040\050p\154a\143\x65\150\157ld\x65r_i\144\x2c\x66i\x65\x6cd\137o\x72d\x65\162)\015
-  \040 \x20 \x29 \x44\105\106A\x55\x4c\x54\x20\103\x48\101R\x53\105\x54=\x75t\x66\x38
-\012 \040\x20\040 \040\x20\x20";$table8 = $g_table_prefix . "\155\157\x64\x75\154\145\x5f\x66o\x72m_\142\165\x69\x6c\144e\162\137\164\x65\155\x70\154\x61\164e\x5f\163\x65\164\137\x72eso\x75r\143\x65s";$queries[] = "\015\012  \x20\040\040\040CR\105\x41TE \124A\x42LE\x20$table8 \050
-\x0a\x20\x20\040\040  \040\x20r\145s\x6f\165\162\x63e\x5f\x69d\040\x6de\x64\151\x75\155\x69\x6e\164\050\070\x29\x20\x75\x6es\151\147\156\145d\x20N\x4f\x54 N\125LL\040\101\125TO_I\116\x43\x52\x45\x4d\x45\x4e\124\x2c\x0d\012\x20\x20\x20\040\x20\040\x20 \x72\145\x73\157u\x72ce\x5f\164yp\x65\040\x65\x6e\165m\x28'\x63\163s'\054'\152\x73'\051 N\x4f\x54\040N\125\114L\054\x0d\012\040\040\040 \040\040\040\040t\145m\160\154a\x74\145\137\x73\x65t\x5f\151\x64 \x6de\144iu\x6di\156\164\050\070)\x20\x75\156si\x67\x6e\x65\144\x20N\117\x54 \x4eU\x4c\x4c,
-\x20\x20\040\x20  \040\040\162\x65\x73\157\165\162\143\145\x5f\x6e\x61m\145\040\166arch\141\x72\050\x32\065\065\x29 N\117T\040\x4e\x55\x4cL,\x0d\x0a   \040 \040  \x70\154\141\143\145ho\x6cd\x65r\040v\141\x72\x63ha\162(\061\x300\051\040\116\x4f\124\x20NU\114\x4c,\015\012\x20\040\040 \x20 \040 \x63\x6f\156\164\x65\156t\040m\x65\144i\x75\x6d\x74e\170\x74 \x4eO\x54\040\116\125\x4c\x4c,\015
- \x20\040\040\040\040\x20\040\x6cas\164\x5f\165p\144ated\040d\x61\x74\145ti\155\x65\040NOT\040N\125\x4cL\x2c\x0d
-\040\040\040\x20\x20   l\151\163\x74\137o\x72d\x65\162 \x53\115\x41\x4c\x4c\x49NT \x4eO\x54\x20\116\x55\x4cL\x2c\015\x0a\040\040\x20 \x20\040\x20\x20\x50\x52I\x4dA\x52\131\x20\113\x45\x59\040(r\x65\163our\x63e\137\151d\x29
-\x0a\x20 \x20\040\040\040\051\040\x44\105F\x41\125\x4c\124\x20\103\110ARSET\x3dut\x66\070\015\012\x20  \x20 \040\040\040";foreach ($queries as $query){$result = mysql_query($query);if (!$result){$last_error = mysql_error();fb_delete_tables();return array(false, $LANG["\146o\x72\x6d\137b\165\x69\x6c\x64\145\x72"]["n\x6ft\x69\x66\x79\137\151\x6es\x74\141\154l\x61\164\x69\157n_\160\162\157\142\x6c\x65m\137c"] . "\x20\x3c\x62\076$last_error<\x2f\142\076");}} fb_populate_default_template_sets(); $default_published_folder_path = $g_root_dir . "\x2fm\157\144\x75le\x73\057\146\157r\155\137b\x75\x69\154\144e\x72/\160u\x62l\151\163\x68ed";$default_published_folder_url= $g_root_url . "\057modules\x2ff\157\x72\155\x5f\x62\165\151ld\145\x72/\160ub\x6c\x69\x73\150\x65\144";$settings = array("de\x66\x61\165\154\x74\137f\157\x72m\137\x6ff\146\154\151\x6e\x65\137p\x61\147\145_\143\x6f\x6ete\156\x74" => "\x3c\x682\x20\x63l\x61\x73\163\075\"\164\x73_\150\x65a\x64\151\156g\"\x3e\x53\157\162\162\x79\x21\x3c\057\x68\x32\076\n\n\x3cp\076\n\x20 \124h\x65 f\157\162\155\040i\163\040\x63\165\x72r\x65ntl\171\040o\x66f\x6c\x69\x6ee\x2e\n<\x2f\x70\x3e","\163\143\150\x65\144ul\x65\144\x5f\x6fffli\x6e\145\x5f\x66or\155_b\145\150\141v\151\157u\162"=> "\x61\154\x6c\157\167\137\x63\157mp\154e\164\x69\157\x6e","de\x66\x61u\154\x74\x5f\x74\x68\x61\x6e\153\171ou\x5f\x70\141\147e\x5fco\156\x74e\x6e\x74" => "\074h\062\x20\x63\154\141\163\x73=\"\164s\137\x68\145\141\x64\x69n\x67\"\x3eT\x68a\x6e\153\163\041\074\057h\062>\n\n\x3cp\076\n\040\040Y\157u\162\040form\040h\141\x73\040\x62\x65\145\156 p\x72\x6fc\x65\x73\x73\x65d.\040T\x68an\x6b\163 \x66or\x20\163\x75\142\155\x69\164\x74i\156g \x74h\x65\040f\157\162\x6d\x2e\n\074\x2f\x70\076\n\n\074\x70>\n\040\040\x3c\x61\040\150r\145\146=\"?p\x61\147e\x3d1\">\103\x6c\x69\x63\153\040\x68\x65\x72\x65\074/\141> \164o\040\160\165t\040\x74\x68\x72\157\165\147\x68 \141n\157\x74\150e\x72 \163\x75\142mi\x73\x73\x69\157\156\x2e\n</\160\x3e","d\145\146a\x75\154\x74\x5fp\165\x62li\163h\145\x64_\x66old\145\x72_\160a\164\150" => $default_published_folder_path,"d\x65fa\165\x6c\164\x5fp\165\142\x6ci\x73\x68\145\144_fo\154\x64\x65\x72\x5f\165rl"=> $default_published_folder_url,"r\x65\166\151e\x77\137p\x61\x67\145_\164\151\x74\x6c\x65" => "\x52\145v\x69\x65\x77","t\x68\x61\156\x6by\x6f\165\x5f\x70a\x67e_\164\x69\x74\154e" => "\x54\150\141\x6ek\x79ou","\x66\x6f\162\155\x5f\x62\165ild\x65r\x5fwidt\x68"=> 1000,"fo\x72m\137\142\165i\x6c\144\x65r\137\x68\x65\151g\150t" => 700,"\x70\x68ra\163e\x5f\145d\x69\164_i\x6e\137\146\x6f\x72\x6d\x5fb\165i\154\x64\145\x72_\x6c\x69\x6e\x6b_\x61\x63ti\157\x6e" => "\x73\141\x6d\145_w\151n\144\157\x77","\x64\x65\x6do\137\x6do\x64\145" => "\x6f\x66f");ft_set_settings($settings, "f\157\x72m_\x62ui\154d\x65\x72"); fb_reset_hooks();}return array($success, $message);}function form_builder__uninstall($module_id){global $g_table_prefix;fb_delete_tables();@mysql_query("
-\012  \040\x20\x55\120D\x41\x54\105\040{$g_table_prefix}\146\157r\155\163\015\012  \x20\x20\x53\105\124\040\040\040\x20\146\157\162\x6d\137t\x79\160\145 \075\040'\x69\156t\145\x72\x6e\141l'
-\x0a  \040\x20\x57HER\x45 \x20\146o\162\155_\x74\x79pe\040= '\146o\x72m\137\x62\165\151\154\x64er'
- \x20");return array(true, "");}function form_builder__update($old_version_info, $new_version_info){ global $g_table_prefix; $old_version_num = $old_version_info["v\x65\162s\x69\x6f\156"];$old_version_int = preg_replace("\057\D\057", "", $old_version_num); if ($old_version_int <= 105) {$old_table_name = $g_table_prefix . "\155\157\x64\x75\154\x65_f\x6fr\x6d_b\x75i\154\144\145r_\164\145\x6d\160\154\141t\x65_\x73\x65\x74\137\160\x6caceh\x6f\154d\145\162_\x6f\160\164\x69\x6fn\163";$new_table_name = $g_table_prefix . "\155\x6f\144\165\x6c\x65\137f\157\x72m\x5fb\x75\151\154\144\145\162\137\164\x65\155\160\154\x61\164e_\x73\x65t_\160\154a\143e\x68\157\x6c\144\145\x72_\157\x70\164s";$update_query = mysql_query("\x0d\x0a  \040 \x20 R\x45\116\101\115\105 TA\102L\105 $old_table_name\x20\124O $new_table_name
-\012 \x20\x20\x20");if (!$update_query){ return array(false, "T\150er\x65\040\x77\141s\x20\141\x20\160\162\x6fb\x6c\x65\155\x20\x72en\141mi\x6e\147\040\171\157\x75r\040\x6d\x6f\144\x75\154\x65\137\146o\x72\x6d_\x62u\x69l\144\x65\x72_\164\145m\x70lat\x65_se\164_pl\x61\x63\x65\150\157lder\x5f\x6fp\164\x69\x6f\x6es\040\164\x61\142\x6c\x65 \x74o \155\x6fdu\154\x65_f\157r\x6d\x5fbu\x69ld\145r\137\x74e\155p\x6c\141t\x65\x5fs\x65\164_\160\154\141\143\x65h\x6f\x6c\x64\x65r_o\160ts.");} }fb_reset_hooks();return array(true, "");}function fb_delete_tables(){global $g_table_prefix;$table1 = $g_table_prefix . "\155o\x64\165\154\145\137\x66\x6fr\155\x5f\142\x75i\154\144\145\x72_\146o\x72ms";@mysql_query("D\x52\x4fP\040\124A\x42\x4c\105\x20$table1");$table2 = $g_table_prefix . "\x6d\x6f\x64u\x6c\x65\x5ff\x6f\162\155\x5f\x62u\151\154d\145\x72_\146\x6f\162m_\x70l\141\x63\x65\x68o\x6c\144\x65\162\x73";@mysql_query("DR\x4fP\x20\124A\x42\114E\x20$table2");$table3 = $g_table_prefix . "m\157du\x6ce\x5f\x66\x6f\x72m\137b\x75il\x64\x65r_\146\157r\155\137\x74\x65\155\x70l\x61\x74e\x73";@mysql_query("\x44\122O\120 \124\x41B\x4cE\x20$table3");$table4 = $g_table_prefix . "m\x6f\x64\x75\x6c\145\x5f\146\157\x72\x6d\137\142\165\151l\144\x65\162_t\x65m\160l\x61te\163";@mysql_query("\x44ROP \x54\101B\x4cE $table4");$table5 = $g_table_prefix . "\x6d\x6f\x64\x75\x6c\x65_\x66\157\x72\x6d\x5f\142uil\x64\x65r_\x74e\x6d\x70l\141t\x65_se\x74\163";@mysql_query("\x44R\117\120\x20\124AB\x4c\105\x20$table5");$table6 = $g_table_prefix . "\155\157\x64\x75\x6c\x65\137\146\x6f\162m\x5fbu\151l\144\x65\162\137\x74em\x70lat\145\x5fs\145\x74\x5f\160\x6c\141c\145\150o\x6c\x64\145\x72s";@mysql_query("\x44RO\x50 \x54ABL\105\x20$table6");$table7 = $g_table_prefix . "m\x6f\144\x75\x6c\145\x5f\x66\x6f\x72\x6d_\x62\x75i\x6c\144\145r\137tem\x70\x6c\x61\x74e\137s\145\x74\x5f\x70\154ac\145\x68o\x6cd\145\162_\x6f\x70\x74s";@mysql_query("\104\122O\x50 \x54\101\102\x4c\x45\x20$table7");$table8 = $g_table_prefix . "\155\157d\x75\154e\137\x66\157\162\x6d\137\x62\165ild\x65\162\x5f\164\x65\155\x70\154\x61t\145_\163\x65t\x5fre\163\x6f\x75r\x63e\163";@mysql_query("\x44RO\120\x20T\101\x42L\x45\040$table8");}function fb_populate_default_template_sets(){global $g_table_prefix;require_once(dirname(__FILE__) . "/defau\x6c\x74_\163\x65t\163\x2eph\160");fb_import_template_set_data($g_default_sets);}
+function form_builder__uninstall($module_id)
+{
+	global $g_table_prefix;
+
+	fb_delete_tables();
+
+	@mysql_query("
+		UPDATE {$g_table_prefix}forms
+		SET    form_type = 'internal'
+		WHERE  form_type = 'form_builder'
+	");
+
+	return array(true, "");
+}
+
+
+function form_builder__update($old_version_info, $new_version_info)
+{
+	global $g_table_prefix;
+
+	$old_version_num = $old_version_info["version"];
+
+	// normally we do a date comparison, but the dates got messed up in 1.0.5, so we have to do a workaround by
+	// converting the version number to a number
+	$old_version_int = preg_replace("/\D/", "", $old_version_num);
+	if ($old_version_int <= 105)
+	{
+		$update_query = mysql_query("
+			RENAME TABLE {$g_table_prefix}module_form_builder_template_set_placeholder_options
+			TO {$g_table_prefix}module_form_builder_template_set_placeholder_opts
+		");
+
+		if (!$update_query)
+		{
+			return array(false, "There was a problem renaming your module_form_builder_template_set_placeholder_options table to module_form_builder_template_set_placeholder_opts.");
+		}
+	}
+
+	fb_reset_hooks();
+	return array(true, "");
+}
+
+
+/**
+ * Called during installation in case there are problems, to roll back anyd tables that had been
+ * created. Also called during uninstallation.
+ */
+function fb_delete_tables()
+{
+	global $g_table_prefix;
+
+	@mysql_query("DROP TABLE {$g_table_prefix}module_form_builder_forms");
+	@mysql_query("DROP TABLE {$g_table_prefix}module_form_builder_form_placeholders");
+	@mysql_query("DROP TABLE {$g_table_prefix}module_form_builder_form_templates");
+	@mysql_query("DROP TABLE {$g_table_prefix}module_form_builder_templates");
+	@mysql_query("DROP TABLE {$g_table_prefix}module_form_builder_template_sets");
+	@mysql_query("DROP TABLE {$g_table_prefix}module_form_builder_template_set_placeholders");
+	@mysql_query("DROP TABLE {$g_table_prefix}module_form_builder_template_set_placeholder_opts");
+	@mysql_query("DROP TABLE {$g_table_prefix}module_form_builder_template_set_resources");
+}
+
+
+/**
+ * Called on installation. This populates the database with the default template set data stored in /global/code/default_sets.php.
+ * Eventually, this will be replaced with the Shared Resources.
+ */
+function fb_populate_default_template_sets()
+{
+	global $g_table_prefix;
+
+	// not clear, but this includes the $g_default_sets "global"
+	require_once(dirname(__FILE__) . "/default_sets.php");
+	fb_import_template_set_data($g_default_sets);
+}
