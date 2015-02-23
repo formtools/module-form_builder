@@ -1,5 +1,17 @@
+{% assign col1Class = 'col-lg-3' %}
+{% assign col2Class = 'col-lg-9' %}
+{% if include.nav_width == 4 %}
+	{% assign col1Class = 'col-lg-4' %}
+	{% assign col2Class = 'col-lg-8' %}
+{% endif %}
+{% if include.nav_width == 5 %}
+	{% assign col1Class = 'col-lg-5' %}
+	{% assign col2Class = 'col-lg-7' %}
+{% endif %}
+
+
 <div class="row">
 	<div class="{{col1Class}} docNav">
-		{% include nav.html selected=include.selected %}
+		{% include {{include.nav}} selected=include.selected %}
 	</div>
 	<div class="{{col2Class}}">

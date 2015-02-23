@@ -1,0 +1,12 @@
+<div class="row docPrevNextNav">
+	<div class="col-lg-6 text-left">
+		{% if page.prev %}
+			<a href="{{site.baseurl}}/{{page.prevLink}}">&laquo; {{page.prev}}</a>
+		{% endif %}
+	</div>
+	<div class="col-lg-6 text-right">
+		{% if page.next %}
+			<a href="{{site.baseurl}}/{{page.nextLink}}">{{page.next}} &raquo;</a>
+		{% endif %}
+	</div>
+</div>
