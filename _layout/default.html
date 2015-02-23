@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{% include head.html %}
+
+	<!-- doc-specific styles -->
+	<link rel="stylesheet" href="{{site.baseurl}}/assets/css/docs.css">
+</head>
+<body>
+
+	{% include top_nav.html %}
+
+	<section class="title-section main-color">
+		<div class="container">
+			<h4>DOCUMENTATION</h4>
+		</div>
+	</section>
+
+	<section class="container doc-container">
+		<div class="page-content">
+			<div class="wrap">
+
+				<nav id="mainDocNav">
+					<a href="{{site.baseurl}}/">Documentation</a>
+
+					{% if page.navSection %}
+						&raquo;
+
+						{% if page.navSectionLink %}
+							<a href="{{site.baseurl}}/{{page.navSectionLink}}">{{page.navSection}}</a>
+							&raquo;
+
+							{% if page.subnavSectionLink %}
+								<a href="{{site.baseurl}}/{{page.subnavSectionLink}}">{{page.subnavSection}}</a>
+								&raquo;
+								{{page.heading}}
+							{% else %}
+								{{page.subnavSection}}
+							{% endif %}
+
+						{% else %}
+							{{page.navSection}}
+						{% endif %}
+					{% endif %}
+
+				</nav>
+
+				<header>
+					<h1>{{page.heading}}</h1>
+					{% include prev_next_nav.html %}
+				</header>
+
+				{{ content }}
+			</div>
+		</div>
+
+		{% include footer-docs.html %}
+
+	</section>
+
+	{% include footer.html %}
+
+</body>
+</html>
