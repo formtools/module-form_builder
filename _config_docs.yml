@@ -1,0 +1,19 @@
+# -----------------------------------------------------------------------------------------------
+# The config file used when the module is running within the standalone formtools/docs repo.
+# -----------------------------------------------------------------------------------------------
+title: Form Tools
+email: ben.keen@gmail.com
+baseurl: "modules/form-builder"
+
+# within the standalone docs, we can only
+resourceurl: "http://formtools.org"
+ft_url: "http://formtools.org"
+docs_url: "http://docs.formtools.org"
+modules_url: "http://modules.formtools.org"
+themes_url: "http://themes.formtools.org"
+translations_url: "http://translations.formtools.org"
+forums_url: "http://themes.formtools.org"
+
+# build settings
+markdown: kramdown
+permalink: pretty

@@ -1,4 +1,6 @@
-# site settings
+# -----------------------------------------------------------------------------------------------
+# The standalone config file. This is used when running the individual module doc.
+# -----------------------------------------------------------------------------------------------
 title: Form Tools
 email: ben.keen@gmail.com
 baseurl: ""
