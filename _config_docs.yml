@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------------------------
 title: Form Tools
 email: ben.keen@gmail.com
-baseurl: "/docs/modules/form-builder"
+baseurl: "/docs/modules/module-form_builder"
 
 # within the standalone docs, we can only
 resourceurl: "http://formtools.org"
