@@ -3,7 +3,13 @@
 # -----------------------------------------------------------------------------------------------
 title: Form Tools
 email: ben.keen@gmail.com
+standalone: true
+repo: module-form_builder
+module_name: Form Builder
+module_list_url: /docs/modules
 baseurl: ""
+
+# absolute URLs
 resourceurl: "http://localhost:4000/formtools.org"
 ft_url: "http://localhost:4000/formtools.org"
 docs_url: "http://localhost:4000/docs.formtools.org"
