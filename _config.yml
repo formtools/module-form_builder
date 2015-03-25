@@ -6,7 +6,7 @@ email: ben.keen@gmail.com
 standalone: true
 repo: module-form_builder
 module_name: Form Builder
-module_list_url: /docs/modules
+module_list_url: /modules
 baseurl: ""
 
 # absolute URLs

@@ -6,8 +6,8 @@ email: ben.keen@gmail.com
 standalone: false
 repo: module-form_builder
 module_name: Form Builder
-module_list_url: /docs/modules
-baseurl: "/docs/modules/module-form_builder"
+module_list_url: /modules
+baseurl: /modules/module-form_builder
 
 # within the standalone docs, we can only
 resourceurl: "http://formtools.org"
