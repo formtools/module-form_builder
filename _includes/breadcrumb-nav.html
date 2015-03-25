@@ -1,14 +1,14 @@
 <nav id="mainDocNav">
-  <a href="{{site.baseurl}}/">Documentation</a>
+  <a href="{{site.baseurl}}/">Documentation</a> &raquo;
 
   {% if site.standalone == false %}
     <a href="{{site.module_list_url}}">Modules</a> &raquo;
   {% endif %}
 
   {% if page.navSection %}
-    &raquo;
 
-    <a href="{{site.module_list_url}}/{{site.repo}}/">{{site.module_name}}</a> &raquo;
+    <a href="{{site.baseurl}}/">{{site.module_name}}</a> &raquo;
+
 
     {% if page.navSectionLink %}
       <a href="{{site.baseurl}}/{{page.navSectionLink}}">{{page.navSection}}</a>
@@ -28,5 +28,4 @@
   {% else %}
     {{site.module_name}}
   {% endif %}
-
 </nav>
