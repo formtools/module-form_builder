@@ -1,6 +1,40 @@
 <?php
 
 
+
+
+namespace FormTools\Modules\FormBuilder;
+
+use FormTools\Core;
+use PDO, PDOException;
+
+
+class Templates
+{
+
+    public static function addTemplate($set_id, $template_type, $template_name, $content, $list_order)
+    {
+        $db = Core::$db;
+
+        $db->query("
+            INSERT INTO {PREFIX}module_form_builder_templates (set_id, template_type, template_name, content, list_order)
+            VALUES (:set_id, :template_type, :template_name, :content, :list_order)
+        ");
+        $db->bindAll(array(
+            "set_id" => $set_id,
+            "template_type" => $template_type,
+            "template_name" => $template_name,
+            "content" => $content,
+            "list_order" => $list_order
+        ));
+        $db->execute();
+
+        return $db->getInsertId();
+    }
+
+}
+
+
 /**
  * Creates a new template.
  *

@@ -1,5 +1,37 @@
 <?php
 
+namespace FormTools\Modules\FormBuilder;
+
+use FormTools\Core;
+
+
+class Resources
+{
+    public static function addResource($set_id, $resource_type, $resource_name, $placeholder, $content, $last_updated, $order)
+    {
+        $db = Core::$db;
+
+        $db->query("
+            INSERT INTO {PREFIX}module_form_builder_template_set_resources (resource_type, template_set_id,
+              resource_name, placeholder, content, last_updated, list_order)
+            VALUES (:resource_type, :set_id, :resource_name, :placeholder, :content, :last_updated, :list_order)
+        ");
+        $db->bindAll(array(
+            "resource_type" => $resource_type,
+            "set_id" => $set_id,
+            "resource_name" => $resource_name,
+            "placeholder" => $placeholder,
+            "content" => $content,
+            "last_updated" => $last_updated,
+            "list_order" => $order
+        ));
+        $db->execute();
+
+        return $db->getInsertId();
+    }
+}
+
+
 
 function fb_add_resource($set_id, $resource_name, $placeholder, $resource_type)
 {

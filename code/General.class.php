@@ -1,6 +1,7 @@
 <?php
 
 
+
 /**
  * Helper function to return a JS array of View IDs and the number of tabs in each.
  *

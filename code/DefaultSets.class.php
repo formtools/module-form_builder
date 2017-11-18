@@ -18,9 +18,10 @@ class DefaultSets
     public function construct()
     {
         self::$default_sets[] = self::getSet1();
+        self::$default_sets[] = self::getSet2();
     }
 
-    private function getSet1()
+    private static function getSet1()
     {
         return array(
             "set_name" => "ProSimple",
@@ -439,457 +440,459 @@ h3 a:hover {
     }
 
 
-//
-//$g_default_sets[] = array(
-//"set_name" => "Conformist",
-//"version" => "1.2",
-//"description" => "A clean blue Template Set with delicate CSS3 gradients and tab-like, top-row page navigation.",
-//"is_complete" => "yes",
-//"list_order" => 3,
-//
-//    // templates
-//"templates" => array(
-//array(
-//"template_type" => "page_layout",
-//"template_name" => "Page Layout",
-//"content" => "{{header}}\n{{page}}\n{{footer}}"
-//),
-//array(
-//"template_type" => "header",
-//"template_name" => "Header",
-//"content" => "<html>\n<head>\n  <title>{{\$form_name}}</title>\n  <link href=\"http://fonts.googleapis.com/css?family={{\$P.font|regex_replace:'/[ ]/':'+'}}\" rel='stylesheet' type='text/css'>  \n  {{\$required_resources}}\n  {{\$R.styles}}\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:900px\">\n    <div class=\"ts_header\">\n      {{form_builder_edit_link}}\n      <h1>{{\$form_name}}</h1>\n    </div>\n\n"
-//),
-//array(
-//"template_type" => "header",
-//"template_name" => "No Header",
-//"content" => "<html>\n<head>\n  <title>{{\$form_name}}</title>\n  {{\$required_resources}}\n  {{\$R.styles}}\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:900px\">\n\n"
-//),
-//array(
-//"template_type" => "footer",
-//"template_name" => "Footer",
-//"content" => "  <div class=\"ts_footer\">{{\$P.footer_html}}</div>\n</div> <!-- ends class=\"ts_page\" div -->\n\n</body>\n</html>"
-//),
-//array(
-//"template_type" => "form_page",
-//"template_name" => "Form Page",
-//"content" => "{{navigation}}\n\n<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n\n  <h2>{{\$page_name}}</h2>\n\n  {{error_message}}\n\n  <form action=\"{{\$page_url}}\" method=\"post\" enctype=\"multipart/form-data\"\n    id=\"ts_form_element_id\" name=\"edit_submission_form\">\n    <input type=\"hidden\" id=\"form_tools_published_form_id\" value=\"{{\$published_form_id}}\" />\n  {{foreach from=\$grouped_fields key=k item=curr_group name=row}}\n    {{assign var=group value=\$curr_group.group}}\n    {{assign var=fields value=\$curr_group.fields}}\n\n      <a name=\"s{{\$group.group_id}}\"></a>\n    {{if \$group.group_name}}\n      <h3>{{\$group.group_name}}</h3>\n    {{else}}\n      <br />\n    {{/if}}\n\n    {{if \$fields|@count > 0}}\n    <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"798\">\n    {{/if}}\n    \n    {{foreach from=\$fields item=curr_field}}\n      {{assign var=field_id value=\$field.field_id}}\n      <tr>\n        <td width=\"180\" valign=\"top\">\n          {{\$curr_field.field_title}}\n          <span class=\"req\">{{if \$curr_field.is_required}}*{{/if}}</span>\n        </td>\n        <td class=\"answer\" valign=\"top\">\n          <div class=\"pad_left\">\n          {{edit_custom_field form_id=\$form_id field_info=\$curr_field field_types=\$field_types\n            settings=\$settings submission_id=\$submission_id}}\n          </div>\n        </td>\n      </tr>\n    {{/foreach}}\n\n    {{if \$fields|@count > 0}}\n      </table>  \n    {{/if}}\n\n  {{/foreach}}\n\n  {{continue_block}}\n\n  </form>\n    \n  </div>\n</div>\n"
-//),
-//array(
-//"template_type" => "review_page",
-//"template_name" => "Review Page",
-//"content" => "{{navigation}}\n\n<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n\n  <h2>{{\$review_page_title}}</h2>\n\n  <form action=\"{{\$page_url}}\" method=\"post\" enctype=\"multipart/form-data\">\n  {{foreach from=\$grouped_fields item=curr_group}}\n    {{assign var=group value=\$curr_group.group}}\n    {{assign var=fields value=\$curr_group.fields}}\n\n    {{if \$fields|@count > 0}}\n      <h3>\n        <a href=\"?page={{\$group.custom_data}}#s{{\$group.group_id}}\">EDIT</a>\n        {{\$group.group_name}}\n      </h3>\n  \n      <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"798\">\n    {{/if}}\n\n    {{foreach from=\$fields item=curr_field}}\n      {{assign var=field_id value=\$field.field_id}}\n      <tr>\n        <td width=\"200\" class=\"pad_left_small\" valign=\"top\">{{\$curr_field.field_title}}</td>\n        <td class=\"answer\" valign=\"top\">\n          <div class=\"pad_left\">\n          {{edit_custom_field form_id=\$form_id submission_id=\$submission_id\n            field_info=\$curr_field field_types=\$field_types settings=\$settings}}\n          </div>\n        </td>\n      </tr>\n    {{/foreach}}\n\n    {{if \$fields|@count > 0}}\n      </table>    \n    {{/if}}\n  {{/foreach}}\n\n  {{continue_block}}\n\n  </form>\n\n  </div>\n</div>\n\n"
-//),
-//array(
-//"template_type" => "thankyou_page",
-//"template_name" => "Thankyou Page",
-//"content" => "{{navigation}}\n\n<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n    {{\$thankyou_page_content}}\n  </div>\n</div>\n"
-//),
-//array(
-//"template_type" => "form_offline_page",
-//"template_name" => "Form Offline Page",
-//"content" => "<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n    {{\$form_offline_page_content}}\n  </div>\n</div>\n"
-//),
-//array(
-//"template_type" => "continue_block",
-//"template_name" => "Continue - Button Only",
-//"content" => "<div class=\"ts_continue_button\">\n  <input type=\"submit\" name=\"form_tools_continue\" value=\"Continue\" />\n</div>"
-//),
-//array(
-//"template_type" => "continue_block",
-//"template_name" => "Continue - Detailed",
-//"content" => "<div class=\"ts_continue_block\">\n  <input type=\"submit\" name=\"form_tools_continue\" value=\"Continue\" />\n  This is page <b>{{\$current_page}}</b> of <b>{{\$num_pages}}</b>. You must complete \n  all steps in order for your submission to be processed. Please click continue.\n</div>\n\n"
-//),
-//array(
-//"template_type" => "navigation",
-//"template_name" => "Navigation - Arrows",
-//"content" => "<ul id=\"css_nav\" class=\"nav_{{\$nav_pages|@count}}_pages\">\n  {{foreach from=\$nav_pages item=page_info name=row}}\n    {{assign var=i value=\$smarty.foreach.row.iteration}}\n    {{assign var=a value=\" "
-//),
-//array(
-//"template_type" => "navigation",
-//"template_name" => "Navigation - Numbered",
-//"content" => "<ul id=\"css_nav\" class=\"nav_{{\$nav_pages|@count}}_pages\">\n  {{foreach from=\$nav_pages item=page_info name=row}}\n    {{assign var=i value=\$smarty.foreach.row.iteration}}\n    {{if \$current_page > \$i && \$current_page != \$num_pages}}\n      <li class=\"completed_page\"><a href=\"{{\$filename}}?page={{\$i}}\">{{\$i}}. {{\$page_info.page_name}}</a></li>\n    {{elseif \$i != \$current_page && \$current_page == \$num_pages}}\n      <li class=\"completed_page\"><span>{{\$i}}. {{\$page_info.page_name}}</span></li>\n    {{elseif \$current_page == \$i || \$current_page == \$num_pages}}\n      <li class=\"css_nav_current_page\">{{\$i}}. {{\$page_info.page_name}}</li>\n    {{else}}\n      <li>{{\$i}}. {{\$page_info.page_name}}</li>\n    {{/if}}\n  {{/foreach}}\n</ul>"
-//),
-//array(
-//"template_type" => "navigation",
-//"template_name" => "No Navigation",
-//"content" => "<ul id=\"css_nav\">\n  <li><span></span></li>\n</ul>"
-//),
-//array(
-//"template_type" => "error_message",
-//"template_name" => "Error Message",
-//"content" => "{{if \$validation_error}}\n  <div class=\"fb_error\">{{\$validation_error}}</div>\n{{/if}}\n\n"
-//)
-//),
-//
-//    // resources
-//"resources" => array(
-//array(
-//"resource_type" => "css",
-//"resource_name" => "General Styles",
-//"placeholder" => "styles",
-//"content" => "html {
-//  height: 100%;
-//}
-//body {
-//  height: 100%;
-//  text-align: center;
-//  padding: 0px;
-//  margin: 0px;
-//  background: rgb(106,147,184);
-//  background: -moz-linear-gradient(top,  rgba(106,147,184,1) 0%, rgba(115,151,183,1) 100%);
-//  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(106,147,184,1)), color-stop(100%,rgba(115,151,183,1)));
-//  background: -webkit-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
-//  background: -o-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
-//  background: -ms-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
-//  background: linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
-//  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6a93b8', endColorstr='#7397b7',GradientType=0 );
-//  background-repeat: no-repeat;
-//  background-attachment: fixed;
-//}
-//td, th, p, input, textarea, select,ul,li,div, span {
-//  font-family: \"Lucida Grande\",\"Lucida Sans Unicode\", Tahoma, sans-serif;
-//  font-size: 12px;
-//  color: #555555;
-//}
-//td, th, p, textarea, ul, li, div {
-//  line-height: 22px;
-//}
-//a:link, a:visited {
-//  color: #336699;
-//}
-//table {
-//  empty-cells: show;
-//}
-//
-///* page sections */
-//.ts_page:after {
-//  -moz-transform: translate(0pt, 0pt);
-//  background: none repeat scroll 0 0 transparent;
-//  border-radius: 20px 20px 20px 20px;
-//  box-shadow: 15px 0 30px rgba(0, 0, 0, 0.2);
-//  content: \"\";
-//  left: 0;
-//  position: absolute;
-//  width: 100%;
-//  z-index: -2;
-//}
-//.ts_page {
-//  margin: 40px auto;
-//  position: relative;
-//  text-align: left;
-//}
-//.ts_header h1 {
-//  margin: 0px 0px 42px 20px;
-//  padding: 0px;
-//  font-size: {{\$P.font_size}};
-//  color: white;
-//  font-family: \"{{\$P.font}}\", \"Lucida Grande\", Arial;
-//  font-weight: normal;
-//}
-//.ts_footer {
-//  background: rgb(64,86,107);
-//  background: -moz-linear-gradient(top,  rgb(64,86,107) 0%, rgb(44,61,76) 100%);
-//  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(64,86,107)), color-stop(100%,rgb(44,61,76)));
-//  background: -webkit-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
-//  background: -o-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
-//  background: -ms-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
-//  background: linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
-//  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40566b', endColorstr='#2c3d4c',GradientType=0 );
-//  -webkit-border-bottom-left-radius: 6px;
-//  -webkit-border-bottom-right-radius: 6px;
-//  -moz-border-radius-bottomleft: 6px;
-//  -moz-border-radius-bottomright: 6px;
-//  border-bottom-left-radius: 6px;
-//  border-bottom-right-radius: 6px;
-//  padding: 10px 0px;
-//  text-align: center;
-//  color: #dddddd;
-//  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
-//  height: 5px;
-//}
-//.ts_content {
-//  background-color: white;
-//  border: 1px solid #777777;
-//  border-top: 0px;
-//  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
-//  padding: 25px 50px;
-//}
-//.ts_continue_block {
-//  margin-top: 16px;
-//  background-color: #ffffdd;
-//  padding: 8px;
-//  box-shadow: 1px 2px 2px #878787;
-//}
-//.ts_continue_block input {
-//  float: right;
-//}
-//.ts_continue_button {
-//  margin-top: 12px;
-//}
-//.light_grey {
-//  color: #999999;
-//}
-//h2 {
-//  font-size: 20px;
-//}
-//.ts_heading {
-//  font-size: 20px;
-//}
-//
-//h3 {
-//  border-top-left-radius: 4px;
-//  border-top-right-radius: 4px;
-//  -webkit-border-top-left-radius: 4px;
-//  -webkit-border-top-right-radius: 4px;
-//  -moz-border-radius-topleft: 4px;
-//  -moz-border-radius-topright: 4px;
-//  font-size: 12px;
-//  font-weight: normal;
-//  margin-bottom: 0;
-//  margin-right: 1px;
-//  padding: 1px 0 0 5px;
-//  width: 792px;
-//  background-color: #36485a;
-//  color: white;
-//  height: 22px;
-//}
-//h3 a:link, h3 a:visited {
-//  background-color: white;
-//  -webkit-border-radius: 2px;
-//  -moz-border-radius: 2px;
-//  border-radius: 2px;
-//  color: black;
-//  float: right;
-//  line-height: 17px;
-//  margin-right: 3px;
-//  margin-top: 2px;
-//  padding: 0 8px;
-//  text-decoration: none;
-//}
-//h3 a:hover {
-//  -webkit-border-radius: 2px;
-//  -moz-border-radius: 2px;
-//  border-radius: 2px;
-//}
-//
-///* navigation */
-//ul#css_nav {
-//  clear: both;
-//  margin: 0px;
-//  padding: 0px 40px;
-//  overflow: hidden;
-//  background: rgb(64,86,107);
-//  background: -moz-linear-gradient(top,  rgb(64,86,107) 0%, rgb(44,61,76) 100%);
-//  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(64,86,107)), color-stop(100%,rgb(44,61,76)));
-//  background: -webkit-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
-//  background: -o-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
-//  background: -ms-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
-//  background: linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
-//  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40566b', endColorstr='#2c3d4c',GradientType=0 );
-//  -webkit-border-top-left-radius: 6px;
-//  -webkit-border-top-right-radius: 6px;
-//  -moz-border-radius-topleft: 6px;
-//  -moz-border-radius-topright: 6px;
-//  border-top-left-radius: 6px;
-//  border-top-right-radius: 6px;
-//  height: 38px;
-//}
-//ul#css_nav li {
-//  float: left;
-//  list-style: none;
-//  text-align:center;
-//  color: #dddddd;
-//  font-size: 11px;
-//  padding: 8px 0px;
-//}
-//ul#css_nav li span {
-//  font-size: 11px;
-//}
-//
-//ul#css_nav li.completed_page {
-//  padding: 0px;
-//}
-//ul#css_nav li.css_nav_current_page {
-//  background: rgb(249,249,249);
-//  background: -moz-linear-gradient(top, rgba(249,249,249,1) 0%, rgba(255,255,255,1) 100%);
-//  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(249,249,249,1)), color-stop(100%,rgba(255,255,255,1)));
-//  background: -webkit-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
-//  background: -o-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
-//  background: -ms-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
-//  background: linear-gradient(top,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
-//  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f9f9', endColorstr='#ffffff',GradientType=0 );
-//  color: #000000;
-//}
-//ul#css_nav li a:link, ul#css_nav li a:visited, ul#css_nav li span {
-//  display: block;
-//  text-decoration: none;
-//  color: white;
-//  background-color: #333333;
-//  padding: 8px 0px;
-//  opacity: 0.5;
-//  filter: alpha(opacity=50);
-//}
-// ul#css_nav li a:hover {
-//  background-color: #222222;
-//  opacity: 0.9;
-//  filter: alpha(opacity=90);
-//}
-//
-//.nav_1_pages li {
-//  width: 150px;
-//}
-//.nav_2_pages li {
-//  width: 150px;
-//}
-//.nav_3_pages li {
-//  width: 150px;
-//}
-//.nav_4_pages li {
-//  width: 150px;
-//}
-//.nav_5_pages li {
-//  width: 150px;
-//}
-//.nav_6_pages li {
-//  width: 136px;
-//}
-//.nav_7_pages li {
-//  width: 116px;
-//}
-//.nav_8_pages li {
-//  width: 102px;
-//}
-//
-//
-///* notifications */
-//.notify {
-//  border: 1px solid #336699;
-//  background-color: #ffffee;
-//  color: #336699;
-//  padding: 8px;
-//  width: 400px;
-//}
-//.notify li { color: #336699; }
-//.error {
-//  font-size: 8pt;
-//  border: 1px solid #cc0000;
-//  background-color: #ffffee;
-//  color: #cc0000;
-//  padding: 8px;
-//  width: 550px;
-//}
-//.error span {
-//  color: #cc0000;
-//  font-weight: bold;
-//  margin-bottom: 4px;
-//}
-//
-///* forms */
-//table.table_1 > tbody > tr > td {
-//  border-bottom: 1px solid #dddddd;
-//}
-//.table_1_bg td {
-//  padding: 1px;
-//  padding-left: 1px;
-//  background-color: #336699;
-//  border-bottom: 1px solid #cccccc;
-//}
-//td.answer {
-//  background-color: #efefef;
-//}
-//.pad_left {
-//  padding-left: 4px;
-//}
-//.req {
-//  color: #aa0000;
-//}
-//.fb_error {
-//  border: 1px solid #990000;
-//  padding: 8px;
-//  background-color: #ffefef;
-//}
-//
-///* for the code / markup editor */
-//.editor {
-//  background-color: white;
-//  border: 1px solid #999999;
-//  padding: 3px;
-//}
-//#form_builder__edit_link {
-//  position: absolute;
-//  right: 5px;
-//  top: 0px;
-//  text-decoration: none;
-//}
-//#form_builder__edit_link:hover {
-//  color: #990000;
-//  text-decoration: underline;
-//}
-//
-//",
-//"last_updated" => "2012-02-03 17:42:30"
-//)
-//),
-//
-//    // placeholders
-//"placeholders" => array(
-//array(
-//"placeholder_label" => "Title Font",
-//"placeholder" => "font",
-//"field_type" => "select",
-//"field_orientation" => "na",
-//"default_value" => "Italianno",
-//"options" => array(
-//array("option_text" => "Aladin"),
-//array("option_text" => "Alegreya SC"),
-//array("option_text" => "Alike Angular"),
-//array("option_text" => "Almendra SC"),
-//array("option_text" => "Chango"),
-//array("option_text" => "Fredericka the Great"),
-//array("option_text" => "Frijole"),
-//array("option_text" => "Gudea"),
-//array("option_text" => "Italianno"),
-//array("option_text" => "Jim Nightshade"),
-//array("option_text" => "Lustria"),
-//array("option_text" => "Miss Fajardose"),
-//array("option_text" => "Montez"),
-//array("option_text" => "Telex"),
-//array("option_text" => "Yesteryear")
-//)
-//),
-//array(
-//"placeholder_label" => "Title Font Size",
-//"placeholder" => "font_size",
-//"field_type" => "select",
-//"field_orientation" => "na",
-//"default_value" => "44px",
-//"options" => array(
-//array("option_text" => "20px"),
-//array("option_text" => "22px"),
-//array("option_text" => "24px"),
-//array("option_text" => "26px"),
-//array("option_text" => "28px"),
-//array("option_text" => "30px"),
-//array("option_text" => "32px"),
-//array("option_text" => "34px"),
-//array("option_text" => "36px"),
-//array("option_text" => "38px"),
-//array("option_text" => "40px"),
-//array("option_text" => "42px"),
-//array("option_text" => "44px"),
-//array("option_text" => "46px"),
-//array("option_text" => "48px"),
-//array("option_text" => "50px"),
-//array("option_text" => "52px"),
-//array("option_text" => "54px"),
-//array("option_text" => "56px"),
-//array("option_text" => "58px"),
-//array("option_text" => "60px")
-//)
-//)
-//)
-//);
-//
+    private static function getSet2()
+    {
+        return array(
+            "set_name" => "Conformist",
+            "version" => "1.2",
+            "description" => "A clean blue Template Set with delicate CSS3 gradients and tab-like, top-row page navigation.",
+            "is_complete" => "yes",
+            "list_order" => 3,
+
+            // templates
+            "templates" => array(
+            array(
+                "template_type" => "page_layout",
+                "template_name" => "Page Layout",
+                "content" => "{{header}}\n{{page}}\n{{footer}}"
+            ),
+array(
+"template_type" => "header",
+"template_name" => "Header",
+"content" => "<html>\n<head>\n  <title>{{\$form_name}}</title>\n  <link href=\"http://fonts.googleapis.com/css?family={{\$P.font|regex_replace:'/[ ]/':'+'}}\" rel='stylesheet' type='text/css'>  \n  {{\$required_resources}}\n  {{\$R.styles}}\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:900px\">\n    <div class=\"ts_header\">\n      {{form_builder_edit_link}}\n      <h1>{{\$form_name}}</h1>\n    </div>\n\n"
+),
+array(
+"template_type" => "header",
+"template_name" => "No Header",
+"content" => "<html>\n<head>\n  <title>{{\$form_name}}</title>\n  {{\$required_resources}}\n  {{\$R.styles}}\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:900px\">\n\n"
+),
+array(
+"template_type" => "footer",
+"template_name" => "Footer",
+"content" => "  <div class=\"ts_footer\">{{\$P.footer_html}}</div>\n</div> <!-- ends class=\"ts_page\" div -->\n\n</body>\n</html>"
+),
+array(
+"template_type" => "form_page",
+"template_name" => "Form Page",
+"content" => "{{navigation}}\n\n<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n\n  <h2>{{\$page_name}}</h2>\n\n  {{error_message}}\n\n  <form action=\"{{\$page_url}}\" method=\"post\" enctype=\"multipart/form-data\"\n    id=\"ts_form_element_id\" name=\"edit_submission_form\">\n    <input type=\"hidden\" id=\"form_tools_published_form_id\" value=\"{{\$published_form_id}}\" />\n  {{foreach from=\$grouped_fields key=k item=curr_group name=row}}\n    {{assign var=group value=\$curr_group.group}}\n    {{assign var=fields value=\$curr_group.fields}}\n\n      <a name=\"s{{\$group.group_id}}\"></a>\n    {{if \$group.group_name}}\n      <h3>{{\$group.group_name}}</h3>\n    {{else}}\n      <br />\n    {{/if}}\n\n    {{if \$fields|@count > 0}}\n    <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"798\">\n    {{/if}}\n    \n    {{foreach from=\$fields item=curr_field}}\n      {{assign var=field_id value=\$field.field_id}}\n      <tr>\n        <td width=\"180\" valign=\"top\">\n          {{\$curr_field.field_title}}\n          <span class=\"req\">{{if \$curr_field.is_required}}*{{/if}}</span>\n        </td>\n        <td class=\"answer\" valign=\"top\">\n          <div class=\"pad_left\">\n          {{edit_custom_field form_id=\$form_id field_info=\$curr_field field_types=\$field_types\n            settings=\$settings submission_id=\$submission_id}}\n          </div>\n        </td>\n      </tr>\n    {{/foreach}}\n\n    {{if \$fields|@count > 0}}\n      </table>  \n    {{/if}}\n\n  {{/foreach}}\n\n  {{continue_block}}\n\n  </form>\n    \n  </div>\n</div>\n"
+),
+array(
+"template_type" => "review_page",
+"template_name" => "Review Page",
+"content" => "{{navigation}}\n\n<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n\n  <h2>{{\$review_page_title}}</h2>\n\n  <form action=\"{{\$page_url}}\" method=\"post\" enctype=\"multipart/form-data\">\n  {{foreach from=\$grouped_fields item=curr_group}}\n    {{assign var=group value=\$curr_group.group}}\n    {{assign var=fields value=\$curr_group.fields}}\n\n    {{if \$fields|@count > 0}}\n      <h3>\n        <a href=\"?page={{\$group.custom_data}}#s{{\$group.group_id}}\">EDIT</a>\n        {{\$group.group_name}}\n      </h3>\n  \n      <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"798\">\n    {{/if}}\n\n    {{foreach from=\$fields item=curr_field}}\n      {{assign var=field_id value=\$field.field_id}}\n      <tr>\n        <td width=\"200\" class=\"pad_left_small\" valign=\"top\">{{\$curr_field.field_title}}</td>\n        <td class=\"answer\" valign=\"top\">\n          <div class=\"pad_left\">\n          {{edit_custom_field form_id=\$form_id submission_id=\$submission_id\n            field_info=\$curr_field field_types=\$field_types settings=\$settings}}\n          </div>\n        </td>\n      </tr>\n    {{/foreach}}\n\n    {{if \$fields|@count > 0}}\n      </table>    \n    {{/if}}\n  {{/foreach}}\n\n  {{continue_block}}\n\n  </form>\n\n  </div>\n</div>\n\n"
+),
+array(
+"template_type" => "thankyou_page",
+"template_name" => "Thankyou Page",
+"content" => "{{navigation}}\n\n<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n    {{\$thankyou_page_content}}\n  </div>\n</div>\n"
+),
+array(
+"template_type" => "form_offline_page",
+"template_name" => "Form Offline Page",
+"content" => "<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n    {{\$form_offline_page_content}}\n  </div>\n</div>\n"
+),
+array(
+"template_type" => "continue_block",
+"template_name" => "Continue - Button Only",
+"content" => "<div class=\"ts_continue_button\">\n  <input type=\"submit\" name=\"form_tools_continue\" value=\"Continue\" />\n</div>"
+),
+array(
+"template_type" => "continue_block",
+"template_name" => "Continue - Detailed",
+"content" => "<div class=\"ts_continue_block\">\n  <input type=\"submit\" name=\"form_tools_continue\" value=\"Continue\" />\n  This is page <b>{{\$current_page}}</b> of <b>{{\$num_pages}}</b>. You must complete \n  all steps in order for your submission to be processed. Please click continue.\n</div>\n\n"
+),
+array(
+"template_type" => "navigation",
+"template_name" => "Navigation - Arrows",
+"content" => "<ul id=\"css_nav\" class=\"nav_{{\$nav_pages|@count}}_pages\">\n  {{foreach from=\$nav_pages item=page_info name=row}}\n    {{assign var=i value=\$smarty.foreach.row.iteration}}\n    {{assign var=a value=\" "
+),
+array(
+"template_type" => "navigation",
+"template_name" => "Navigation - Numbered",
+"content" => "<ul id=\"css_nav\" class=\"nav_{{\$nav_pages|@count}}_pages\">\n  {{foreach from=\$nav_pages item=page_info name=row}}\n    {{assign var=i value=\$smarty.foreach.row.iteration}}\n    {{if \$current_page > \$i && \$current_page != \$num_pages}}\n      <li class=\"completed_page\"><a href=\"{{\$filename}}?page={{\$i}}\">{{\$i}}. {{\$page_info.page_name}}</a></li>\n    {{elseif \$i != \$current_page && \$current_page == \$num_pages}}\n      <li class=\"completed_page\"><span>{{\$i}}. {{\$page_info.page_name}}</span></li>\n    {{elseif \$current_page == \$i || \$current_page == \$num_pages}}\n      <li class=\"css_nav_current_page\">{{\$i}}. {{\$page_info.page_name}}</li>\n    {{else}}\n      <li>{{\$i}}. {{\$page_info.page_name}}</li>\n    {{/if}}\n  {{/foreach}}\n</ul>"
+),
+array(
+"template_type" => "navigation",
+"template_name" => "No Navigation",
+"content" => "<ul id=\"css_nav\">\n  <li><span></span></li>\n</ul>"
+),
+array(
+"template_type" => "error_message",
+"template_name" => "Error Message",
+"content" => "{{if \$validation_error}}\n  <div class=\"fb_error\">{{\$validation_error}}</div>\n{{/if}}\n\n"
+)
+),
+
+    // resources
+"resources" => array(
+array(
+"resource_type" => "css",
+"resource_name" => "General Styles",
+"placeholder" => "styles",
+"content" => "html {
+  height: 100%;
+}
+body {
+  height: 100%;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  background: rgb(106,147,184);
+  background: -moz-linear-gradient(top,  rgba(106,147,184,1) 0%, rgba(115,151,183,1) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(106,147,184,1)), color-stop(100%,rgba(115,151,183,1)));
+  background: -webkit-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
+  background: -o-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
+  background: -ms-linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
+  background: linear-gradient(top,  rgba(106,147,184,1) 0%,rgba(115,151,183,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6a93b8', endColorstr='#7397b7',GradientType=0 );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+td, th, p, input, textarea, select,ul,li,div, span {
+  font-family: \"Lucida Grande\",\"Lucida Sans Unicode\", Tahoma, sans-serif;
+  font-size: 12px;
+  color: #555555;
+}
+td, th, p, textarea, ul, li, div {
+  line-height: 22px;
+}
+a:link, a:visited {
+  color: #336699;
+}
+table {
+  empty-cells: show;
+}
+
+/* page sections */
+.ts_page:after {
+  -moz-transform: translate(0pt, 0pt);
+  background: none repeat scroll 0 0 transparent;
+  border-radius: 20px 20px 20px 20px;
+  box-shadow: 15px 0 30px rgba(0, 0, 0, 0.2);
+  content: \"\";
+  left: 0;
+  position: absolute;
+  width: 100%;
+  z-index: -2;
+}
+.ts_page {
+  margin: 40px auto;
+  position: relative;
+  text-align: left;
+}
+.ts_header h1 {
+  margin: 0px 0px 42px 20px;
+  padding: 0px;
+  font-size: {{\$P.font_size}};
+  color: white;
+  font-family: \"{{\$P.font}}\", \"Lucida Grande\", Arial;
+  font-weight: normal;
+}
+.ts_footer {
+  background: rgb(64,86,107);
+  background: -moz-linear-gradient(top,  rgb(64,86,107) 0%, rgb(44,61,76) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(64,86,107)), color-stop(100%,rgb(44,61,76)));
+  background: -webkit-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: -o-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: -ms-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40566b', endColorstr='#2c3d4c',GradientType=0 );
+  -webkit-border-bottom-left-radius: 6px;
+  -webkit-border-bottom-right-radius: 6px;
+  -moz-border-radius-bottomleft: 6px;
+  -moz-border-radius-bottomright: 6px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  padding: 10px 0px;
+  text-align: center;
+  color: #dddddd;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+  height: 5px;
+}
+.ts_content {
+  background-color: white;
+  border: 1px solid #777777;
+  border-top: 0px;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+  padding: 25px 50px;
+}
+.ts_continue_block {
+  margin-top: 16px;
+  background-color: #ffffdd;
+  padding: 8px;
+  box-shadow: 1px 2px 2px #878787;
+}
+.ts_continue_block input {
+  float: right;
+}
+.ts_continue_button {
+  margin-top: 12px;
+}
+.light_grey {
+  color: #999999;
+}
+h2 {
+  font-size: 20px;
+}
+.ts_heading {
+  font-size: 20px;
+}
+
+h3 {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  -webkit-border-top-left-radius: 4px;
+  -webkit-border-top-right-radius: 4px;
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-topright: 4px;
+  font-size: 12px;
+  font-weight: normal;
+  margin-bottom: 0;
+  margin-right: 1px;
+  padding: 1px 0 0 5px;
+  width: 792px;
+  background-color: #36485a;
+  color: white;
+  height: 22px;
+}
+h3 a:link, h3 a:visited {
+  background-color: white;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  color: black;
+  float: right;
+  line-height: 17px;
+  margin-right: 3px;
+  margin-top: 2px;
+  padding: 0 8px;
+  text-decoration: none;
+}
+h3 a:hover {
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}
+
+/* navigation */
+ul#css_nav {
+  clear: both;
+  margin: 0px;
+  padding: 0px 40px;
+  overflow: hidden;
+  background: rgb(64,86,107);
+  background: -moz-linear-gradient(top,  rgb(64,86,107) 0%, rgb(44,61,76) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(64,86,107)), color-stop(100%,rgb(44,61,76)));
+  background: -webkit-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: -o-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: -ms-linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  background: linear-gradient(top,  rgb(64,86,107) 0%,rgb(44,61,76) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40566b', endColorstr='#2c3d4c',GradientType=0 );
+  -webkit-border-top-left-radius: 6px;
+  -webkit-border-top-right-radius: 6px;
+  -moz-border-radius-topleft: 6px;
+  -moz-border-radius-topright: 6px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  height: 38px;
+}
+ul#css_nav li {
+  float: left;
+  list-style: none;
+  text-align:center;
+  color: #dddddd;
+  font-size: 11px;
+  padding: 8px 0px;
+}
+ul#css_nav li span {
+  font-size: 11px;
+}
+
+ul#css_nav li.completed_page {
+  padding: 0px;
+}
+ul#css_nav li.css_nav_current_page {
+  background: rgb(249,249,249);
+  background: -moz-linear-gradient(top, rgba(249,249,249,1) 0%, rgba(255,255,255,1) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(249,249,249,1)), color-stop(100%,rgba(255,255,255,1)));
+  background: -webkit-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
+  background: -o-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
+  background: -ms-linear-gradient(top, rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
+  background: linear-gradient(top,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f9f9', endColorstr='#ffffff',GradientType=0 );
+  color: #000000;
+}
+ul#css_nav li a:link, ul#css_nav li a:visited, ul#css_nav li span {
+  display: block;
+  text-decoration: none;
+  color: white;
+  background-color: #333333;
+  padding: 8px 0px;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+ ul#css_nav li a:hover {
+  background-color: #222222;
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+}
+
+.nav_1_pages li {
+  width: 150px;
+}
+.nav_2_pages li {
+  width: 150px;
+}
+.nav_3_pages li {
+  width: 150px;
+}
+.nav_4_pages li {
+  width: 150px;
+}
+.nav_5_pages li {
+  width: 150px;
+}
+.nav_6_pages li {
+  width: 136px;
+}
+.nav_7_pages li {
+  width: 116px;
+}
+.nav_8_pages li {
+  width: 102px;
+}
+
+
+/* notifications */
+.notify {
+  border: 1px solid #336699;
+  background-color: #ffffee;
+  color: #336699;
+  padding: 8px;
+  width: 400px;
+}
+.notify li { color: #336699; }
+.error {
+  font-size: 8pt;
+  border: 1px solid #cc0000;
+  background-color: #ffffee;
+  color: #cc0000;
+  padding: 8px;
+  width: 550px;
+}
+.error span {
+  color: #cc0000;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+/* forms */
+table.table_1 > tbody > tr > td {
+  border-bottom: 1px solid #dddddd;
+}
+.table_1_bg td {
+  padding: 1px;
+  padding-left: 1px;
+  background-color: #336699;
+  border-bottom: 1px solid #cccccc;
+}
+td.answer {
+  background-color: #efefef;
+}
+.pad_left {
+  padding-left: 4px;
+}
+.req {
+  color: #aa0000;
+}
+.fb_error {
+  border: 1px solid #990000;
+  padding: 8px;
+  background-color: #ffefef;
+}
+
+/* for the code / markup editor */
+.editor {
+  background-color: white;
+  border: 1px solid #999999;
+  padding: 3px;
+}
+#form_builder__edit_link {
+  position: absolute;
+  right: 5px;
+  top: 0px;
+  text-decoration: none;
+}
+#form_builder__edit_link:hover {
+  color: #990000;
+  text-decoration: underline;
+}
+
+",
+"last_updated" => "2012-02-03 17:42:30"
+)
+),
+
+    // placeholders
+"placeholders" => array(
+array(
+"placeholder_label" => "Title Font",
+"placeholder" => "font",
+"field_type" => "select",
+"field_orientation" => "na",
+"default_value" => "Italianno",
+"options" => array(
+array("option_text" => "Aladin"),
+array("option_text" => "Alegreya SC"),
+array("option_text" => "Alike Angular"),
+array("option_text" => "Almendra SC"),
+array("option_text" => "Chango"),
+array("option_text" => "Fredericka the Great"),
+array("option_text" => "Frijole"),
+array("option_text" => "Gudea"),
+array("option_text" => "Italianno"),
+array("option_text" => "Jim Nightshade"),
+array("option_text" => "Lustria"),
+array("option_text" => "Miss Fajardose"),
+array("option_text" => "Montez"),
+array("option_text" => "Telex"),
+array("option_text" => "Yesteryear")
+)
+),
+array(
+"placeholder_label" => "Title Font Size",
+"placeholder" => "font_size",
+"field_type" => "select",
+"field_orientation" => "na",
+"default_value" => "44px",
+"options" => array(
+array("option_text" => "20px"),
+array("option_text" => "22px"),
+array("option_text" => "24px"),
+array("option_text" => "26px"),
+array("option_text" => "28px"),
+array("option_text" => "30px"),
+array("option_text" => "32px"),
+array("option_text" => "34px"),
+array("option_text" => "36px"),
+array("option_text" => "38px"),
+array("option_text" => "40px"),
+array("option_text" => "42px"),
+array("option_text" => "44px"),
+array("option_text" => "46px"),
+array("option_text" => "48px"),
+array("option_text" => "50px"),
+array("option_text" => "52px"),
+array("option_text" => "54px"),
+array("option_text" => "56px"),
+array("option_text" => "58px"),
+array("option_text" => "60px")
+)
+)
+)
+);
+    }
+
 //$g_default_sets[] = array(
 //"set_name" => "Illuminate",
 //"version" => "1.1",

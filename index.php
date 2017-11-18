@@ -3,7 +3,7 @@
 require_once("../../global/library.php");
 
 use FormTools\Modules;
-use FormTools\Modules\FormBuilder\DefaultSets;
+use FormTools\Modules\FormBuilder\TemplateSets;
 
 $module = Modules::initModulePage("admin");
 $L = $module->getLangStrings();
@@ -12,7 +12,7 @@ $sortable_id = "template_set_table";
 
 // hidden feature, used for development only
 if (isset($_GET["generate"])) {
-    echo fb_create_default_template_set_file();
+    echo TemplateSets::createDefaultTemplateSetFile();
     exit;
 }
 
