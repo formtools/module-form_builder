@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0.0",
+  "template_set_name": "Classic Grey",
+  "template_set_version": "1.1",
+  "description": "A form template set based on the same styles as the default Form Tools user interface. Complete with choice of swatches!",
+  "last_updated": "2012-02-03 12:57:51",
+  "templates": {
+    "page_layout": [
+      {
+        "template_name": "Page Layout",
+        "content": "{{header}}\n{{page}}\n{{footer}}"
+      }
+    ],
+    "header": [
+      {
+        "template_name": "Header",
+        "content": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html dir=\"ltr\">\n<head>\n  <title>{{$form_name}}</title>\n  <link type=\"text/css\" rel=\"stylesheet\" href=\"{{$g_root_url}}/global/css/main.css\">\n  {{$required_resources}}\n  <link type=\"text/css\" rel=\"stylesheet\" href=\"{{$g_root_url}}/global/css/main.css\">\n  <link type=\"text/css\" rel=\"stylesheet\" href=\"{{$g_root_url}}/themes/classicgrey/css/styles.css\">  \n  {{$R.styles}}\n</head>\n<body>\n<div id=\"container\">\n  <div id=\"header\">\n    {{form_builder_edit_link}}\n    <h1>{{$form_name}}</h1>\n  </div>\n  <div id=\"header_row\">\n    <div id=\"left_nav_top\">\n    <div style=\"height: 20px\"> </div>\n    </div>\n  </div>\n\n  <div class=\"outer\">\n    <div class=\"inner\">\n      <div class=\"float-wrap\">\n      <div id=\"content\">\n        <div class=\"content_wrap\">\n          <div id=\"main_window\">\n            <div id=\"page_content\">\n\n"
+      }
+    ],
+    "footer": [
+      {
+        "template_name": "Footer",
+        "content": "              </div>\n            </div>\n          </div>\n        </div>\n        <div id=\"left\" class=\"pad_top_large\">\n          {{navigation}}\n        </div>\n      </div>\n      <div class=\"clear\"></div>\n    </div>\n  </div>\n</div>\n\n</body>\n</html>"
+      }
+    ],
+    "form_page": [
+      {
+        "template_name": "Form Page",
+        "content": "        <div class=\"title margin_bottom_large\">{{$page_name}}</div>\n\n        {{error_message}}\n\n        <form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\"\n          id=\"ts_form_element_id\" name=\"edit_submission_form\">\n          <input type=\"hidden\" id=\"form_tools_published_form_id\" value=\"{{$published_form_id}}\" />\n        {{foreach from=$grouped_fields key=k item=curr_group name=row}}\n          {{assign var=group value=$curr_group.group}}\n          {{assign var=fields value=$curr_group.fields}}\n\n        <a name=\"s{{$group.group_id}}\"></a>\n        {{if $group.group_name}}\n        <div class=\"subtitle underline margin_bottom_large\">{{$group.group_name|upper}}</div>\n        {{/if}}\n\n        {{if $fields|@count > 0}}\n        <table class=\"list_table margin_bottom_large\" cellpadding=\"1\" cellspacing=\"1\" \n          border=\"0\" width=\"688\">\n        {{/if}}\n    \n        {{foreach from=$fields item=curr_field name=i}}\n          {{assign var=field_id value=$field.field_id}}\n          <tr>\n            <td width=\"180\" valign=\"top\" class=\"pad_left_small\">\n              {{$curr_field.field_title}}\n              <span class=\"req\">{{if $curr_field.is_required}}*{{/if}}</span>\n            </td>\n            <td valign=\"top\" {{if $smarty.foreach.i.last}}class=\"rowN\"{{/if}}>\n              {{edit_custom_field form_id=$form_id field_info=$curr_field field_types=$field_types\n              settings=$settings submission_id=$submission_id}}\n            </td>\n          </tr>\n        {{/foreach}}\n\n        {{if $fields|@count > 0}}\n          </table>  \n        {{/if}}\n\n      {{/foreach}}\n\n      {{continue_block}}\n\n      </form>\n\n\n"
+      }
+    ],
+    "review_page": [
+      {
+        "template_name": "Review Page",
+        "content": "<div class=\"title margin_bottom_large\">{{$review_page_title}}</div>\n\n<form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\">\n  {{foreach from=$grouped_fields item=curr_group}}\n    {{assign var=group value=$curr_group.group}}\n    {{assign var=fields value=$curr_group.fields}}\n\n    {{if $fields|@count > 0}}\n      <div class=\"subtitle underline margin_bottom_large\">\n        {{$group.group_name|upper|default:\"&nbsp;\"}} \n        <span class=\"edit_link\">\n          <a href=\"?page={{$group.custom_data}}#s{{$group.group_id}}\">EDIT</a>\n        </span>\n      </div>\n\n      <table class=\"list_table margin_bottom_large\" cellpadding=\"1\" cellspacing=\"1\" \n        border=\"0\" width=\"668\">\n    {{/if}}\n\n    {{foreach from=$fields item=curr_field name=i}}\n      {{assign var=field_id value=$field.field_id}}\n      <tr>\n        <td class=\"pad_left_small\" width=\"200\" valign=\"top\">{{$curr_field.field_title}}</td>\n        <td valign=\"top\">\n          {{edit_custom_field form_id=$form_id submission_id=$submission_id\n            field_info=$curr_field field_types=$field_types settings=$settings}}\n        </td>\n      </tr>\n    {{/foreach}}\n\n    {{if $fields|@count > 0}}\n      </table>    \n    {{/if}}\n \n  {{/foreach}}\n\n  {{continue_block}}\n\n</form>\n"
+      }
+    ],
+    "thankyou_page": [
+      {
+        "template_name": "Thankyou Page",
+        "content": "{{$thankyou_page_content}} \n\n"
+      }
+    ],
+    "form_offline_page": [
+      {
+        "template_name": "Form Offline Page",
+        "content": "{{$form_offline_page_content}}"
+      }
+    ],
+    "continue_block": [
+      {
+        "template_name": "Continue - Button Only",
+        "content": "<div class=\"ts_continue_button\">\n  <input type=\"submit\" name=\"form_tools_continue\" value=\"Continue\" />\n</div>"
+      }
+    ],
+    "navigation": [
+      {
+        "template_name": "Navigation",
+        "content": "{{if $page_type != \"form_offline_page\"}}\n  <ul id=\"ts_css_nav\">\n    {{foreach from=$nav_pages item=page_info name=row}}\n      {{assign var=i value=$smarty.foreach.row.iteration}}\n \n      {{if $current_page > $i && $current_page != $num_pages}}\n        <li class=\"nav_link_submenu completed_page\"><a \n          href=\"?page={{$i}}\">{{$page_info.page_name}}</a></li>\n      {{elseif $current_page == $i}}\n        <li class=\"css_nav_current_page\"><div>{{$page_info.page_name}}</div></li>\n      {{else}}\n        <li><div>{{$page_info.page_name}}</div></li>\n      {{/if}}\n    {{/foreach}}\n  </ul>\n{{/if}}\n"
+      },
+      {
+        "template_name": "Navigation - Numbered",
+        "content": "{{if $page_type != \"form_offline_page\"}}\n  <ul id=\"ts_css_nav\">\n    {{foreach from=$nav_pages item=page_info name=row}}\n      {{assign var=i value=$smarty.foreach.row.iteration}}\n \n      {{if $current_page > $i && $current_page != $num_pages}}\n        <li class=\"nav_link_submenu completed_page\"><a\n          href=\"?page={{$i}}\">{{$i}}. {{$page_info.page_name}}</a></li>\n      {{elseif $current_page == $i}}\n        <li class=\"css_nav_current_page\"><div>{{$i}}. {{$page_info.page_name}}</div></li>\n      {{else}}\n        <li><div>{{$i}}. {{$page_info.page_name}}</div></li>\n      {{/if}}\n    {{/foreach}}\n  </ul>\n{{/if}}"
+      }
+    ],
+    "error_message": [
+      {
+        "template_name": "Error Message",
+        "content": "{{if $validation_error}}\n  <div class=\"ft_message error margin_bottom_large\">\n    <div style=\"padding:8px\">\n      {{$validation_error}}\n    </div>\n  </div>\n{{/if}}\n\n"
+      }
+    ]
+  },
+  "resources": {
+    "css": [
+      {
+        "resource_name": "Additional Styles",
+        "placeholder": "styles",
+        "content": "/**\n * The majority of styles for this Template Set are pulled directly from the Classic Grey theme.\n * This supplements them for a few things that aren't covered.\n */\n#ts_css_nav {\n  list-style:none;\n  margin: 0px;\n  padding: 0px;\n}\n#ts_css_nav li {\n  height: 27px;\n}\n#ts_css_nav li a, #ts_css_nav li div {\n  padding: 4px 0px 4px 12px;\n  width: 188px;\n  border-bottom: 1px dotted #aaaaaa;\n}\n#ts_css_nav li.completed_page a:link, #ts_css_nav li.completed_page a:visited {\n  display: block;\n  text-underline: none;\n}\n#ts_css_nav li.css_nav_current_page div {\n  font-weight: bold;\n}\n.ts_heading {\n  font-size: 16px;\n  margin: 0px 0px 15px;\n}\n.edit_link {\n  float: right;\n}\n.edit_link a:link, .edit_link a:visited {\n  padding: 0px 7px;\n  background-color: #aaaaaa;\n  color: white;\n  border-radius: 3px;\n  letter-spacing: 0px;\n}\n.edit_link a:hover {\n  background-color: #222222;\n  text-decoration: none;\n}\n#form_builder__edit_link {\n  background-color: #444444;\n  border-radius: 3px 3px 3px 3px;\n  color: white;\n  float: right;\n  margin: 25px;\n  padding: 0 8px;\n}\n#form_builder__edit_link:hover {\n  background-color: #000000;\n  text-decoration: none;\n}\n#header {\n  background: #000000;\n  background: -moz-linear-gradient(left,  #000000 1%, #5b5b5b 100%);\n  background: -webkit-gradient(linear, left top, right top, color-stop(1%,#000000), color-stop(100%,#5b5b5b));\n  background: -webkit-linear-gradient(left,  #000000 1%,#5b5b5b 100%);\n  background: -o-linear-gradient(left,  #000000 1%,#5b5b5b 100%);\n  background: -ms-linear-gradient(left,  #000000 1%,#5b5b5b 100%);\n  background: linear-gradient(left,  #000000 1%,#5b5b5b 100%);\n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#5b5b5b',GradientType=1 );\n}\n#header h1 {\n  margin: 0px;\n  padding: 21px;\n  color: white;\n  font-size: 20px;\n  font-weight: normal;\n}"
+      }
+    ]
+  },
+  "placeholders": []
+}

@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0.0",
+  "template_set_name": "Illuminate",
+  "template_set_version": "1.1",
+  "description": "A bold, bright-coloured theme with choice of colour set and footer content. Navigation is required and displayed as a left column. Uses the \"Trykker\" Google Web Font for a little extra snap!",
+  "last_updated": "2012-01-18 23:06:16",
+  "templates": {
+    "page_layout": [
+      {
+        "template_name": "Page Layout",
+        "content": "{{header}}\n{{page}}\n{{footer}}"
+      }
+    ],
+    "header": [
+      {
+        "template_name": "Header",
+        "content": "<html>\n<head>\n  <title>{{$form_name}}</title>\n  {{$required_resources}}\n  <link href=\"http://fonts.googleapis.com/css?family=Trykker\" rel=\"stylesheet\" type=\"text/css\">\n  {{$R.styles}}\n</head>\n<body>\n  <div class=\"ts_head_bg\"></div>\n  <div class=\"ts_page\" style=\"width:960px\">\n    <div class=\"ts_header\"><h1>{{$form_name}}</h1></div>\n    {{form_builder_edit_link}}\n\n    <div class=\"ts_content\">\n      \n\n"
+      },
+      {
+        "template_name": "No Header",
+        "content": "<html>\n<head>\n  <title>{{$form_name}}</title>\n  {{$required_resources}}\n  <link href=\"http://fonts.googleapis.com/css?family=Trykker\" rel=\"stylesheet\" type=\"text/css\">\n  {{$R.styles}}\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:960px\">\n    {{form_builder_edit_link}}\n    <div class=\"ts_content\">"
+      }
+    ],
+    "footer": [
+      {
+        "template_name": "Footer",
+        "content": "<div class=\"clear\"></div>\n\n  </div> <!-- ends class=\"ts_content\" div -->\n</div> <!-- ends class=\"ts_page\" div -->\n\n<div id=\"ts_footer\">{{$P.footer_html}}</div>\n\n</body>\n</html>"
+      }
+    ],
+    "form_page": [
+      {
+        "template_name": "Form Page",
+        "content": "{{navigation}}\n\n<div class=\"ts_page_content\">\n\n<h2>{{$page_name}}</h2>\n\n{{error_message}}\n\n<form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\"\n  id=\"ts_form_element_id\" name=\"edit_submission_form\">\n  <input type=\"hidden\" id=\"form_tools_published_form_id\" value=\"{{$published_form_id}}\" />\n{{foreach from=$grouped_fields key=k item=curr_group name=row}}\n  {{assign var=group value=$curr_group.group}}\n  {{assign var=fields value=$curr_group.fields}}\n\n  <a name=\"s{{$group.group_id}}\"></a>\n  <fieldset>\n  {{if $group.group_name}}\n    <legend>{{$group.group_name}}</legend>\n  {{/if}}\n\n  {{if $fields|@count > 0}}\n  <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"688\">\n  {{/if}}\n    \n  {{foreach from=$fields item=curr_field name=i}}\n    {{assign var=field_id value=$field.field_id}}\n    <tr>\n      <td width=\"180\" valign=\"top\" {{if $smarty.foreach.i.last}}class=\"rowN\"{{/if}}>\n        {{$curr_field.field_title}}\n        <span class=\"req\">{{if $curr_field.is_required}}*{{/if}}</span>\n      </td>\n      <td valign=\"top\" {{if $smarty.foreach.i.last}}class=\"rowN\"{{/if}}>\n        {{edit_custom_field form_id=$form_id field_info=$curr_field field_types=$field_types\n          settings=$settings submission_id=$submission_id}}\n      </td>\n    </tr>\n  {{/foreach}}\n\n  {{if $fields|@count > 0}}\n    </table>  \n  {{/if}}\n\n  </fieldset>\n\n{{/foreach}}\n\n{{continue_block}}\n\n</form>\n  \n</div>\n"
+      }
+    ],
+    "review_page": [
+      {
+        "template_name": "Review Page",
+        "content": "{{navigation}}\n\n<div class=\"ts_page_content\">\n\n<h2>{{$review_page_title}}</h2>\n\n<form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\">\n{{foreach from=$grouped_fields item=curr_group}}\n  {{assign var=group value=$curr_group.group}}\n  {{assign var=fields value=$curr_group.fields}}\n\n  <fieldset>\n  {{if $fields|@count > 0}}\n    <legend>{{$group.group_name}} <span class=\"edit_link\">(<a \n      href=\"?page={{$group.custom_data}}#s{{$group.group_id}}\">EDIT</a>)</span>\n    </legend>\n\n    <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"668\">\n  {{/if}}\n\n  {{foreach from=$fields item=curr_field name=i}}\n    {{assign var=field_id value=$field.field_id}}\n    <tr>\n      <td width=\"200\" valign=\"top\" \n        {{if $smarty.foreach.i.last}}class=\"rowN\"{{/if}}>{{$curr_field.field_title}}</td>\n      <td valign=\"top\" {{if $smarty.foreach.i.last}}class=\"rowN\"{{/if}}>\n        {{edit_custom_field form_id=$form_id submission_id=$submission_id\n          field_info=$curr_field field_types=$field_types settings=$settings}}\n      </td>\n    </tr>\n  {{/foreach}}\n\n  {{if $fields|@count > 0}}\n    </table>    \n  {{/if}}\n  </fieldset>\n\n{{/foreach}}\n\n{{continue_block}}\n\n</form>\n  \n</div>\n\n"
+      }
+    ],
+    "thankyou_page": [
+      {
+        "template_name": "Thankyou Page",
+        "content": "{{navigation}}\n\n<div class=\"ts_page_content\">\n{{$thankyou_page_content}}  \n</div>\n"
+      }
+    ],
+    "form_offline_page": [
+      {
+        "template_name": "Form Offline Page",
+        "content": "{{$form_offline_page_content}}"
+      }
+    ],
+    "continue_block": [
+      {
+        "template_name": "Continue - Button Only",
+        "content": "<div class=\"ts_continue_button\">\n  <input type=\"submit\" name=\"form_tools_continue\" value=\"Continue\" />\n</div>"
+      }
+    ],
+    "navigation": [
+      {
+        "template_name": "Navigation",
+        "content": "{{if $current_page == $num_pages}}\n\n<ul id=\"ts_css_nav\">\n  {{foreach from=$nav_pages item=page_info name=row}}\n    {{assign var=i value=$smarty.foreach.row.iteration}}\n    {{if $i != $num_pages}}\n  <li class=\"completed_page\"><div>&raquo; {{$page_info.page_name}}</div></li>\n    {{else}}\n  <li class=\"css_nav_current_page\"><div>&raquo; {{$page_info.page_name}}</div></li>\n    {{/if}}\n  {{/foreach}}\n</ul>\n\n{{else}}\n\n<ul id=\"ts_css_nav\">\n  {{foreach from=$nav_pages item=page_info name=row}}\n    {{assign var=i value=$smarty.foreach.row.iteration}}\n    {{if $current_page > $i && $current_page != $num_pages}}\n  <li class=\"completed_page\"><a href=\"?page={{$i}}\">&raquo; {{$page_info.page_name}}</a></li>\n    {{elseif $current_page == $i || $current_page == $num_pages}}\n  <li class=\"css_nav_current_page\"><div>&raquo; {{$page_info.page_name}}</div></li>\n    {{else}}\n  <li><div>&raquo; {{$page_info.page_name}}</div></li>\n    {{/if}}\n  {{/foreach}}\n</ul>\n\n{{/if}}\n\n"
+      },
+      {
+        "template_name": "Navigation - Numbered",
+        "content": "<ul id=\"ts_css_nav\">\n  {{foreach from=$nav_pages item=page_info name=row}}\n    {{assign var=i value=$smarty.foreach.row.iteration}}\n    {{if $current_page > $i && $current_page != $num_pages}}\n  <li class=\"completed_page\"><a href=\"?page={{$i}}\">{{$i}}. {{$page_info.page_name}}</a></li>\n    {{elseif $current_page == $i || $current_page == $num_pages}}\n  <li class=\"css_nav_current_page\"><div>{{$i}}. {{$page_info.page_name}}</div></li>\n    {{else}}\n  <li><div>{{$i}}. {{$page_info.page_name}}</div></li>\n    {{/if}}\n  {{/foreach}}\n</ul>"
+      }
+    ],
+    "error_message": [
+      {
+        "template_name": "Error Message",
+        "content": "{{if $validation_error}}\n  <div class=\"fb_error\">{{$validation_error}}</div>\n{{/if}}\n\n"
+      }
+    ]
+  },
+  "resources": {
+    "css": [
+      {
+        "resource_name": "General Styles",
+        "placeholder": "styles",
+        "content": "{{* This top section defines the colours, based on the selected Colour placeholder *}}\n{{assign var=header_colour value=\"#ffffff\"}}\n{{assign var=header_shadow value=\"on\"}}\n{{if $P.colours == \"Red\"}}\n  {{assign var=c1 value=\"#950000\"}}\n  {{assign var=c2 value=\"#af0a0a\"}}\n  {{assign var=link_colour value=\"#ffffcc\"}}\n  {{assign var=line value=\"#670000\"}}\n  {{assign var=fieldset_bg value=\"#780404\"}}\n  {{assign var=fieldset_lines value=\"#660909\"}}\n  {{assign var=fieldset_colour value=\"#FFFF99\"}}\n  {{assign var=fieldset_shadow value=\"on\"}}\n  {{assign var=font_colour value=\"#ffffff\"}}\n  {{assign var=page_heading value=\"#000000\"}}\n  {{assign var=nav_next_page value=\"#999999\"}}\n  {{assign var=nav_prev_page_text value=\"#999999\"}}\n  {{assign var=nav_prev_page_bg_over value=\"#D78B00\"}}\n  {{assign var=nav_prev_page_border value=\"#999999\"}}\n  {{assign var=submit_btn_over value=\"#ff3c00\"}}\n  {{assign var=edit_link_colour value=\"#ffffff\"}}\n{{elseif $P.colours == \"Orange\"}}\n  {{assign var=c1 value=\"#ffa500\"}}\n  {{assign var=c2 value=\"#ffb12b\"}}\n  {{assign var=link_colour value=\"#990000\"}}\n  {{assign var=line value=\"#ffc558\"}}\n  {{assign var=fieldset_bg value=\"#ef9c00\"}}\n  {{assign var=fieldset_lines value=\"#d28900\"}}\n  {{assign var=fieldset_colour value=\"#FFFF99\"}}\n  {{assign var=fieldset_shadow value=\"on\"}}\n  {{assign var=font_colour value=\"#333333\"}}\n  {{assign var=page_heading value=\"#ffffff\"}}\n  {{assign var=nav_next_page value=\"#555555\"}}\n  {{assign var=nav_prev_page_text value=\"#AF8D4F\"}}\n  {{assign var=nav_prev_page_bg_over value=\"#D78B00\"}}\n  {{assign var=nav_prev_page_border value=\"#E69500\"}}\n  {{assign var=submit_btn_over value=\"#ff3c00\"}}\n  {{assign var=edit_link value=\"#990000\"}}\n{{elseif $P.colours == \"Green\"}}\n  {{assign var=c1 value=\"#299a0b\"}}\n  {{assign var=c2 value=\"#31a612\"}}\n  {{assign var=link_colour value=\"#FFFF99\"}}\n  {{assign var=line value=\"#1c7e00\"}}\n  {{assign var=fieldset_bg value=\"#228a00\"}}\n  {{assign var=fieldset_lines value=\"#1e7d00\"}}\n  {{assign var=fieldset_colour value=\"#FFFF99\"}}\n  {{assign var=fieldset_shadow value=\"on\"}}\n  {{assign var=font_colour value=\"#eeeeee\"}}\n  {{assign var=page_heading value=\"#333333\"}}\n  {{assign var=nav_next_page value=\"#0f4f00\"}}\n  {{assign var=nav_prev_page_text value=\"#136600\"}}\n  {{assign var=nav_prev_page_bg_over value=\"#135205\"}}\n  {{assign var=nav_prev_page_border value=\"#1e710b\"}}\n  {{assign var=submit_btn_over value=\"#0093E8\"}}\n  {{assign var=edit_link value=\"#990000\"}}\n{{elseif $P.colours == \"Blue\"}}\n  {{assign var=c1 value=\"#0083cf\"}}\n  {{assign var=c2 value=\"#0690e0\"}}\n  {{assign var=link_colour value=\"#FFFF99\"}}\n  {{assign var=line value=\"#0c5e8d\"}}\n  {{assign var=fieldset_bg value=\"#0878b8\"}}\n  {{assign var=fieldset_lines value=\"#0669a2\"}}\n  {{assign var=fieldset_colour value=\"#FFFF99\"}}\n  {{assign var=fieldset_shadow value=\"on\"}}\n  {{assign var=font_colour value=\"#eeeeee\"}}\n  {{assign var=page_heading value=\"#222222\"}}\n  {{assign var=nav_next_page value=\"#333333\"}}\n  {{assign var=nav_prev_page_text value=\"#efefef\"}}\n  {{assign var=nav_prev_page_bg_over value=\"#3396e2\"}}\n  {{assign var=nav_prev_page_border value=\"#cccccc\"}}\n  {{assign var=submit_btn_over value=\"#621111\"}}\n  {{assign var=edit_link value=\"#621111\"}}\n{{elseif $P.colours == \"Black\"}}\n  {{assign var=c1 value=\"#222222\"}}\n  {{assign var=c2 value=\"#333333\"}}\n  {{assign var=link_colour value=\"#c8ebff\"}}\n  {{assign var=line value=\"#444444\"}}\n  {{assign var=fieldset_bg value=\"#353535\"}}\n  {{assign var=fieldset_lines value=\"#444444\"}}\n  {{assign var=fieldset_colour value=\"#c8ebff\"}}\n  {{assign var=fieldset_shadow value=\"on\"}}\n  {{assign var=font_colour value=\"#efefef\"}}\n  {{assign var=page_heading value=\"#eeeeee\"}}\n  {{assign var=nav_next_page value=\"#999999\"}}\n  {{assign var=nav_prev_page_text value=\"#3a8ab8\"}}\n  {{assign var=nav_prev_page_bg_over value=\"#3a8ab8\"}}\n  {{assign var=nav_prev_page_border value=\"#4a99c7\"}}\n  {{assign var=submit_btn_over value=\"#3a8ab8\"}}\n  {{assign var=edit_link value=\"#c8ebff\"}}\n{{elseif $P.colours == \"Grey\"}}\n  {{assign var=c1 value=\"#dddddd\"}}\n  {{assign var=c2 value=\"#ffffff\"}}\n  {{assign var=link_colour value=\"#0033cc\"}}\n  {{assign var=line value=\"#cccccc\"}}\n  {{assign var=fieldset_bg value=\"#f2f2f2\"}}\n  {{assign var=fieldset_lines value=\"#aaaaaa\"}}\n  {{assign var=fieldset_colour value=\"#888888\"}}\n  {{assign var=fieldset_shadow value=\"off\"}}\n  {{assign var=font_colour value=\"#333333\"}}\n  {{assign var=page_heading value=\"#555555\"}}\n  {{assign var=nav_next_page value=\"#999999\"}}\n  {{assign var=nav_prev_page_text value=\"#888888\"}}\n  {{assign var=nav_prev_page_bg_over value=\"#888888\"}}\n  {{assign var=nav_prev_page_border value=\"#888888\"}}\n  {{assign var=submit_btn_over value=\"#3a8ab8\"}}\n  {{assign var=edit_link value=\"#c8ebff\"}}\n{{elseif $P.colours == \"White\"}}\n  {{assign var=c1 value=\"#ffffff\"}}\n  {{assign var=c2 value=\"#ffffff\"}}\n  {{assign var=header_colour value=\"#222222\"}}\n  {{assign var=header_shadow value=\"off\"}}\n  {{assign var=link_colour value=\"#0093e8\"}}\n  {{assign var=line value=\"#000000\"}}\n  {{assign var=fieldset_bg value=\"#ffffff\"}}\n  {{assign var=fieldset_lines value=\"#000000\"}}\n  {{assign var=fieldset_colour value=\"#000000\"}}\n  {{assign var=fieldset_shadow value=\"off\"}}\n  {{assign var=font_colour value=\"#333333\"}}\n  {{assign var=page_heading value=\"#555555\"}}\n  {{assign var=nav_next_page value=\"#999999\"}}\n  {{assign var=nav_prev_page_text value=\"#888888\"}}\n  {{assign var=nav_prev_page_bg_over value=\"#888888\"}}\n  {{assign var=nav_prev_page_border value=\"#888888\"}}\n  {{assign var=submit_btn_over value=\"#0093e8\"}}\n  {{assign var=edit_link value=\"#0093e8\"}}\n{{/if}}\nhtml {\n  height: 100%;\n  margin: 0px;\n}\nbody {\n  height: 100%;\n  text-align: center;\n  padding: 0px;\n  margin: 0px;\n  background: {{$c2}}; /* Old browsers */\n  background: -moz-linear-gradient(top, {{$c1}} 0%, {{$c2}} 100%); /* FF3.6+ */\n  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,{{$c1}}), color-stop(100%,{{$c2}})); /* Chrome,Safari4+ */\n  background: -webkit-linear-gradient(top, {{$c1}} 0%,{{$c2}} 100%); /* Chrome10+,Safari5.1+ */\n  background: -o-linear-gradient(top, {{$c1}} 0%,{{$c2}} 100%); /* Opera 11.10+ */\n  background: -ms-linear-gradient(top, {{$c1}} 0%,{{$c2}} 100%); /* IE10+ */\n  background: linear-gradient(top, {{$c1}} 0%,{{$c2}} 100%); /* W3C */\n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='{{$c1}}', endColorstr='{{$c2}}',GradientType=0 ); /* IE6-9 */\n  background-repeat: no-repeat;\n  background-attachment: fixed;\n}\ntd, th, p, ul,li,div, span {\n  font-family: Trykker, \"Lucida Grande\", Georgia, serif;\n  font-size: 12px;\n  color: {{$font_colour}};\n}\ninput, textarea, select {\n  font-family: Trykker, \"Lucida Grande\", Georgia, serif;\n  font-size: 12px;\n}\ntd, th, p, textarea, ul,li, div, a {\n  line-height: 25px;\n}\ntable {\n  empty-cells: show;\n}\n.clear {\n  clear: both;\n}\na:link, a:visited {\n  color: {{$link_colour}};\n  text-decoration: none;\n}\na:hover {\n  text-decoration: underline;\n}\ndiv.ui-dialog div, div.ui-dialog li, div.ui-dialog span {\n  color: #333333;\n}\n\n/* page sections */\n.ts_page {\n  margin: 40px auto;\n  position: relative;\n  text-align: left;\n}\n.ts_head_bg {\n  height: 105px;\n  border-bottom: 1px solid {{$line}};\n  position: absolute;\n  top: 0px;\n  width: 100%;\n}\n.ts_header {\n  height: 70px;\n}\n.ts_header h1 {\n  margin: 20px 20px;\n  font-family: Trykker, \"Lucida Grande\", Georgia, serif;\n  font-weight: bold;\n  padding: 0px;\n  font-size: 30px;\n  color: {{$header_colour}};\n  {{if $header_shadow == \"on\"}}text-shadow: 2px 2px 5px #555555;{{/if}}\n}\nh2 {\n  font-size: 21px;\n  font-family: Trykker, \"Lucida Grande\", Georgia, serif;\n  color: {{$page_heading}};\n}\n\n/* navigation */\n#ts_css_nav {\n  width: 180px;\n  float: left;\n  list-style: none;\n  padding: 20px;\n  margin: 0px;\n}\n#ts_css_nav li {\n  list-style: none;\n  margin: 0px 0px 2px;\n  color: #666666;\n  font-size: 12px;\n  line-height: 20px;\n  text-align: left;\n}\n#ts_css_nav div {\n  color: {{$nav_next_page}};\n}\n#ts_css_nav li div, #ts_css_nav li a {\n  padding: 5px 0px 5px 12px;\n  display: block;\n}\nul#ts_css_nav li.completed_page {\n  -webkit-border-radius: 4px;\n  -moz-border-radius: 4px;\n  border-radius: 4px;\n  border: 1px solid {{$nav_prev_page_border}};\n}\nul#ts_css_nav li.completed_page div {\n  color: {{$nav_prev_page_text}};\n}\nul#ts_css_nav li.css_nav_current_page {\n  -webkit-border-radius: 4px;\n  -moz-border-radius: 4px;\n  border-radius: 4px;\n  border: 1px solid #ffffff;\n}\nul#ts_css_nav li.css_nav_current_page div {\n  background-color: #222222;\n  color: white;\n  margin: 1px;\n  -webkit-border-radius: 3px;\n  -moz-border-radius: 3px;\n  border-radius: 3px;\n}\nul#ts_css_nav li a {\n  margin: 1px;\n  -webkit-border-radius: 3px;\n  -moz-border-radius: 3px;\n  border-radius: 3px;\n}\nul#ts_css_nav li a:link, ul#ts_css_nav li a:visited {\n  text-decoration: none;\n  color: {{$nav_prev_page_text}};\n  -webkit-border-radius: 2px;\n  -moz-border-radius: 2px;\n  border-radius: 2px;\n}\nul#ts_css_nav li a:hover {\n  color: white;\n  background-color: {{$nav_prev_page_bg_over}};\n  -webkit-border-radius: 3px;\n  -moz-border-radius: 3px;\n  border-radius: 3px;\n}\n\n/* notifications */\n.notify {\n  border: 1px solid #336699;\n  background-color: #ffffee;\n  color: #336699;\n  padding: 8px;\n  width: 400px;\n}\n.notify li { color: #336699; }\n.error {\n  font-size: 8pt;\n  border: 1px solid #cc0000;\n  background-color: #ffffee;\n  color: #cc0000;\n  padding: 8px;\n  width: 550px;\n}\n.error span {\n  color: #cc0000;\n  font-weight: bold;\n  margin-bottom: 4px;\n}\n\n/* forms */\ntable.table_1 > tbody > tr > td {\n  border-bottom: 1px solid {{$fieldset_lines}};\n}\ntable.table_1 > tbody > tr > td.rowN {\n  border-bottom: none;\n}\n.req {\n  color: #aa0000;\n}\n.fb_error {\n  background-color: #FFFFCC;\n  border: 1px solid #CC0000;\n  color: #CC0000;\n  margin-bottom: 12px;\n  padding: 8px;\n}\n\n/* for the code / markup editor */\n.editor {\n  background-color: white;\n  border: 1px solid #999999;\n  padding: 3px;\n}\n.ts_page_content {\n  width: 720px;\n  float: right;\n}\nfieldset {\n  border: 1px solid {{$fieldset_lines}};\n  font-size: 11pt;\n  font-weight: bold;\n  color: {{$fieldset_colour}};\n  margin-bottom: 10px;\n  background-color: {{$fieldset_bg}};\n}\n{{if $fieldset_shadow == \"on\"}}\nfieldset legend {\n  text-shadow: 2px 2px 3px #333333;\n}\n{{/if}}\n.ts_continue_button input {\n  background-color: #222222;\n  color: white;\n  padding: 2px 10px;\n  border-radius: 3px;\n  border: 0px;\n  cursor: pointer;\n}\n.ts_continue_button input:hover {\n  background-color: {{$submit_btn_over}};\n}\n#ts_footer {\n  border-top: 1px solid {{$line}};\n  padding: 20px;\n  color: #222222;\n}\n.edit_link {\n  text-shadow: none;\n  margin-left: 12px;\n}\n.edit_link a {\n  color: {{$edit_link_colour}};\n  text-decoration: none;\n}\n.edit_link a:hover {\n  text-decoration: underline;\n}\n\n#form_builder__edit_link {\n  position: absolute;\n  right: 5px;\n  top: 5px;\n  padding: 2px 10px;\n  background-color: black;\n  border: 1px solid white;\n  color: white;\n  text-decoration: none;\n  border-radius: 4px;\n}\n#form_builder__edit_link:hover {\n  color: #06a4ff;\n}"
+      }
+    ]
+  },
+  "placeholders": [
+    {
+      "placeholder_label": "Colours",
+      "placeholder": "colours",
+      "field_type": "select",
+      "field_orientation": "na",
+      "default_value": "Orange",
+      "options": [
+        {
+          "option_text": "Red"
+        },
+        {
+          "option_text": "Orange"
+        },
+        {
+          "option_text": "Green"
+        },
+        {
+          "option_text": "Blue"
+        },
+        {
+          "option_text": "Black"
+        },
+        {
+          "option_text": "Grey"
+        },
+        {
+          "option_text": "White"
+        }
+      ]
+    },
+    {
+      "placeholder_label": "Footer HTML",
+      "placeholder": "footer_html",
+      "field_type": "textarea",
+      "field_orientation": "horizontal",
+      "default_value": "",
+      "options": []
+    }
+  ]
+}

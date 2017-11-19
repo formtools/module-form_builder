@@ -1,0 +1,127 @@
+{
+  "schema_version": "1.0.0",
+  "template_set_name": "Theme - Default",
+  "template_set_version": "1.1",
+  "description": "A form template set based on the same styles as the default Form Tools user interface. Complete with choice of swatches!",
+  "last_updated": "2012-02-03 17:47:10",
+  "templates": {
+    "page_layout": [
+      {
+        "template_name": "Page Layout",
+        "content": "{{header}}\n{{page}}\n{{footer}}"
+      }
+    ],
+    "header": [
+      {
+        "template_name": "Header",
+        "content": "<html>\n<head>\n  <title>{{$form_name}}</title>\n  <link type=\"text/css\" rel=\"stylesheet\" href=\"{{$g_root_url}}/global/css/main.css\">\n  {{$required_resources}}\n  {{$R.styles}}\n  <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>\n  <link type=\"text/css\" rel=\"stylesheet\" href=\"{{$g_root_url}}/themes/default/css/styles.css\">\n  <link type=\"text/css\" rel=\"stylesheet\" href=\"{{$g_root_url}}/themes/default/css/swatch_{{$P.swatch|lower|regex_replace:'/[ ]/':'_'}}.css\">\n</head>\n<body>\n  <div id=\"container\">\n    <div id=\"header\">\n      {{form_builder_edit_link}}\n      <h1>{{$form_name|upper}}</h1>\n    </div>\n\n"
+      },
+      {
+        "template_name": "No Header",
+        "content": "<html>\n<head>\n  <title>{{$form_name}}</title>\n  <link type=\"text/css\" rel=\"stylesheet\" href=\"{{$g_root_url}}/global/css/main.css\">\n  {{$required_resources}}\n  {{$R.styles}}\n  <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>\n  <link type=\"text/css\" rel=\"stylesheet\" href=\"{{$g_root_url}}/themes/default/css/styles.css\">\n  <link type=\"text/css\" rel=\"stylesheet\" href=\"{{$g_root_url}}/themes/default/css/swatch_{{$P.swatch|lower|regex_replace:'/[ ]/':'_'}}.css\">\n</head>\n<body>\n  <div id=\"container\">\n      {{form_builder_edit_link}}\n"
+      }
+    ],
+    "footer": [
+      {
+        "template_name": "Footer",
+        "content": "      </div>\n    </td>\n  </tr>\n  </table>\n\n</div>\n\n</body>\n</html>"
+      }
+    ],
+    "form_page": [
+      {
+        "template_name": "Form Page",
+        "content": "<div id=\"content\">\n  <table cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">\n  <tr>\n    <td width=\"180\" valign=\"top\">\n      <div id=\"left_nav\">\n        {{navigation}}\n      </div>\n    </td>\n    <td valign=\"top\">\n      <div style=\"width:740px\">\n        <div class=\"title margin_bottom_large\">{{$page_name}}</div>\n\n        {{error_message}}\n\n        <form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\"\n          id=\"ts_form_element_id\" name=\"edit_submission_form\">\n          <input type=\"hidden\" id=\"form_tools_published_form_id\" value=\"{{$published_form_id}}\" />\n        {{foreach from=$grouped_fields key=k item=curr_group name=row}}\n          {{assign var=group value=$curr_group.group}}\n          {{assign var=fields value=$curr_group.fields}}\n\n        <a name=\"s{{$group.group_id}}\"></a>\n        {{if $group.group_name}}\n        <div class=\"subtitle underline margin_bottom_large\">{{$group.group_name|upper}}</div>\n        {{/if}}\n\n        {{if $fields|@count > 0}}\n        <table class=\"list_table margin_bottom_large\" cellpadding=\"1\" cellspacing=\"1\" \n          border=\"0\" width=\"688\">\n        {{/if}}\n    \n        {{foreach from=$fields item=curr_field name=i}}\n          {{assign var=field_id value=$field.field_id}}\n          <tr>\n            <td width=\"180\" valign=\"top\" class=\"pad_left_small\">\n              {{$curr_field.field_title}}\n              <span class=\"req\">{{if $curr_field.is_required}}*{{/if}}</span>\n            </td>\n            <td valign=\"top\" {{if $smarty.foreach.i.last}}class=\"rowN\"{{/if}}>\n              {{edit_custom_field form_id=$form_id field_info=$curr_field field_types=$field_types\n              settings=$settings submission_id=$submission_id}}\n            </td>\n          </tr>\n        {{/foreach}}\n\n        {{if $fields|@count > 0}}\n          </table>  \n        {{/if}}\n\n      {{/foreach}}\n\n      {{continue_block}}\n\n      </form>\n\n      </div>\n    </td>\n  </tr>\n  </table>\n</div>\n"
+      }
+    ],
+    "review_page": [
+      {
+        "template_name": "Review Page",
+        "content": "<div id=\"content\">\n  <table cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">\n  <tr>\n    <td width=\"180\" valign=\"top\">\n      <div id=\"left_nav\">\n        {{navigation}}\n      </div>\n    </td>\n    <td valign=\"top\">\n      <div style=\"width:740px\">\n        <div class=\"title margin_bottom_large\">{{$review_page_title}}</div>\n\n        <form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\">\n        {{foreach from=$grouped_fields item=curr_group}}\n          {{assign var=group value=$curr_group.group}}\n          {{assign var=fields value=$curr_group.fields}}\n\n          {{if $fields|@count > 0}}\n            <div class=\"subtitle underline margin_bottom_large\">\n              {{$group.group_name|upper|default:\"&nbsp;\"}}\n              <span class=\"edit_link\">\n                <a href=\"?page={{$group.custom_data}}#s{{$group.group_id}}\">EDIT</a>\n              </span>\n            </div>\n\n            <table class=\"list_table margin_bottom_large\" cellpadding=\"1\" cellspacing=\"1\" \n              border=\"0\" width=\"668\">\n          {{/if}}\n\n          {{foreach from=$fields item=curr_field name=i}}\n            {{assign var=field_id value=$field.field_id}}\n            <tr>\n              <td class=\"pad_left_small\" width=\"200\" valign=\"top\">{{$curr_field.field_title}}</td>\n              <td valign=\"top\">\n                {{edit_custom_field form_id=$form_id submission_id=$submission_id\n                  field_info=$curr_field field_types=$field_types settings=$settings}}\n              </td>\n            </tr>\n          {{/foreach}}\n\n          {{if $fields|@count > 0}}\n            </table>    \n          {{/if}}\n \n        {{/foreach}}\n\n        {{continue_block}}\n\n      </form>\n\n      </div>\n    </td>\n  </tr>\n  </table>\n</div>\n"
+      }
+    ],
+    "thankyou_page": [
+      {
+        "template_name": "Thankyou Page",
+        "content": "<div id=\"content\">\n  <table cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">\n  <tr>\n    <td width=\"180\" valign=\"top\">\n      <div id=\"left_nav\">\n        {{navigation}}\n      </div>\n    </td>\n    <td valign=\"top\">\n      <div style=\"width:740px\">\n      {{$thankyou_page_content}} \n      </div>\n    </td>\n  </tr>\n  </table>\n</div>\n\n"
+      }
+    ],
+    "form_offline_page": [
+      {
+        "template_name": "Form Offline Page",
+        "content": "<div id=\"content\">\n  {{$form_offline_page_content}}\n</div>"
+      }
+    ],
+    "continue_block": [
+      {
+        "template_name": "Continue - Button Only",
+        "content": "<div class=\"ts_continue_button\">\n  <input type=\"submit\" name=\"form_tools_continue\" value=\"Continue\" />\n</div>"
+      }
+    ],
+    "navigation": [
+      {
+        "template_name": "Navigation",
+        "content": "<ul id=\"ts_css_nav\">\n  {{foreach from=$nav_pages item=page_info name=row}}\n    {{assign var=i value=$smarty.foreach.row.iteration}}\n  \n  {{if $current_page > $i && $current_page != $num_pages}}\n  \n  <li class=\"nav_link_submenu completed_page\"><a href=\"?page={{$i}}\">{{$page_info.page_name}}</a></li>\n  \n  {{elseif $current_page == $i}}\n  \n  <li class=\"css_nav_current_page\"><div>{{$page_info.page_name}}</div></li>\n    {{else}}\n  <li><div>{{$page_info.page_name}}</div></li>\n    {{/if}}\n  {{/foreach}}\n</ul>"
+      },
+      {
+        "template_name": "Navigation - Numbered",
+        "content": "<ul id=\"ts_css_nav\">\n  {{foreach from=$nav_pages item=page_info name=row}}\n    {{assign var=i value=$smarty.foreach.row.iteration}}\n    {{if $current_page > $i && $current_page != $num_pages}}\n    <li class=\"nav_link_submenu completed_page\"><a href=\"?page={{$i}}\">{{$i}}. {{$page_info.page_name}}</a></li>\n    {{elseif $current_page == $i}}\n    <li class=\"css_nav_current_page\"><div>{{$i}}. {{$page_info.page_name}}</div></li>\n    {{else}}\n    <li><div>{{$i}}. {{$page_info.page_name}}</div></li>\n    {{/if}}\n  {{/foreach}}\n</ul>"
+      }
+    ],
+    "error_message": [
+      {
+        "template_name": "Error Message",
+        "content": "{{if $validation_error}}\n  <div class=\"ft_message error margin_bottom_large\">\n    <div style=\"padding:8px\">\n      {{$validation_error}}\n    </div>\n  </div>\n{{/if}}\n\n"
+      }
+    ]
+  },
+  "resources": {
+    "css": [
+      {
+        "resource_name": "Additional Styles",
+        "placeholder": "styles",
+        "content": "/**\n * The majority of styles for this Template Set are pulled directly from the Core's default theme.\n * This supplements them for a few things that aren't covered.\n */\nh1 {\n  margin: 0px;\n  padding: 28px 0px 0px 21px;\n  float: left;\n  font-family: 'Lato', Arial;\n  color: white;\n  font-size: 20px;\n  font-weight: normal;\n}\n#ts_css_nav {\n  list-style:none;\n  margin: 0px;\n  padding: 0px;\n}\n#ts_css_nav li {\n  height: 27px;\n}\n#ts_css_nav li a, #ts_css_nav li div {\n  padding: 2px 0px 2px 4px;\n  width: 150px;\n}\n#ts_css_nav li.completed_page a:link, #ts_css_nav li.completed_page a:visited {\n  display: block;\n  text-underline: none;\n}\n#ts_css_nav li.css_nav_current_page div {\n  font-weight: bold;\n}\n.edit_link {\n  float: right;\n}\n.edit_link a:link, .edit_link a:visited {\n  padding: 0px 7px;\n  background-color: #aaaaaa;\n  color: white;\n  border-radius: 3px;\n  letter-spacing: 0px;\n}\n.edit_link a:hover {\n  background-color: #222222;\n  text-decoration: none;\n}\n#form_builder__edit_link {\n  background-color: #444444;\n  border-radius: 3px 3px 3px 3px;\n  color: white;\n  float: right;\n  margin: 25px;\n  padding: 0 8px;\n}\n#form_builder__edit_link:hover {\n  background-color: #000000;\n  text-decoration: none;\n}\n.ts_heading {\n  font: 17.6px/20px Verdana,sans-serif;\n  padding-bottom: 5px;\n  margin: 0px;\n}"
+      }
+    ]
+  },
+  "placeholders": [
+    {
+      "placeholder_label": "Swatch",
+      "placeholder": "swatch",
+      "field_type": "select",
+      "field_orientation": "na",
+      "default_value": "Orange",
+      "options": [
+        {
+          "option_text": "Aquamarine"
+        },
+        {
+          "option_text": "Blue"
+        },
+        {
+          "option_text": "Dark Blue"
+        },
+        {
+          "option_text": "Green"
+        },
+        {
+          "option_text": "Grey"
+        },
+        {
+          "option_text": "Light Brown"
+        },
+        {
+          "option_text": "Orange"
+        },
+        {
+          "option_text": "Purple"
+        },
+        {
+          "option_text": "Red"
+        },
+        {
+          "option_text": "Yellow"
+        }
+      ]
+    }
+  ]
+}

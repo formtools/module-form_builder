@@ -5,9 +5,10 @@ namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
 use FormTools\Module as CoreModule;
+use FormTools\Schemas;
 
-use PDO, PDOException;
-
+use PDO, Exception;
+use JsonSchema;
 
 class Module extends CoreModule
 {
@@ -34,6 +35,9 @@ class Module extends CoreModule
         $root_dir = Core::getRootDir();
         $root_url = Core::getRootUrl();
 
+        self::populateDefaultTemplateSets();
+        exit;
+
         try {
             $db->query("
                 CREATE TABLE {PREFIX}module_form_builder_forms (
@@ -56,7 +60,7 @@ class Module extends CoreModule
                     offline_date datetime NOT NULL,
                     list_order smallint(6) NOT NULL,
                     PRIMARY KEY (published_form_id)
-                ) DEFAULT CHARSET=utf8
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8
             ");
             $db->execute();
 
@@ -66,7 +70,7 @@ class Module extends CoreModule
                     placeholder_id mediumint(9) NOT NULL,
                     placeholder_value mediumtext NOT NULL,
                     UNIQUE KEY published_form_id (published_form_id, placeholder_id)
-                ) DEFAULT CHARSET=utf8
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8
             ");
             $db->execute();
 
@@ -76,7 +80,7 @@ class Module extends CoreModule
                     template_type varchar(30) NOT NULL,
                     template_id mediumint(9) NOT NULL,
                     PRIMARY KEY (published_form_id,template_type)
-                ) DEFAULT CHARSET=utf8
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8
             ");
             $db->execute();
 
@@ -89,7 +93,7 @@ class Module extends CoreModule
                     content mediumtext,
                     list_order smallint(6) NOT NULL,
                     PRIMARY KEY (template_id)
-                ) DEFAULT CHARSET=utf8
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8
             ");
             $db->execute();
 
@@ -102,7 +106,7 @@ class Module extends CoreModule
                     is_complete enum('yes','no') NOT NULL,
                     list_order smallint(6) NOT NULL,
                     PRIMARY KEY (set_id)
-                ) DEFAULT CHARSET=utf8
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8
             ");
             $db->execute();
 
@@ -117,7 +121,7 @@ class Module extends CoreModule
                     default_value varchar(255) DEFAULT NULL,
                     field_order smallint(6) NOT NULL,
                     PRIMARY KEY (placeholder_id)
-                ) DEFAULT CHARSET=utf8
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8
             ");
             $db->execute();
 
@@ -127,7 +131,7 @@ class Module extends CoreModule
                     option_text varchar(255) NOT NULL,
                     field_order smallint(6) NOT NULL,
                     PRIMARY KEY (placeholder_id,field_order)
-                ) DEFAULT CHARSET=utf8
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8
             ");
             $db->execute();
 
@@ -142,17 +146,17 @@ class Module extends CoreModule
                     last_updated datetime NOT NULL,
                     list_order SMALLINT NOT NULL,
                     PRIMARY KEY (resource_id)
-                ) DEFAULT CHARSET=utf8
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8
             ");
             $db->execute();
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             $this->deleteTables();
             $L = $this->getLangStrings();
             return array(false, $L["notify_installation_problem_c"] . " <b>" . $e->getMessage() . "</b>");
         }
 
         // populate the database with the default template sets
-        $this->populateDefaultTemplateSets();
+        list ($template_sets_installed, $template_set_install_error) = $this->populateDefaultTemplateSets();
 
         $this->setSettings(array(
             "default_form_offline_page_content" => "<h2 class=\"ts_heading\">Sorry!</h2>\n\n<p>\n  The form is currently offline.\n</p>",
@@ -225,15 +229,40 @@ class Module extends CoreModule
         $db->execute();
     }
 
+
     /**
-     * Called on installation. This populates the database with the default template set data stored in /global/code/default_sets.php.
-     * Eventually, this will be replaced with the Shared Resources.
+     * Called on installation. This populates the database with the default template sets found in JSON format in the
+     * default_template_sets folder.
      */
     public function populateDefaultTemplateSets()
     {
-        // not clear, but this includes the $g_default_sets "global"
-        require_once(dirname(__FILE__) . "/default_sets.php");
-        TemplateSets::importTemplateSetData($g_default_sets);
+        $root_dir = Core::getRootDir();
+
+        $data_folder = "$root_dir/modules/form_builder/default_template_sets";
+        $dh = opendir($data_folder);
+
+        if (!$dh) {
+            return array(false, "You appear to be missing the default_template_sets folder, or your \$g_root_dir settings is invalid.");
+        }
+
+        while (($file = readdir($dh)) !== false) {
+            $parts = pathinfo($file);
+            if ($parts["extension"] !== "json") {
+                continue;
+            }
+
+            $template_set = json_decode(file_get_contents("$data_folder/$file"));
+            $schema = json_decode(file_get_contents("$root_dir/modules/form_builder/schemas/template_set-1.0.0.json"));
+            $response = Schemas::validateSchema($template_set, $schema);
+
+            if ($response["is_valid"]) {
+                //TemplateSets::importTemplateSetData($template_set);
+            } else {
+                echo "$file\n\n";
+                print_r($response["errors"]);
+                echo "___________________";
+            }
+        }
     }
 
 }

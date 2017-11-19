@@ -549,7 +549,7 @@ END;
         }
 
         require_once("$root_dir/modules/form_builder/share/$filename");
-        fb_import_template_set_data($g_default_sets);
+        self::importTemplateSetData($g_default_sets);
 
         return array(true, $L["notify_template_set_imported"]);
     }
@@ -597,40 +597,37 @@ END;
     }
 
 
-    public static function importTemplateSetData($template_sets)
+    // currently schema-less (!) but this imports a PHP-serialized JSON object
+    public static function importTemplateSetData($set)
     {
         $template_set_order = self::getNewTemplateSetOrder();
-        foreach ($template_sets as $set_info) {
 
-            // insert the new template set
-            $set_id = self::addTemplateSet($set_info["set_name"], $set_info["version"], $set_info["description"],
-                $set_info['is_complete'], $template_set_order);
+        // insert the new template set
+        $set_id = self::addTemplateSet($set_info["set_name"], $set_info["version"], $set_info["description"],
+            $set_info['is_complete'], $template_set_order);
 
-            // templates
-            $template_order = 1;
-            foreach ($set_info["templates"] as $template_info) {
-                Templates::addTemplate($set_id, $template_info["template_type"], $template_info["template_name"],
-                    $template_info["content"], $template_order);
-                $template_order++;
-            }
+        // templates
+        $template_order = 1;
+        foreach ($set_info["templates"] as $template_info) {
+            Templates::addTemplate($set_id, $template_info["template_type"], $template_info["template_name"],
+                $template_info["content"], $template_order);
+            $template_order++;
+        }
 
-            // resources
-            $resource_order = 1;
-            foreach ($set_info["resources"] as $resource_info) {
-                Resources::addResource($set_id, $resource_info["resource_type"], $resource_info["resource_name"],
-                    $resource_info["placeholder"], $resource_info["content"], $resource_info["last_updated"],
-                    $resource_order);
-                $resource_order++;
-            }
+        // resources
+        $resource_order = 1;
+        foreach ($set_info["resources"] as $resource_info) {
+            Resources::addResource($set_id, $resource_info["resource_type"], $resource_info["resource_name"],
+                $resource_info["placeholder"], $resource_info["content"], $resource_info["last_updated"],
+                $resource_order);
+            $resource_order++;
+        }
 
-            // placeholders
-            foreach ($set_info["placeholders"] as $placeholder_info) {
-                Placeholders::addPlaceholder($set_id, $placeholder_info["placeholder_label"], $placeholder_info["placeholder"],
-                    $placeholder_info["field_type"], $placeholder_info["field_orientation"], $placeholder_info["default_value"],
-                    $placeholder_info["options"]);
-            }
-
-            $template_set_order++;
+        // placeholders
+        foreach ($set_info["placeholders"] as $placeholder_info) {
+            Placeholders::addPlaceholder($set_id, $placeholder_info["placeholder_label"], $placeholder_info["placeholder"],
+                $placeholder_info["field_type"], $placeholder_info["field_orientation"], $placeholder_info["default_value"],
+                $placeholder_info["options"]);
         }
     }
 

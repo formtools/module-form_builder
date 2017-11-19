@@ -1,0 +1,186 @@
+{
+  "title": "Template Set Schemas",
+  "schema_version": "1.0.0",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["1.0.0"]
+        }
+      ]
+    },
+    "template_set_name": {
+      "type": "string"
+    },
+    "template_set_version": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "last_updated": {
+      "type": "string"
+    },
+    "templates": {
+      "type": "object",
+      "properties": {
+        "page_layout": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/template"
+          }
+        },
+        "header": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/template"
+          }
+        },
+        "footer": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/template"
+          }
+        },
+        "form_page": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/template"
+          }
+        },
+        "review_page": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/template"
+          }
+        },
+        "thankyou_page": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/template"
+          }
+        },
+        "form_offline_page": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/template"
+          }
+        },
+        "continue_block": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/template"
+          }
+        },
+        "navigation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/template"
+          }
+        },
+        "error_message": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/template"
+          }
+        }
+      },
+      "required": [
+        "page_layout",
+        "header",
+        "footer",
+        "form_page",
+        "review_page",
+        "thankyou_page",
+        "form_offline_page",
+        "continue_block",
+        "navigation",
+        "error_message"
+      ]
+    },
+
+    "resources": {
+      "type": "object",
+      "properties": {
+        "css": {
+          "type": "array"
+        },
+        "js": {
+          "type": "array"
+        }
+      }
+    },
+    "placeholders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "placeholder_label": {
+            "type": "string"
+          },
+          "placeholder": {
+            "type": "string"
+          },
+          "field_type": {
+            "type": "string",
+            "enum": ["textbox", "textarea", "radios", "checkboxes", "select", "multi-select"]
+          },
+          "field_orientation": {
+            "type": "string",
+            "enum": ["na", "horizontal", "vertical"]
+          },
+          "default_value": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "option_text": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "placeholder_label",
+          "placeholder",
+          "field_type",
+          "field_orientation",
+          "default_value"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "template": {
+      "type": "object",
+      "properties": {
+        "template_name": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "template_name",
+        "content"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "template_set_name",
+    "template_set_version",
+    "description",
+    "last_updated",
+    "templates"
+  ]
+}
