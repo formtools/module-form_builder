@@ -7,7 +7,7 @@
 namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
-use FormTools\Forms;
+use FormTools\Forms as CoreForms;
 use FormTools\Views;
 
 
@@ -124,7 +124,7 @@ class FormGenerator
             "error_message"  => Templates::getTemplate($settings["error_message_template_id"])
         );
 
-        $form_info = Forms::getForm($form_id);
+        $form_info = CoreForms::getForm($form_id);
         $view_info = Views::getView($view_id);
 
         // a little helper function to make sense of the awful crap returned by ft_get_view
@@ -144,33 +144,33 @@ class FormGenerator
             $templates["page"] = Templates::getTemplate($settings["form_offline_page_template_id"]);
             $current_page = 1;
         } else {
-            $page_type = fb_get_current_page_type($current_page, $view_tabs, $include_review_page);
+            $page_type = Forms::getCurrentPageType($current_page, $view_tabs, $include_review_page);
 
             switch ($page_type)
             {
                 case "form_page":
-                    $templates["page"] = fb_get_template($settings["form_page_template_id"]);
+                    $templates["page"] = Templates::getTemplate($settings["form_page_template_id"]);
                     break;
                 case "review_page":
-                    $templates["page"] = fb_get_template($settings["review_page_template_id"]);
+                    $templates["page"] = Templates::getTemplate($settings["review_page_template_id"]);
                     break;
                 case "thanks_page":
-                    $templates["page"] = fb_get_template($settings["thankyou_page_template_id"]);
+                    $templates["page"] = Templates::getTemplate($settings["thankyou_page_template_id"]);
                     break;
             }
         }
 
         // construct the list of pages that should appear in the navigation.
         $params = array(
-        "view_tabs"                  => $view_tabs,
-        "include_review_page"        => $include_review_page,
-        "include_thanks_page_in_nav" => $include_thanks_page_in_nav,
-        "review_page_title"          => $settings["review_page_title"],
-        "thankyou_page_title"        => $settings["thankyou_page_title"]
+            "view_tabs"                  => $view_tabs,
+            "include_review_page"        => $include_review_page,
+            "include_thanks_page_in_nav" => $include_thanks_page_in_nav,
+            "review_page_title"          => $settings["review_page_title"],
+            "thankyou_page_title"        => $settings["thankyou_page_title"]
         );
-        $nav_pages = fb_get_nav_pages($params);
+        $nav_pages = Forms::getNavPages($params);
 
-        $smarty = fb_create_new_smarty_instance();
+        $smarty = General::createNewSmartyInstance();
         $smarty->assign("mode", $mode);
         $smarty->assign("template_set_id", $template_set_id);
         $smarty->assign("namespace", "form_builder_{$published_form_id}");

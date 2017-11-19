@@ -4,7 +4,7 @@
 namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
-use FormTools\General;
+use FormTools\General as CoreGeneral;
 use PDO, PDOException;
 
 
@@ -172,7 +172,7 @@ class TemplateSets
             }
 
             // copy over the resources
-            $now = General::getCurrentDatetime();
+            $now = CoreGeneral::getCurrentDatetime();
             $resources = Resources::getResources($original_set_id);
             foreach ($resources as $resource_info) {
                 Resources::addResource($set_id, $resource_info["resource_type"], $resource_info["resource_name"],
@@ -266,7 +266,7 @@ class TemplateSets
         while (list($group_name, $types) = each(self::$templateTypes))  {
             while (list($key, $lang_key) = each($types)) {
                 if ($key == $template_type) {
-                    $name = General::evalSmartyString("{\$" . $lang_key . "}", $L);
+                    $name = CoreGeneral::evalSmartyString("{\$" . $lang_key . "}", $L);
                 }
             }
         }

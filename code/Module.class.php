@@ -4,9 +4,12 @@
 namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
+use FormTools\Module as CoreModule;
+
 use PDO, PDOException;
 
-class Module
+
+class Module extends CoreModule
 {
     protected $moduleName = "Form Builder";
     protected $moduleDesc = "Publish any Form Tools form to make it publicly available on your website.";
@@ -25,7 +28,7 @@ class Module
         "word_help"            => array("help.php", false)
     );
 
-    public function install()
+    public function install($module_id)
     {
         $db = Core::$db;
         $root_dir = Core::getRootDir();
@@ -165,7 +168,7 @@ class Module
             "demo_mode"                         => "off"
         ));
 
-        $this->resetHooks();
+        Hooks::resetHooks();
 
         return array(true, "");
     }
@@ -230,7 +233,7 @@ class Module
     {
         // not clear, but this includes the $g_default_sets "global"
         require_once(dirname(__FILE__) . "/default_sets.php");
-        fb_import_template_set_data($g_default_sets);
+        TemplateSets::importTemplateSetData($g_default_sets);
     }
 
 }

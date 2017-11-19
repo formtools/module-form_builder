@@ -2,6 +2,7 @@
 
 namespace FormTools\Modules\FormBuilder;
 
+use FormTools\Core;
 use FormTools\Hooks as CoreHooks;
 
 
@@ -26,9 +27,11 @@ class Hooks
      */
     public static function displayAddFormOption()
     {
-        global $LANG, $g_root_url;
+        $LANG = Core::$L;
+        $root_url = Core::getRootUrl();
 
-        $L = ft_get_module_lang_file_contents("form_builder");
+        // TODO
+//        $L = ft_get_module_lang_file_contents("form_builder");
         $select = mb_strtoupper($LANG["word_select"]);
 
         echo <<< END
@@ -38,7 +41,7 @@ class Hooks
           <div class="grey_box add_form_select">
             <span style="float:right">
               <input type="button" name="form_builder" class="blue bold" value="$select"
-                onclick="window.location='$g_root_url/modules/form_builder/admin/add_form.php'" />
+                onclick="window.location='$root_url/modules/form_builder/admin/add_form.php'" />
             </span>
             <div class="bold">{$L["module_name"]}</div>
             <div class="medium_grey">{$L["text_form_builder_add_form_section"]}</div>

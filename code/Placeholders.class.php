@@ -5,6 +5,7 @@ namespace FormTools\Modules\FormBuilder;
 use FormTools\Core;
 use PDO;
 
+
 class Placeholders
 {
 
@@ -51,6 +52,143 @@ class Placeholders
         return array(true, "");
     }
 
+
+    /**
+     * Simple delete function.
+     *
+     * @param integer $placeholder_id
+     */
+    public static function deletePlaceholder($placeholder_id, $L)
+    {
+        $db = Core::$db;
+
+        $placeholder_info = fb_get_placeholder($placeholder_id);
+
+        if (empty($placeholder_id) || !is_numeric($placeholder_id)) {
+            return array(false, $L["notify_delete_invalid_placeholder_id"]);
+        }
+
+        $db->query("
+            DELETE FROM {PREFIX}module_form_builder_template_set_placeholders
+            WHERE placeholder_id = :placeholder_id
+        ");
+        $db->bind("placeholder_id", $placeholder_id);
+        $db->execute();
+
+        if ($db->numRows() > 0) {
+            $db->query("
+                DELETE FROM {PREFIX}module_form_builder_template_set_placeholder_opts
+                WHERE placeholder_id = :placeholder_id
+            ");
+            $db->bind("placeholder_id", $placeholder_id);
+            $db->execute();
+
+            if (!empty($placeholder_info) && isset($placeholder_info["set_id"])) {
+                Placeholders::updatePlaceholderOrder($placeholder_info["set_id"]);
+            }
+            return array(true, $L["notify_placeholder_deleted"]);
+        }
+
+        return array(true, $L["notify_placeholder_not_deleted"]);
+    }
+
+
+    /**
+     * Called on the Template Set -> Edit Placeholder page.
+     *
+     * @param integer $set_id
+     * @param array $info
+     */
+    public static function updatePlaceholder($placeholder_id, $info, $L)
+    {
+        $db = Core::$db;
+        $field_type = $info["field_type"];
+
+        // add the main record first
+        $db->query("
+            UPDATE {PREFIX}module_form_builder_template_set_placeholders
+            SET    placeholder_label = :placeholder_label,
+                   placeholder = :placeholder,
+                   field_type = :field_type,
+                   field_orientation = :field_orientation,
+                   default_value = :default_value
+            WHERE  placeholder_id = :placeholder_id
+        ");
+        $db->bindAll(array(
+            "placeholder_label" => $info["placeholder_label"],
+            "placeholder" => $info["placeholder"],
+            "field_type" => $field_type,
+            "field_orientation" => $info["field_orientation"],
+            "default_value" => $info["default_value"],
+            "placeholder_id" => $placeholder_id
+        ));
+        $db->execute();
+
+        // if this field had multiple options, add them too
+        $placeholder_options = isset($info["placeholder_options"]) ? $info["placeholder_options"] : array();
+        $db->query("
+            DELETE FROM {PREFIX}module_form_builder_template_set_placeholder_opts
+            WHERE placeholder_id = $placeholder_id
+        ");
+        $db->bind("placeholder_id", $placeholder_id);
+        $db->execute();
+
+        if (in_array($field_type, array("select", "multi-select", "radios", "checkboxes")) && !empty($placeholder_options)) {
+            $field_order = 1;
+
+            foreach ($placeholder_options as $option) {
+                if (empty($option)) {
+                    continue;
+                }
+
+                $db->query("
+                    INSERT INTO {PREFIX}module_form_builder_template_set_placeholder_opts (placeholder_id, option_text, field_order)
+                    VALUES (:placeholder_id, :option_text, :field_order)
+                ");
+                $db->bindAll(array(
+                    "placeholder_id" => $placeholder_id,
+                    "option_text" => $option,
+                    "field_order" => $field_order
+                ));
+                $db->execute();
+
+                $field_order++;
+            }
+        }
+
+        return array(true, $L["notify_placeholder_updated"]);
+    }
+
+
+    public static function getPlaceholder($placeholder_id)
+    {
+        $db = Core::$db;
+
+        $db->query("
+            SELECT *
+            FROM   {PREFIX}module_form_builder_template_set_placeholders
+            WHERE  placeholder_id = :placeholder_id
+        ");
+        $db->bind("placeholder_id", $placeholder_id);
+        $db->execute();
+
+        $result = $db->fetch();
+
+        $db->query("
+            SELECT *
+            FROM   {PREFIX}module_form_builder_template_set_placeholder_opts
+            WHERE  placeholder_id = :placeholder_id
+            ORDER BY field_order
+        ");
+        $db->bind("placeholder_id", $placeholder_id);
+        $db->execute();
+
+        $result["options"] = $db->fetchAll();
+
+        return $result;
+    }
+
+
     // -----------------------------------------------------------------------------------------------------------------
 
 
@@ -76,266 +214,161 @@ class Placeholders
 
         return $next_order;
     }
-}
-
-/**
- * Simple delete function.
- *
- * @param integer $placeholder_id
- */
-function fb_delete_placeholder($placeholder_id)
-{
-  global $g_table_prefix, $L;
-
-  $placeholder_info = fb_get_placeholder($placeholder_id);
-
-  if (empty($placeholder_id) || !is_numeric($placeholder_id))
-    return array(false, $L["notify_delete_invalid_placeholder_id"]);
-
-  $result = mysql_query("DELETE FROM {PREFIX}module_form_builder_template_set_placeholders WHERE placeholder_id = $placeholder_id");
-
-  if (mysql_affected_rows() > 0)
-  {
-  	$result = mysql_query("DELETE FROM {PREFIX}module_form_builder_template_set_placeholder_opts WHERE placeholder_id = $placeholder_id");
-
-  	if (!empty($placeholder_info) && isset($placeholder_info["set_id"]))
-      fb_update_placeholder_order($placeholder_info["set_id"]);
-
-    return array(true, $L["notify_placeholder_deleted"]);
-  }
-  else
-  {
-    return array(true, $L["notify_placeholder_not_deleted"]);
-  }
-}
 
 
-/**
- * Called on the Template Set -> Edit Placeholder page.
- *
- * @param integer $set_id
- * @param array $info
- */
-function fb_update_placeholder($placeholder_id, $info)
-{
-  global $g_table_prefix, $L;
-
-  $info = ft_sanitize($info);
-
-  $placeholder_label = $info["placeholder_label"];
-  $placeholder       = $info["placeholder"];
-  $field_type        = $info["field_type"];
-  $field_orientation = $info["field_orientation"];
-  $default_value     = $info["default_value"];
-  $placeholder       = $info["placeholder"];
-
-  // add the main record first
-  $query = mysql_query("
-    UPDATE {PREFIX}module_form_builder_template_set_placeholders
-    SET    placeholder_label = '$placeholder_label',
-           placeholder = '$placeholder',
-           field_type = '$field_type',
-           field_orientation = '$field_orientation',
-           default_value = '$default_value'
-    WHERE  placeholder_id = $placeholder_id
-      ") or die(mysql_error());
-
-
-  // if this field had multiple options, add them too
-  $placeholder_options = isset($info["placeholder_options"]) ? $info["placeholder_options"] : array();
-  mysql_query("
-    DELETE FROM {PREFIX}module_form_builder_template_set_placeholder_opts
-    WHERE placeholder_id = $placeholder_id
-  ");
-
-  if (in_array($field_type, array("select", "multi-select", "radios", "checkboxes")) && !empty($placeholder_options))
-  {
-    $field_order = 1;
-    foreach ($placeholder_options as $option)
+    /**
+     * Returns all placeholders for a template set.
+     *
+     * @param integer $set_id
+     */
+    public static function getPlaceholders($set_id, $L)
     {
-      if (empty($option))
-        continue;
+        $db = Core::$db;
 
-      mysql_query("
-        INSERT INTO {PREFIX}module_form_builder_template_set_placeholder_opts (placeholder_id, option_text, field_order)
-        VALUES ($placeholder_id, '$option', $field_order)
-          ");
-      $field_order++;
+        $db->query("
+            SELECT *
+            FROM   {PREFIX}module_form_builder_template_set_placeholders
+            WHERE  set_id = :set_id
+            ORDER BY field_order
+        ");
+        $db->bind("set_id", $set_id);
+        $db->execute();
+
+        $rows = $db->fetchAll();
+        $results = array();
+        foreach ($rows as $row) {
+            $db->query("
+                SELECT *
+                FROM   {PREFIX}module_form_builder_template_set_placeholder_opts
+                WHERE  placeholder_id = :placeholder_id
+                ORDER BY field_order
+            ");
+            $db->bind("placeholder_id", $row["placeholder_id"]);
+            $db->execute();
+
+            $row["options"] = $db->fetchAll();
+            $results[] = $row;
+        }
+
+        return $results;
     }
-  }
 
-  return array(true, $L["notify_placeholder_updated"]);
+
+
+    /**
+     * Called on the main Placeholders page - it deletes unwanted placeholders and re-orders those the
+     * user wants to keep.
+     *
+     * @param array $info
+     */
+    public static function updatePlaceholders($info, $L)
+    {
+        $db = Core::$db;
+
+        $sortable_id = $info["sortable_id"];
+
+        // delete any unwanted placeholders
+        $deleted_placeholder_ids_str = $info["{$sortable_id}_sortable__deleted_rows"];
+        if (!empty($deleted_placeholder_ids_str)) {
+            $db->query("
+                DELETE FROM {PREFIX}module_form_builder_template_set_placeholders
+                WHERE placeholder_id IN ($deleted_placeholder_ids_str)
+            ");
+            $db->execute();
+
+            $db->query("
+                DELETE FROM {PREFIX}module_form_builder_template_set_placeholder_opts
+                WHERE placeholder_id IN ($deleted_placeholder_ids_str)
+            ");
+            $db->execute();
+        }
+
+        $placeholder_ids = explode(",", $info["{$sortable_id}_sortable__rows"]);
+
+        $order = 1;
+        foreach ($placeholder_ids as $placeholder_id) {
+            $db->query("
+                UPDATE {PREFIX}module_form_builder_template_set_placeholders
+                SET    field_order = :field_order
+                WHERE  placeholder_id = :placeholder_id
+            ");
+            $db->bindAll(array(
+                "field_order" => $order,
+                "placeholder_id" => $placeholder_id
+            ));
+            $db->execute();
+            $order++;
+        }
+
+        return array(true, $L["notify_placeholders_updated"]);
+    }
+
+
+    public static function getNumPlaceholders($set_id)
+    {
+        $db = Core::$db;
+
+        $db->query("
+            SELECT count(*)
+            FROM   {PREFIX}module_form_builder_template_set_placeholders
+            WHERE  set_id = :set_id
+        ");
+        $db->bind("set_id", $set_id);
+        $db->execute();
+
+        return $db->fetch(PDO::FETCH_COLUMN);
+    }
+
+
+    /**
+     * Called after a placeholder gets deleted.
+     *
+     * @param integer $set_id
+     */
+    public static function updatePlaceholderOrder($set_id)
+    {
+        $db = Core::$db;
+
+        $placeholders = Placeholders::getPlaceholders($set_id, $L);
+
+        $list_order = 1;
+        foreach ($placeholders as $info) {
+            $placeholder_id = $info["placeholder_id"];
+
+            $db->query("
+                UPDATE {PREFIX}module_form_builder_template_set_placeholders
+                SET    field_order = :field_order
+                WHERE  placeholder_id = :placeholder_id
+            ");
+            $db->bindAll(array(
+                "field_order" => $list_order,
+                "placeholder_id" => $placeholder_id
+            ));
+            $db->execute();
+
+            $list_order++;
+        }
+    }
+
+
+    /**
+     * Called by the Form Builder to generate the markup for the Placeholders section in the sidebar.
+     *
+     * @param integer $set_id
+     * @param array $placeholders
+     * @param array $placeholder_hash
+     */
+    public static function generateTemplateSetPlaceholdersHtml($set_id, $placeholders, $placeholder_hash = array(), $L)
+    {
+        $smarty = General::createNewSmartyInstance("single");
+        $smarty->assign("placeholders", $placeholders);
+        $smarty->assign("placeholder_hash", $placeholder_hash);
+        $smarty->assign("L", $L);
+
+        $html = $smarty->fetch("../../modules/form_builder/smarty/placeholders_html.tpl");
+
+        return $html;
+    }
+
 }
 
-
-function fb_get_placeholder($placeholder_id)
-{
-	global $g_table_prefix;
-
-	$result = mysql_query("
-	  SELECT *
-	  FROM   {PREFIX}module_form_builder_template_set_placeholders
-	  WHERE  placeholder_id = $placeholder_id
-	");
-
-	$result = mysql_fetch_assoc($result);
-
-	$options_query = mysql_query("
-	  SELECT *
-	  FROM   {PREFIX}module_form_builder_template_set_placeholder_opts
-	  WHERE  placeholder_id = $placeholder_id
-	  ORDER BY field_order
-	");
-	$options = array();
-	while ($row = mysql_fetch_assoc($options_query))
-	  $options[] = $row;
-
-  $result["options"] = $options;
-
-	return $result;
-}
-
-
-/**
- * Returns all placeholders for a template set.
- *
- * @param integer $set_id
- */
-function fb_get_placeholders($set_id)
-{
-  global $g_table_prefix, $L;
-
-  $query = mysql_query("
-    SELECT *
-    FROM   {PREFIX}module_form_builder_template_set_placeholders
-    WHERE  set_id = $set_id
-    ORDER BY field_order
-  ");
-
-  $results = array();
-  while ($row = mysql_fetch_assoc($query))
-  {
-  	$placeholder_id = $row["placeholder_id"];
-
-  	$options_query = mysql_query("
-  	  SELECT *
-  	  FROM   {PREFIX}module_form_builder_template_set_placeholder_opts
-  	  WHERE  placeholder_id = $placeholder_id
-  	  ORDER BY field_order
-  	");
-
-  	$options = array();
-  	while ($row2 = mysql_fetch_assoc($options_query))
-  	{
-  	  $options[] = $row2;
-  	}
-  	$row["options"] = $options;
-    $results[] = $row;
-  }
-
-  return $results;
-}
-
-/**
- * Called on the main Placeholders page - it deletes unwanted placeholders and re-orders those the
- * user wants to keep.
- *
- * @param array $info
- */
-function fb_update_placeholders($info)
-{
-  global $g_table_prefix, $L;
-
-  $sortable_id = $info["sortable_id"];
-
-  // delete any unwanted placeholders
-  $deleted_placeholder_ids_str = $info["{$sortable_id}_sortable__deleted_rows"];
-  if (!empty($deleted_placeholder_ids_str))
-  {
-  	mysql_query("
-  	  DELETE FROM {PREFIX}module_form_builder_template_set_placeholders
-  	  WHERE placeholder_id IN ($deleted_placeholder_ids_str)
-  	");
-  	mysql_query("
-      DELETE FROM {PREFIX}module_form_builder_template_set_placeholder_opts
-      WHERE placeholder_id IN ($deleted_placeholder_ids_str)
-    ");
-  }
-
-  $placeholder_ids = explode(",", $info["{$sortable_id}_sortable__rows"]);
-
-  $order = 1;
-  foreach ($placeholder_ids as $placeholder_id)
-  {
-    mysql_query("
-      UPDATE {PREFIX}module_form_builder_template_set_placeholders
-      SET    field_order = $order
-      WHERE  placeholder_id = $placeholder_id
-    ");
-    $order++;
-  }
-
-  return array(true, $L["notify_placeholders_updated"]);
-}
-
-
-function fb_get_num_placeholders($set_id)
-{
-	global $g_table_prefix;
-
-	$query = mysql_query("
-	  SELECT count(*) as c
-	  FROM   {PREFIX}module_form_builder_template_set_placeholders
-	  WHERE  set_id = $set_id
-	");
-	$result = mysql_fetch_assoc($query);
-
-	return $result["c"];
-}
-
-
-/**
- * Called after a placeholder gets deleted.
- *
- * @param integer $set_id
- */
-function fb_update_placeholder_order($set_id)
-{
-  global $g_table_prefix;
-
-  $placeholders = fb_get_placeholders($set_id);
-
-  $list_order = 1;
-  foreach ($placeholders as $info)
-  {
-  	$placeholder_id = $info["placeholder_id"];
-  	@mysql_query("
-  	  UPDATE {PREFIX}module_form_builder_template_set_placeholders
-  	  SET    field_order = $list_order
-  	  WHERE  placeholder_id = $placeholder_id
-  	");
-    $list_order++;
-  }
-}
-
-
-/**
- * Called by the Form Builder to generate the markup for the Placeholders section in the sidebar.
- *
- * @param integer $set_id
- * @param array $placeholders
- * @param array $placeholder_hash
- */
-function fb_generate_template_set_placeholders_html($set_id, $placeholders, $placeholder_hash = array())
-{
-  global $g_table_prefix, $g_root_dir, $L;
-
-  $smarty = fb_create_new_smarty_instance("single");
-  $smarty->assign("placeholders", $placeholders);
-  $smarty->assign("placeholder_hash", $placeholder_hash);
-  $smarty->assign("L", $L);
-
-  $html = $smarty->fetch("../../modules/form_builder/smarty/placeholders_html.tpl");
-
-  return $html;
-}

@@ -4,7 +4,7 @@ namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
 use FormTools\Fields;
-use FormTools\Forms;
+use FormTools\Forms as CoreForms;
 use FormTools\Views;
 use FormTools\ViewTabs;
 use Smarty;
@@ -116,7 +116,7 @@ class General
         );
 
         // set up the entry for the form
-        list($success, $message, $new_form_id) = Forms::setupForm($config);
+        list($success, $message, $new_form_id) = CoreForms::setupForm($config);
 
         $form_data = array(
             "form_tools_form_id" => $new_form_id,
@@ -126,7 +126,7 @@ class General
         for ($i=1; $i<=$request["num_fields"]; $i++) {
             $form_data["field{$i}"] = $i;
         }
-        Forms::initializeForm($form_data);
+        CoreForms::initializeForm($form_data);
 
         $form_fields = Fields::getFormFields($new_form_id);
 
@@ -156,7 +156,7 @@ class General
             }
         }
 
-        Forms::finalizeForm($new_form_id);
+        CoreForms::finalizeForm($new_form_id);
 
         // if the form has an access type of "private" add whatever client accounts the user selected
         if ($request["access_type"] == "private") {
