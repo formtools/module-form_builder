@@ -22,7 +22,7 @@ data integrity. That's the purpose of these schema files.
 
 N.B. I've annotated this to explain each property. Note that valid JSON cannot contain comments! 
 
-```json
+```javascript
 {
   // the schema version that this JSON file adheres to. If the format of the file fails to match the schema version
   // specified here, the Form Builder will complain when it attempts to import the Template Set. Over time, if we need
