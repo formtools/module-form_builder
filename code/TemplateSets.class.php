@@ -414,13 +414,10 @@ class TemplateSets
     /**
      * This generates both the main default_sets.php file (found in this folder) used for fresh installations,
      * and for generating a custom template set file for import/export.
-     *
-     * @param mixed $set_id the specific set ID that you
      */
     public static function createDefaultTemplateSetFile($set_id = "")
     {
         $php_lines = array();
-        $php_lines[] = "\$g_default_sets = array();\n";
 
         $template_sets = array();
         if (empty($set_id)) {
@@ -596,7 +593,7 @@ END;
 
         $php = self::createDefaultTemplateSetFile($set_id);
 
-        echo "<textarea style=\"width: 100%; height: 100%\"><?php\n\n$php</textarea>";
+        return "<textarea style=\"width: 100%; height: 100%\"><?php\n\n$php</textarea>";
     }
 
 

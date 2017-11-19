@@ -1,31 +1,37 @@
 <?php
 
+namespace FormTools\Modules\FormBuilder;
 
-function fb_reset_hooks()
+use FormTools\Hooks as CoreHooks;
+
+
+class Hooks
 {
-  ft_unregister_module_hooks("form_builder");
-  ft_register_hook("template", "form_builder", "add_form_page", "", "fb_display_add_form_option", 50, true);
-  ft_register_hook("template", "form_builder", "admin_edit_form_main_tab_form_type_dropdown", "", "fb_display_form_type_option", 50, true);
-  ft_register_hook("template", "form_builder", "admin_forms_form_type_label", "", "fb_display_form_builder_label", 50, true);
-  ft_register_hook("code", "form_builder", "start", "ft_module_override_data", "fb_inline_data_override", 50, true);
-  ft_register_hook("code", "form_builder", "end", "ft_display_custom_page_message", "fb_display_form_created_message", 50, true);
-  ft_register_hook("template", "form_builder", "admin_edit_form_content", "", "fb_display_publish_tab", 50, true);
-  ft_register_hook("code", "form_builder", "start", "ft_delete_form", "fb_hook_delete_form");
-  ft_register_hook("code", "form_builder", "end", "ft_delete_view", "fb_hook_delete_view");
-}
+    public static function resetHooks()
+    {
+        CoreHooks::unregisterModuleHooks("form_builder");
+        CoreHooks::registerHook("template", "form_builder", "add_form_page", "", "fb_display_add_form_option", 50, true);
+        CoreHooks::registerHook("template", "form_builder", "admin_edit_form_main_tab_form_type_dropdown", "", "fb_display_form_type_option", 50, true);
+        CoreHooks::registerHook("template", "form_builder", "admin_forms_form_type_label", "", "fb_display_form_builder_label", 50, true);
+        CoreHooks::registerHook("code", "form_builder", "start", "ft_module_override_data", "fb_inline_data_override", 50, true);
+        CoreHooks::registerHook("code", "form_builder", "end", "ft_display_custom_page_message", "fb_display_form_created_message", 50, true);
+        CoreHooks::registerHook("template", "form_builder", "admin_edit_form_content", "", "fb_display_publish_tab", 50, true);
+        CoreHooks::registerHook("code", "form_builder", "start", "ft_delete_form", "fb_hook_delete_form");
+        CoreHooks::registerHook("code", "form_builder", "end", "ft_delete_view", "fb_hook_delete_view");
+    }
 
 
-/**
- * This adds the "Form Builder" section on the Add Form page.
- */
-function fb_display_add_form_option()
-{
-  global $LANG, $g_root_url;
+    /**
+     * This adds the "Form Builder" section on the Add Form page.
+     */
+    public static function displayAddFormOption()
+    {
+        global $LANG, $g_root_url;
 
-  $L = ft_get_module_lang_file_contents("form_builder");
-  $select = mb_strtoupper($LANG["word_select"]);
+        $L = ft_get_module_lang_file_contents("form_builder");
+        $select = mb_strtoupper($LANG["word_select"]);
 
-  echo <<< END
+        echo <<< END
     <table width="100%">
       <tr>
         <td width="49%" valign="top">
@@ -43,6 +49,8 @@ function fb_display_add_form_option()
       </tr>
     </table>
 END;
+    }
+
 }
 
 
