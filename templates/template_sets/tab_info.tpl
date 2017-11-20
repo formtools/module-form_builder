@@ -32,7 +32,7 @@
 		<tr>
 		  <td class="pad_left_small medium_grey">{$L.word_description}</td>
 		  <td>
-        <textarea name="description" style="width:99%; height: 100px">{$template_set_info.description|escape}</textarea>
+            <textarea name="description" style="width:99%; height: 100px">{$template_set_info.description|escape}</textarea>
 		  </td>
 		</tr>
 	  </table>

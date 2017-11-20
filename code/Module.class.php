@@ -1,6 +1,5 @@
 <?php
 
-
 namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
@@ -8,7 +7,6 @@ use FormTools\Module as CoreModule;
 use FormTools\Schemas;
 
 use PDO, Exception;
-use JsonSchema;
 
 class Module extends CoreModule
 {
@@ -20,8 +18,19 @@ class Module extends CoreModule
     protected $version = "2.0.0";
     protected $date = "2017-11-18";
     protected $originLanguage = "en_us";
-//    protected $jsFiles = array("scripts/tests.js");
-//    protected $cssFiles = array("css/styles.css");
+    protected $jsFiles = array(
+        "{MODULEROOT}/scripts/manage_template_sets.js",
+        "{FTROOT}/global/codemirror/lib/codemirror.js",
+        "{FTROOT}/global/codemirror/mode/xml/xml.js",
+        "{FTROOT}/global/codemirror/mode/smarty/smarty.js",
+        "{FTROOT}/global/codemirror/mode/htmlmixed/htmlmixed.js",
+        "{FTROOT}/global/codemirror/mode/css/css.js",
+        "{FTROOT}/global/codemirror/mode/javascript/javascript.js",
+        "{FTROOT}/global/codemirror/mode/clike/clike.js",
+    );
+    protected $cssFiles = array(
+        "{MODULEROOT}/css/styles.css"
+    );
 
     protected $nav = array(
         "phrase_template_sets" => array("index.php", false),
@@ -34,9 +43,6 @@ class Module extends CoreModule
         $db = Core::$db;
         $root_dir = Core::getRootDir();
         $root_url = Core::getRootUrl();
-
-        self::populateDefaultTemplateSets();
-        exit;
 
         try {
             $db->query("
@@ -168,7 +174,7 @@ class Module extends CoreModule
             "thankyou_page_title"               => "Thankyou",
             "form_builder_width"                => 1000,
             "form_builder_height"               => 700,
-            "phrase_edit_in_form_builder_link_action" => "same_window",
+            "edit_form_builder_link_action"     => "same_window",
             "demo_mode"                         => "off"
         ));
 
@@ -204,28 +210,28 @@ class Module extends CoreModule
     {
         $db = Core::$db;
 
-        $db->query("DROP TABLE {PREFIX}module_form_builder_forms");
+        $db->query("DROP TABLE IF EXISTS {PREFIX}module_form_builder_forms");
         $db->execute();
 
-        $db->query("DROP TABLE {PREFIX}module_form_builder_form_placeholders");
+        $db->query("DROP TABLE IF EXISTS {PREFIX}module_form_builder_form_placeholders");
         $db->execute();
 
-        $db->query("DROP TABLE {PREFIX}module_form_builder_form_templates");
+        $db->query("DROP TABLE IF EXISTS {PREFIX}module_form_builder_form_templates");
         $db->execute();
 
-        $db->query("DROP TABLE {PREFIX}module_form_builder_templates");
+        $db->query("DROP TABLE IF EXISTS {PREFIX}module_form_builder_templates");
         $db->execute();
 
-        $db->query("DROP TABLE {PREFIX}module_form_builder_template_sets");
+        $db->query("DROP TABLE IF EXISTS {PREFIX}module_form_builder_template_sets");
         $db->execute();
 
-        $db->query("DROP TABLE {PREFIX}module_form_builder_template_set_placeholders");
+        $db->query("DROP TABLE IF EXISTS {PREFIX}module_form_builder_template_set_placeholders");
         $db->execute();
 
-        $db->query("DROP TABLE {PREFIX}module_form_builder_template_set_placeholder_opts");
+        $db->query("DROP TABLE IF EXISTS {PREFIX}module_form_builder_template_set_placeholder_opts");
         $db->execute();
 
-        $db->query("DROP TABLE {PREFIX}module_form_builder_template_set_resources");
+        $db->query("DROP TABLE IF EXISTS {PREFIX}module_form_builder_template_set_resources");
         $db->execute();
     }
 
@@ -256,11 +262,9 @@ class Module extends CoreModule
             $response = Schemas::validateSchema($template_set, $schema);
 
             if ($response["is_valid"]) {
-                //TemplateSets::importTemplateSetData($template_set);
+                TemplateSets::importTemplateSetData($template_set);
             } else {
-                echo "$file\n\n";
-                print_r($response["errors"]);
-                echo "___________________";
+                // TODO
             }
         }
     }

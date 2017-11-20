@@ -37,14 +37,22 @@ class Placeholders
         // if this field had multiple options, add them too
         if (in_array($field_type, array("select", "multi-select", "radios", "checkboxes")) && !empty($placeholder_options)) {
             $field_order = 1;
-            foreach ($placeholder_options as $option) {
-                if (empty($option)) {
+
+            foreach ($placeholder_options as $row) {
+                if (empty($row->option_text)) {
                     continue;
                 }
                 $db->query("
                     INSERT INTO {PREFIX}module_form_builder_template_set_placeholder_opts (placeholder_id, option_text, field_order)
-                    VALUES ($placeholder_id, '$option', $field_order)
+                    VALUES (:placeholder_id, :option_text, :field_order)
                 ");
+                $db->bindAll(array(
+                    "placeholder_id" => $placeholder_id,
+                    "option_text" => $row->option_text,
+                    "field_order" => $field_order
+                ));
+                $db->execute();
+
                 $field_order++;
             }
         }
@@ -62,7 +70,7 @@ class Placeholders
     {
         $db = Core::$db;
 
-        $placeholder_info = fb_get_placeholder($placeholder_id);
+        $placeholder_info = Placeholders::getPlaceholder($placeholder_id);
 
         if (empty($placeholder_id) || !is_numeric($placeholder_id)) {
             return array(false, $L["notify_delete_invalid_placeholder_id"]);
@@ -221,7 +229,7 @@ class Placeholders
      *
      * @param integer $set_id
      */
-    public static function getPlaceholders($set_id, $L)
+    public static function getPlaceholders($set_id)
     {
         $db = Core::$db;
 

@@ -5,7 +5,7 @@ namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
 use FormTools\General as CoreGeneral;
-use PDO, PDOException;
+use PDO, PDOException, Exception;
 
 
 class TemplateSets
@@ -30,6 +30,10 @@ class TemplateSets
         )
     );
 
+    public static function getTemplateTypes()
+    {
+        return self::$templateTypes;
+    }
 
     public static function getTemplateSets($only_return_complete = true)
     {
@@ -50,7 +54,7 @@ class TemplateSets
         foreach ($rows as $row) {
             $set_id = $row["set_id"];
 
-            $row["templates"]    = TemplateSets::getTemplates($set_id);
+            $row["templates"]    = Templates::getTemplates($set_id);
             $row["resources"]    = Resources::getResources($set_id);
             $row["placeholders"] = Placeholders::getPlaceholders($set_id);
             $results[] = $row;
@@ -203,7 +207,7 @@ class TemplateSets
      * Called on the Info tab, this updates the name and description. It also checks to see whether all required
      * templates have been entered + assigns the "is_complete" value appropriately.
      */
-    public function updateTemplateSetInfo($set_id, $set_name, $desc, $version, $L)
+    public static function updateTemplateSetInfo($set_id, $set_name, $desc, $version, $L)
     {
         $db = Core::$db;
 
@@ -377,7 +381,7 @@ class TemplateSets
      */
     public static function getTemplateIds($set_id)
     {
-        $templates = self::getTemplates($set_id);
+        $templates = Templates::getTemplates($set_id);
         return array_column($templates, "template_id");
     }
 
@@ -597,37 +601,56 @@ END;
     }
 
 
-    // currently schema-less (!) but this imports a PHP-serialized JSON object
-    public static function importTemplateSetData($set)
+    public static function importTemplateSetData($template_set)
     {
         $template_set_order = self::getNewTemplateSetOrder();
 
-        // insert the new template set
-        $set_id = self::addTemplateSet($set_info["set_name"], $set_info["version"], $set_info["description"],
-            $set_info['is_complete'], $template_set_order);
+        try {
 
-        // templates
-        $template_order = 1;
-        foreach ($set_info["templates"] as $template_info) {
-            Templates::addTemplate($set_id, $template_info["template_type"], $template_info["template_name"],
-                $template_info["content"], $template_order);
-            $template_order++;
-        }
+            // insert the new template set
+            $set_id = self::addTemplateSet($template_set->template_set_name, $template_set->template_set_version,
+                $template_set->description, "yes", $template_set_order);
 
-        // resources
-        $resource_order = 1;
-        foreach ($set_info["resources"] as $resource_info) {
-            Resources::addResource($set_id, $resource_info["resource_type"], $resource_info["resource_name"],
-                $resource_info["placeholder"], $resource_info["content"], $resource_info["last_updated"],
-                $resource_order);
-            $resource_order++;
-        }
+            // templates
+            $template_order = 1;
+            foreach ($template_set->templates as $template_type => $templates) {
+                foreach ($templates as $template_info) {
+                    Templates::addTemplate($set_id, $template_type, $template_info->template_name, $template_info->content, $template_order);
+                    $template_order++;
+                }
+            }
 
-        // placeholders
-        foreach ($set_info["placeholders"] as $placeholder_info) {
-            Placeholders::addPlaceholder($set_id, $placeholder_info["placeholder_label"], $placeholder_info["placeholder"],
-                $placeholder_info["field_type"], $placeholder_info["field_orientation"], $placeholder_info["default_value"],
-                $placeholder_info["options"]);
+            $now = CoreGeneral::getCurrentDatetime();
+
+            // resources
+            $resource_order = 1;
+            if (isset($template_set->resources->css)) {
+                foreach ($template_set->resources->css as $resource_info) {
+                    Resources::addResource($set_id, "css", $resource_info->resource_name, $resource_info->placeholder,
+                        $resource_info->content, $now, $resource_order);
+                    $resource_order++;
+                }
+            }
+            if (isset($template_set->resources->js)) {
+                foreach ($template_set->resources->js as $resource_info) {
+                    Resources::addResource($set_id, "js", $resource_info->resource_name, $resource_info->placeholder,
+                       $resource_info->content, $now, $resource_order);
+                    $resource_order++;
+                }
+            }
+
+            // placeholders
+            if (isset($template_set->placeholders)) {
+                foreach ($template_set->placeholders as $placeholder_info) {
+                    Placeholders::addPlaceholder($set_id, $placeholder_info->placeholder_label,
+                        $placeholder_info->placeholder,
+                        $placeholder_info->field_type, $placeholder_info->field_orientation,
+                        $placeholder_info->default_value,
+                    $placeholder_info->options);
+                }
+            }
+        } catch (Exception $e) {
+            print_r($e->getMessage());
         }
     }
 
@@ -640,8 +663,8 @@ END;
         $db = Core::$db;
 
         $db->query("
-            INSERT INTO {PREFIX}module_form_builder_template_sets (set_name, version, is_complete, list_order)
-            VALUES (:set_name, :version, :is_complete, :list_order)
+            INSERT INTO {PREFIX}module_form_builder_template_sets (set_name, version, description, is_complete, list_order)
+            VALUES (:set_name, :version, :description, :is_complete, :list_order)
         ");
         $db->bindAll(array(
             "set_name" => $set_name,

@@ -234,7 +234,7 @@ $L["text_default_review_page_title_desc"] = "This value is used in your publishe
 $L["text_default_thankyou_page_title_desc"] = "This value is used in your published forms to provide a label to the Thankyou page in the form navigation. You may override it for any published form.";
 $L["text_scheduled_offline_form_desc"] = "When a form is taken offline (manually or at a scheduled time), there may be people in the process of submitting the form. This setting controls how to handle those cases.";
 $L["text_default_thankyou_page_desc"] = "Whenever you publish a form through the Form Builder, it will use the content below to be outputted on the \"Thankyou\" page. This may be customized for each form.";
-$L["text_help"] = "For help on how to use this module, please see the <a href=\"http://modules.formtools.org/form_builder/\" target=\"_blank\">online help documentation</a>.";
+$L["text_help"] = "For help on how to use this module, please see the <a href=\"https://docs.formtools.org/modules/form_builder/\" target=\"_blank\">online help documentation</a>.";
 $L["text_add_form_num_fields_hint"] = "The field labels, types and grouping can be customized later. You can add or remove fields whenever you need, so don't worry if you're not completely sure about how many fields you will need right now.";
 $L["text_add_form_access_hint"] = "This setting controls which Form Tools users get access to the data.";
 $L["text_non_form_builder_form"] = "This form is currently marked as an <b>{\$form_type}</b> form. To publish it on your website via the Form Builder, you must first set it to the <b>Form Builder</b> form type.";

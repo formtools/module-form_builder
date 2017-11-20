@@ -9,6 +9,7 @@ use FormTools\Modules\FormBuilder\TemplateSets;
 $module = Modules::initModulePage("admin");
 $L = $module->getLangStrings();
 $LANG = Core::$L;
+$root_url = Core::getRootUrl();
 
 $sortable_id = "template_set_table";
 
@@ -62,9 +63,9 @@ $page_vars = array(
 );
 
 $page_vars["head_string"] =<<< END
-  <script src="$g_root_url/global/scripts/sortable.js"></script>
+  <script src="$root_url/global/scripts/sortable.js"></script>
   <script src="global/scripts/manage_template_sets.js"></script>
-  <link type="text/css" rel="stylesheet" href="$g_root_url/modules/form_builder/global/css/styles.css">
+  <link type="text/css" rel="stylesheet" href="$root_url/modules/form_builder/global/css/styles.css">
 END;
 
 $page_vars["head_js"] =<<< END
