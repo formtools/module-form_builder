@@ -14,7 +14,7 @@ $template_set_info = TemplateSets::getTemplateSet($set_id);
 $missing_templates = TemplateSets::getMissingTemplateSetTemplates($set_id);
 $missing_template_strs = array();
 foreach ($missing_templates as $template_type) {
-    $missing_template_strs[] = TemplateSets::getTemplateTypeName($template_type);
+    $missing_template_strs[] = TemplateSets::getTemplateTypeName($template_type, $L);
 }
 $missing_templates_str = implode(", ", $missing_template_strs);
 

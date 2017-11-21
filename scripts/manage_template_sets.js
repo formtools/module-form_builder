@@ -27,7 +27,7 @@ fb_ns.init_create_new_template_set_dialog = function() {
               return;
             }
             $.ajax({
-              url: g.root_url + "/modules/form_builder/global/code/actions.php",
+              url: g.root_url + "/modules/form_builder/code/actions.php",
               dataType: "json",
               type: "POST",
               data: {
@@ -138,7 +138,7 @@ fb_ns.init_create_new_template_dialog = function() {
             }
 
             $.ajax({
-              url: g.root_url + "/modules/form_builder/global/code/actions.php",
+              url: g.root_url + "/modules/form_builder/code/actions.php",
               dataType: "json",
               type: "POST",
               data: {
@@ -270,7 +270,7 @@ fb_ns.init_add_resource = function(template_id) {
               return;
             }
             $.ajax({
-              url: g.root_url + "/modules/form_builder/global/code/actions.php",
+              url: g.root_url + "/modules/form_builder/code/actions.php",
               dataType: "json",
               type: "POST",
               data: {

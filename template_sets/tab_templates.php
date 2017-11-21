@@ -12,7 +12,7 @@ if (isset($request["delete"])) {
 } else {
     if (isset($request["update_order"])) {
         $request["sortable_id"] = $sortable_id;
-        list($success, $message) = Templates::updateTemplateOrder($set_id, $request);
+        list($success, $message) = Templates::updateTemplateOrder($request, $L);
     }
 }
 
@@ -25,11 +25,15 @@ foreach ($missing_templates as $template_type) {
 }
 $missing_templates_str = implode(", ", $missing_template_strs);
 
+$page_vars["g_success"] = $success;
+$page_vars["g_message"] = $message;
 $page_vars["sortable_id"] = $sortable_id;
 $page_vars["template_set_info"] = $template_set_info;
 $page_vars["missing_templates_str"] = $missing_templates_str;
 
-$page_vars["js_messages"] = array("word_close", "word_yes", "word_no", "phrase_please_confirm");
+$page_vars["js_messages"] = array(
+    "word_close", "word_yes", "word_no", "phrase_please_confirm"
+);
 $page_vars["module_js_messages"] = array(
     "confirm_delete_template",
     "phrase_create_new_template",

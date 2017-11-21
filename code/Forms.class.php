@@ -4,7 +4,7 @@ namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
 use FormTools\General as CoreGeneral;
-use PDO, PDOException;
+use PDO, Exception;
 
 
 class Forms
@@ -690,153 +690,200 @@ class Forms
         return array(true, $L["notify_published_forms_updated"]);
     }
 
+    /**
+     * Called when the user clicks the "Save" button in the Builder popup.
+     * TODO split this to update/create & rename... "saveBuilderSettings...?"
+     * @param array $info
+     */
+    public static function saveBuilderSettings($info)
+    {
+        $db = Core::$db;
 
-}
+        // optional. If this is set, the user is updating an existing published form
+        $published_form_id = !empty($info["published_form_id"]) ? $info["published_form_id"] : "";
+        $is_online = (isset($info["is_online"])) ? "yes" : "no";
+        $include_review_page        = isset($info["include_review_page"]) ? "yes" : "no";
+        $include_thanks_page_in_nav = isset($info["include_thanks_page_in_nav"]) ? "yes" : "no";
 
-/**
- * Called when the user clicks the "Save" button in the Builder popup.
- *
- * @param array $info
- */
-function fb_save_builder_settings($info)
-{
-  global $g_table_prefix;
+        $offline_date = "";
+        if (!empty($info["offline_date"]) && preg_match("/\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}/", $info["offline_date"])) {
+            list($date, $time) = explode(" ", $info["offline_date"]);
+            list($month, $day, $year) = explode("/", $date);
+            $offline_date = "{$year}-{$month}-{$day} $time";
+        }
 
-  // optional. If this is set, the user is updating an existing published form
-  $published_form_id = !empty($info["published_form_id"]) ? $info["published_form_id"] : "";
+        $filename = $info["filename"];
+        if (!preg_match("/\.php$/", $filename)) {
+            $filename .= ".php";
+        }
 
-  $info = ft_sanitize($info);
+        try {
+            if (empty($published_form_id)) {
+                $list_order = self::getNextPublishedFormOrder($info["form_id"]);
 
-  // main form settings
-  $form_id = $info["form_id"];
-  $view_id = $info["view_id"];
-  $is_online = (isset($info["is_online"])) ? "yes" : "no";
-  $template_set_id = $info["template_set_id"];
-  $include_review_page        = isset($info["include_review_page"]) ? "yes" : "no";
-  $include_thanks_page_in_nav = isset($info["include_thanks_page_in_nav"]) ? "yes" : "no";
-  $thankyou_page_content     = $info["thankyou_page_content"];
-  $form_offline_page_content = $info["form_offline_page_content"];
-  $offline_date              = "";
-  if (!empty($info["offline_date"]) && preg_match("/\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}/", $info["offline_date"]))
-  {
-    list($date, $time) = explode(" ", $info["offline_date"]);
-    list($month, $day, $year) = explode("/", $date);
-    $offline_date = "{$year}-{$month}-{$day} $time";
-  }
+                $db->query("
+                    INSERT INTO {PREFIX}module_form_builder_forms (is_online, is_published, form_id, view_id,
+                        set_id, filename, folder_path, folder_url, include_review_page, include_thanks_page_in_nav,
+                        thankyou_page_content, form_offline_page_content, review_page_title, thankyou_page_title, list_order)
+                    VALUES (:is_online, :is_published, :form_id, :view_id, :set_id, :filename, :folder_path, :folder_url,
+                        :include_review_page, :include_thanks_page_in_nav, :thankyou_page_content, :form_offline_page_content,
+                        :review_page_title, :thankyou_page_title, :list_order)
+                ");
+                $db->bindAll(array(
+                    "is_online" => $is_online,
+                    "is_published" => "no",
+                    "form_id" => $info["form_id"],
+                    "view_id" => $info["view_id"],
+                    "set_id" => $info["template_set_id"],
+                    "filename" => $filename,
+                    "folder_path" => $info["folder_path"],
+                    "folder_url" => $info["folder_url"],
+                    "include_review_page" => $include_review_page,
+                    "include_thanks_page_in_nav" => $include_thanks_page_in_nav,
+                    "thankyou_page_content" => $info["thankyou_page_content"],
+                    "form_offline_page_content" => $info["form_offline_page_content"],
+                    "review_page_title" => $info["review_page_title"],
+                    "thankyou_page_title" => $info["thankyou_page_title"],
+                    "list_order" => $list_order
+                ));
+                $db->execute();
+                $published_form_id = $db->getInsertId();
+            } else {
+                $db->query("
+                    UPDATE {PREFIX}module_form_builder_forms
+                    SET    is_online = :is_online,
+                           form_id = :form_id,
+                           view_id = :view_id,
+                           set_id = :set_id,
+                           filename = :filename,
+                           folder_path = :folder_path,
+                           folder_url = :folder_url,
+                           include_review_page = :include_review_page,
+                           include_thanks_page_in_nav = :include_thanks_page_in_nav,
+                           thankyou_page_content = :thankyou_page_content,
+                           form_offline_page_content = :form_offline_page_content,
+                           review_page_title = :review_page_title,
+                           thankyou_page_title = :thankyou_page_title,
+                           offline_date = :offline_date
+                    WHERE  published_form_id = :published_form_id
+                ");
+                $db->bindAll(array(
+                    "is_online" => $is_online,
+                    "is_published" => "no",
+                    "form_id" => $info["form_id"],
+                    "view_id" => $info["view_id"],
+                    "set_id" => $info["template_set_id"],
+                    "filename" => $filename,
+                    "folder_path" => $info["folder_path"],
+                    "folder_url" => $info["folder_url"],
+                    "include_review_page" => $include_review_page,
+                    "include_thanks_page_in_nav" => $include_thanks_page_in_nav,
+                    "thankyou_page_content" => $info["thankyou_page_content"],
+                    "form_offline_page_content" => $info["form_offline_page_content"],
+                    "review_page_title" => $info["review_page_title"],
+                    "thankyou_page_title" => $info["thankyou_page_title"],
+                    "offline_date" => $offline_date,
+                    "published_form_id" => $published_form_id
+                ));
+                $db->execute();
+            }
+        } catch (Exception $e) {
+            return array(false, $e->getMessage());
+        }
 
-  $filename = $info["filename"];
-  if (!preg_match("/\.php$/", $filename))
-    $filename .= ".php";
+        $db->query("
+            DELETE FROM {PREFIX}module_form_builder_form_templates
+            WHERE published_form_id = :published_form_id
+        ");
+        $db->bind("published_form_id", $published_form_id);
+        $db->execute();
 
-  $folder_path = $info["folder_path"];
-  $folder_url  = $info["folder_url"];
-  $review_page_title = $info["review_page_title"];
-  $thankyou_page_title = $info["thankyou_page_title"];
+        $template_data = array(
+            "page_layout"       => $info["page_layout_template_id"],
+            "header"            => $info["header_template_id"],
+            "footer"            => $info["footer_template_id"],
+            "navigation"        => $info["navigation_template_id"],
+            "continue_block"    => $info["continue_block_template_id"],
+            "error_message"     => $info["error_message_template_id"],
+            "form_page"         => $info["form_page_template_id"],
+            "review_page"       => $info["review_page_template_id"],
+            "thankyou_page"     => $info["thankyou_page_template_id"],
+            "form_offline_page" => $info["form_offline_page_template_id"]
+        );
 
-  if (empty($published_form_id))
-  {
-  	$list_order = fb_get_next_published_form_order($form_id);
-    $query = $db->query("
-      INSERT INTO {PREFIX}module_form_builder_forms (is_online, is_published, form_id, view_id,
-        set_id, filename, folder_path, folder_url, include_review_page, include_thanks_page_in_nav, thankyou_page_content,
-        form_offline_page_content, review_page_title, thankyou_page_title, list_order)
-      VALUES ('$is_online', 'no', $form_id, $view_id, $template_set_id, '$filename', '$folder_path', '$folder_url',
-        '$include_review_page', '$include_thanks_page_in_nav', '$thankyou_page_content', '$form_offline_page_content',
-        '$review_page_title', '$thankyou_page_title', $list_order)
-    ");
-    $published_form_id = mysql_insert_id();
-  }
-  else
-  {
-    $query = $db->query("
-      UPDATE {PREFIX}module_form_builder_forms
-      SET    is_online = '$is_online',
-             form_id = $form_id,
-             view_id = $view_id,
-             set_id = $template_set_id,
-             filename = '$filename',
-             folder_path = '$folder_path',
-             folder_url = '$folder_url',
-             include_review_page = '$include_review_page',
-             include_thanks_page_in_nav = '$include_thanks_page_in_nav',
-             thankyou_page_content = '$thankyou_page_content',
-             form_offline_page_content = '$form_offline_page_content',
-             review_page_title = '$review_page_title',
-             thankyou_page_title = '$thankyou_page_title',
-             offline_date = '$offline_date'
-      WHERE  published_form_id = $published_form_id
-    ") or die(mysql_error());
-  }
+        while (list($key, $template_id) = each($template_data)) {
+            $db->query("
+                INSERT INTO {PREFIX}module_form_builder_form_templates (published_form_id, template_type, template_id)
+                VALUES (:published_form_id, :template_type, :template_id)
+	        ");
+            $db->bindAll(array(
+                "published_form_id" => $published_form_id,
+                "template_type" => $key,
+                "template_id" => $template_id
+            ));
+            $db->execute();
+        }
 
-  if ($query)
-  {
-	  $db->query("DELETE FROM {PREFIX}module_form_builder_form_templates WHERE published_form_id = $published_form_id");
-	  $template_data = array(
-	    "page_layout"       => $info["page_layout_template_id"],
-	    "header"            => $info["header_template_id"],
-	    "footer"            => $info["footer_template_id"],
-	    "navigation"        => $info["navigation_template_id"],
-	    "continue_block"    => $info["continue_block_template_id"],
-	    "error_message"     => $info["error_message_template_id"],
-	    "form_page"         => $info["form_page_template_id"],
-	    "review_page"       => $info["review_page_template_id"],
-	    "thankyou_page"     => $info["thankyou_page_template_id"],
-	    "form_offline_page" => $info["form_offline_page_template_id"]
-	  );
+        // now add the placeholders
+        $placeholder_ids = (isset($info["placeholder_ids"])) ? $info["placeholder_ids"] : array();
+        $db->query("
+            DELETE FROM {PREFIX}module_form_builder_form_placeholders
+            WHERE published_form_id = :published_form_id
+        ");
+        $db->bind("published_form_id", $published_form_id);
+        $db->execute();
 
-	  while (list($key, $template_id) = each($template_data))
-	  {
-	    $db->query("
-	      INSERT INTO {PREFIX}module_form_builder_form_templates (published_form_id, template_type, template_id)
-	      VALUES ($published_form_id, '$key', $template_id)
-	    ") or die(mysql_error());
-	  }
-  }
+        foreach ($placeholder_ids as $placeholder_id) {
 
-  // now add the placeholders
-  $placeholder_ids = (isset($info["placeholder_ids"])) ? $info["placeholder_ids"] : array();
-  $db->query("DELETE FROM {PREFIX}module_form_builder_form_placeholders WHERE published_form_id = $published_form_id");
-  foreach ($placeholder_ids as $placeholder_id)
-  {
-  	// for checkbox groups and multi-selects that don't have any selections, there won't be any values here
-  	if (!isset($info["placeholder_{$placeholder_id}"]))
-  	  continue;
+            // for checkbox groups and multi-selects that don't have any selections, there won't be any values here
+            if (!isset($info["placeholder_{$placeholder_id}"])) {
+                continue;
+            }
 
-  	// again, for checkbox groups and multi-select fields
-  	if (is_array($info["placeholder_{$placeholder_id}"]))
-      $values = implode("|", $info["placeholder_{$placeholder_id}"]);
-  	else
-      $values = $info["placeholder_{$placeholder_id}"];
+            // again, for checkbox groups and multi-select fields
+            if (is_array($info["placeholder_{$placeholder_id}"])) {
+                $values = implode("|", $info["placeholder_{$placeholder_id}"]);
+            } else {
+                $values = $info["placeholder_{$placeholder_id}"];
+            }
 
-    $db->query("
-      INSERT INTO {PREFIX}module_form_builder_form_placeholders (published_form_id, placeholder_id, placeholder_value)
-      VALUES ($published_form_id, $placeholder_id, '$values')
-    ");
-  }
+            $db->query("
+                INSERT INTO {PREFIX}module_form_builder_form_placeholders (published_form_id, placeholder_id, placeholder_value)
+                VALUES (:published_form_id, :placeholder_id, :placeholder_values)
+            ");
+            $db->bindAll(array(
+                "published_form_id" => $published_form_id,
+                "placeholder_id" => $placeholder_id,
+                "placeholder_value" => $values
+            ));
+            $db->execute();
+        }
 
-  return array(
-    "success"           => 1,
-    "published_form_id" => $published_form_id,
-    "message"           => ""
-  );
-}
+        return array(
+            "success"           => 1,
+            "published_form_id" => $published_form_id,
+            "message"           => ""
+        );
+    }
 
 
-function fb_get_generated_form_content($published_form_id, $filename)
-{
-	global $g_root_dir;
+    public static function getGeneratedFormContent($published_form_id, $filename)
+    {
+        $root_dir = Core::getRootDir();
 
-  $content = <<< END
+        $content = <<< END
 <?php
 
 /**
  * This page was created by the Form Tools Form Builder module.
  */
-require_once('$g_root_dir/global/library.php');
+require_once("$root_dir/global/library.php");
 \$published_form_id = $published_form_id;
 \$filename  = "$filename";
 require_once("\$g_root_dir/modules/form_builder/form.php");
 END;
 
-	return $content;
+        return $content;
+    }
+
 }

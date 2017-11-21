@@ -20,6 +20,7 @@ class Module extends CoreModule
     protected $originLanguage = "en_us";
     protected $jsFiles = array(
         "{MODULEROOT}/scripts/manage_template_sets.js",
+        "{FTROOT}/global/scripts/sortable.js",
         "{FTROOT}/global/codemirror/lib/codemirror.js",
         "{FTROOT}/global/codemirror/mode/xml/xml.js",
         "{FTROOT}/global/codemirror/mode/smarty/smarty.js",
@@ -29,7 +30,8 @@ class Module extends CoreModule
         "{FTROOT}/global/codemirror/mode/clike/clike.js",
     );
     protected $cssFiles = array(
-        "{MODULEROOT}/css/styles.css"
+        "{MODULEROOT}/css/styles.css",
+        "{FTROOT}/global/codemirror/lib/codemirror.css"
     );
 
     protected $nav = array(

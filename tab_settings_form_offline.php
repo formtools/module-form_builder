@@ -1,22 +1,20 @@
 <?php
 
-if (isset($request["update"]))
-{
-  $settings = array(
-    "default_form_offline_page_content" => $request["default_form_offline_page_content"],
-    "scheduled_offline_form_behaviour"  => $request["scheduled_offline_form_behaviour"]
-  );
-	ft_set_module_settings($settings);
+$success = true;
+$message = "";
+if (isset($request["update"])) {
+    $settings = array(
+        "default_form_offline_page_content" => $request["default_form_offline_page_content"],
+        "scheduled_offline_form_behaviour" => $request["scheduled_offline_form_behaviour"]
+    );
+    $module->setSettings($settings);
 
-  $g_success = true;
-  $g_message = $L["notify_settings_updated"];
+    $success = true;
+    $message = $L["notify_settings_updated"];
 }
 
-$module_settings = ft_get_module_settings();
+$page_vars["g_success"] = $success;
+$page_vars["g_message"] = $message;
+$page_vars["module_settings"] = $module->getSettings();
 
-$page_vars["module_settings"] = $module_settings;
-$page_vars["head_string"] =<<< END
-<script src="{$g_root_url}/global/codemirror/js/codemirror.js"></script>
-END;
-
-ft_display_module_page("templates/settings.tpl", $page_vars);
+$module->displayPage("templates/settings.tpl", $page_vars);

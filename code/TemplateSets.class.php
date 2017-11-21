@@ -253,28 +253,24 @@ class TemplateSets
 
         $template_set = self::getTemplateSet($set_id);
 
-        $defined_templates = array();
-        foreach ($template_set["templates"] as $template_info) {
-            $defined_templates[] = $template_info["template_type"];
-        }
+        $defined_templates = array_column($template_set["templates"], "template_type");
 
-        $missing_templates = array_diff($required_templates, $defined_templates);
-
-        return $missing_templates;
+        return array_diff($required_templates, $defined_templates);
     }
 
 
     public static function getTemplateTypeName($template_type, $L)
     {
+        $templateTypes = self::getTemplateTypes();
+
         $name = "";
-        while (list($group_name, $types) = each(self::$templateTypes))  {
+        while (list($group_name, $types) = each($templateTypes))  {
             while (list($key, $lang_key) = each($types)) {
                 if ($key == $template_type) {
                     $name = CoreGeneral::evalSmartyString("{\$" . $lang_key . "}", $L);
                 }
             }
         }
-        reset($g_template_types);
 
         return $name;
     }

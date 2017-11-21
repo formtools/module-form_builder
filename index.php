@@ -55,18 +55,14 @@ $page_vars = array(
     "sortable_id" => $sortable_id,
     "template_sets" => $updated_template_sets,
     "module_settings" => $module_settings,
-    "js_messages" => array("word_close", "word_yes", "word_no", "phrase_please_confirm"),
+    "js_messages" => array(
+        "word_close", "word_yes", "word_no", "phrase_please_confirm"
+    ),
     "module_js_messages" => array(
         "phrase_create_new_template_set", "validation_no_template_set_name",
         "confirm_delete_template_set", "confirm_delete_template_set"
     )
 );
-
-$page_vars["head_string"] =<<< END
-  <script src="$root_url/global/scripts/sortable.js"></script>
-  <script src="global/scripts/manage_template_sets.js"></script>
-  <link type="text/css" rel="stylesheet" href="$root_url/modules/form_builder/global/css/styles.css">
-END;
 
 $page_vars["head_js"] =<<< END
 $(function() {

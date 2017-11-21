@@ -262,7 +262,7 @@ class Templates
     }
 
 
-    public static function fb_update_template_order($set_id, $info, $L)
+    public static function updateTemplateOrder($info, $L)
     {
         $db = Core::$db;
 
@@ -307,7 +307,7 @@ class Templates
     }
 
 
-    public static function generateTemplateSetTemplatesHtml($set_id, $selected_templates = array(), $L)
+    public static function generateTemplateSetTemplatesHtml($set_id, $L, $selected_templates = array())
     {
         $grouped_templates = Templates::getTemplatesGroupedByType($set_id);
 
