@@ -337,7 +337,7 @@ class Placeholders
     {
         $db = Core::$db;
 
-        $placeholders = Placeholders::getPlaceholders($set_id, $L);
+        $placeholders = Placeholders::getPlaceholders($set_id);
 
         $list_order = 1;
         foreach ($placeholders as $info) {

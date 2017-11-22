@@ -1,7 +1,6 @@
 <?php
 
 require_once(__DIR__ . "/code/Forms.class.php");
-require_once(__DIR__ . "/code/Hooks.class.php");
 require_once(__DIR__ . "/code/General.class.php");
 require_once(__DIR__ . "/code/FormGenerator.php");
 require_once(__DIR__ . "/code/Module.class.php");

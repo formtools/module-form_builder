@@ -11,11 +11,8 @@ $placeholder_id = Modules::loadModuleField("form_builder", "placeholder_id", "pl
 $success = true;
 $message = "";
 if (isset($request["add_placeholder"])) {
-    $request["sortable_id"] = $sortable_id;
-    print_r($request);
-    exit;
     list($success, $message) = Placeholders::addPlaceholder($set_id, $request["placeholder_label"], $request["placeholder"],
-        $request["field_type"], $request["field_orientation"]);
+        $request["field_type"], $request["field_orientation"], $request["default_value"]);
     if ($success) {
         header("location: index.php?page=placeholders&msg=placeholder_added");
         exit;

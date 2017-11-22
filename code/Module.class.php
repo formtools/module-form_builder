@@ -3,7 +3,10 @@
 namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
+use FormTools\General as CoreGeneral;
+use FormTools\Hooks as CoreHooks;
 use FormTools\Module as CoreModule;
+use FormTools\Modules;
 use FormTools\Schemas;
 
 use PDO, Exception;
@@ -16,7 +19,7 @@ class Module extends CoreModule
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "https://formtools.org";
     protected $version = "2.0.0";
-    protected $date = "2017-11-18";
+    protected $date = "2017-11-21";
     protected $originLanguage = "en_us";
     protected $jsFiles = array(
         "{MODULEROOT}/scripts/manage_template_sets.js",
@@ -33,7 +36,6 @@ class Module extends CoreModule
         "{MODULEROOT}/css/styles.css",
         "{FTROOT}/global/codemirror/lib/codemirror.css"
     );
-
     protected $nav = array(
         "phrase_template_sets" => array("index.php", false),
         "word_settings"        => array("settings.php", false),
@@ -180,10 +182,11 @@ class Module extends CoreModule
             "demo_mode"                         => "off"
         ));
 
-        Hooks::resetHooks();
+        self::resetHooks();
 
         return array(true, "");
     }
+
 
     /**
      * Any forms marked as Form Builder forms will be changed to Internal forms after installation.
@@ -201,6 +204,21 @@ class Module extends CoreModule
         $db->execute();
 
         return array(true, "");
+    }
+
+
+    public static function resetHooks()
+    {
+        CoreHooks::unregisterModuleHooks("form_builder");
+        CoreHooks::registerHook("template", "form_builder", "add_form_page", "", "displayAddFormOption", 50, true);
+        CoreHooks::registerHook("template", "form_builder", "admin_edit_form_main_tab_form_type_dropdown", "", "displayFormTypeOption", 50, true);
+        CoreHooks::registerHook("template", "form_builder", "admin_forms_form_type_label", "", "displayFormBuilderLabel", 50, true);
+        CoreHooks::registerHook("template", "form_builder", "admin_edit_form_content", "", "displayPublishTab", 50, true);
+
+        CoreHooks::registerHook("code", "form_builder", "start", "ft_module_override_data", "inlineDataOverride", 50, true);
+        CoreHooks::registerHook("code", "form_builder", "end", "FormTools\\General::displayCustomPageMessage", "displayFormCreatedMessage", 50, true);
+        CoreHooks::registerHook("code", "form_builder", "start", "ft_delete_form", "deleteForm");
+        CoreHooks::registerHook("code", "form_builder", "end", "ft_delete_view", "deleteView");
     }
 
 
@@ -270,7 +288,250 @@ class Module extends CoreModule
             }
         }
     }
+    
 
+    /**
+     * This adds the "Form Builder" section on the Add Form page.
+     */
+    public function displayAddFormOption() {
+        $L = $this->getLangStrings();
+
+        $LANG = Core::$L;
+        $root_url = Core::getRootUrl();
+
+        $select = mb_strtoupper($LANG["word_select"]);
+
+        echo <<< END
+    <table width="100%">
+      <tr>
+        <td width="49%" valign="top">
+          <div class="grey_box add_form_select">
+            <span style="float:right">
+              <input type="button" name="form_builder" class="blue bold" value="$select"
+                onclick="window.location='$root_url/modules/form_builder/admin/add_form.php'" />
+            </span>
+            <div class="bold">{$L["module_name"]}</div>
+            <div class="medium_grey">{$L["text_form_builder_add_form_section"]}</div>
+          </div>
+        </td>
+        <td width="2%"> </td>
+        <td width="49%"></td>
+      </tr>
+    </table>
+END;
+    }
+
+
+    /**
+     * Displays the "Form Builder" option in the Form Type dropdown on the Edit Form -> Main tab.
+     */
+    public function displayFormTypeOption($location, $vars) {
+        $form_type = $vars["form_info"]["form_type"];
+        $L = $this->getLangStrings();
+
+        $selected = ($form_type == "form_builder") ? "selected=\"selected\"" : "";
+        echo "<option value=\"form_builder\" $selected>{$L["module_name"]}</option>";
+    }
+
+
+    /**
+     * Called after the user creates a new Form Builder form. It returns a custom message to display in the page.
+     *
+     * @param array $info
+     */
+    public function displayFormCreatedMessage($info)
+    {
+        $L = $this->getLangStrings();
+
+        $flag = $info["flag"];
+
+        if ($flag != "notify_form_builder_form_created") {
+            return;
+        }
+
+        $message =<<< END
+{$L["notify_form_builder_form_created"]}
+<ul style="margin-bottom: 0px">
+  <li><a href="http://modules.formtools.org/form_builder/index.php?page=tutorials" target="_blank">{$L["phrase_quick_intro"]}</a></li>
+  <li><a href="http://modules.formtools.org/form_builder/index.php?page=index" target="_blank">{$L["phrase_form_builder_doc"]}</a></li>
+</ul>
+END;
+
+        return array(
+            "g_success" => true,
+            "g_message" => $message
+        );
+    }
+
+
+    /**
+     * Used to render the Publish tab on the Edit Form pages.
+     *
+     * @param string $location
+     * @param array $vars
+     */
+    public function displayPublishTab($location, $vars)
+    {
+        $root_dir = Core::getRootDir();
+        $LANG = Core::$L;
+
+        $form_id = $vars["form_info"]["form_id"];
+        $published_forms = Forms::getPublishedForms($form_id);
+
+        // loop through each published form and take any offline that need it
+        $at_least_one_form_just_taken_offline = false; // yes, this variable name ROCKS!!!!!
+        foreach ($published_forms["results"] as $config) {
+            if ($config["is_online"] == "yes" && $config["offline_date"] != "0000-00-00 00:00:00") {
+                $taken_offline = fb_take_scheduled_form_offline($config);
+                if ($taken_offline) {
+                    $at_least_one_form_just_taken_offline = true;
+                }
+            }
+        }
+
+        // if one of the forms was just taken offline, re-request the published form list so they'll show as online = "no" in the UI
+        // on this page load
+        if ($at_least_one_form_just_taken_offline) {
+            $published_forms = Forms::getPublishedForms($form_id);
+        }
+
+        $demo_mode = $this->getSettings("demo_mode");
+
+        $form_type = ucwords($vars["form_info"]["form_type"]);
+        $text_non_form_builder_form = CoreGeneral::evalSmartyString($L["text_non_form_builder_form"], array("form_type" => $form_type));
+
+        $smarty = General::createNewSmartyInstance("single");
+        $smarty->assign("L", $L);
+        $smarty->assign("LANG", $LANG);
+        $smarty->assign("form_id", $form_id);
+        $smarty->assign("form_info", $vars["form_info"]);
+        $smarty->assign("published_forms", $published_forms);
+        $smarty->assign("demo_mode", $demo_mode);
+        $smarty->assign("text_non_form_builder_form", $text_non_form_builder_form);
+
+        $output = $smarty->fetch("$root_dir/modules/form_builder/templates/admin/tab_publish.tpl");
+
+        echo $output;
+    }
+
+    /**
+     * Used on the main Forms page, to output the label of "Form Builder". By and large, the Form Builder
+     * is totally separate from the Core - despite the "form_builder" form_type ENUM option in the main forms table.
+     * For elegance, I'm going to try to keep it entirely distinct, hence this module hook - instead of hardcoding
+     * it in the templates.
+     *
+     * @param string $location
+     * @param array $vars
+     */
+    public function displayFormBuilderLabel($location, $vars)
+    {
+        $L = $this->getLangStrings();
+        $curr_form_info = $vars["form_info"]; // the form in the current loop
+        if ($curr_form_info["form_type"] == "form_builder") {
+            echo "<span style=\"color: purple\">{$L["module_name"]}</a>";
+        }
+    }
+
+
+    /**
+     * This functionality was added specially for the Form Builder. It's not quite a code or template hooks, but kind of an
+     * "inline code hook". A couple of key places in the code now call the ft_module_override_data() function to allow overriding
+     * of any data - even info that isn't inside a function. Do a code search to see how the function works + is used.
+     *
+     * @param array $vars
+     */
+    public static function inlineDataOverride($vars)
+    {
+        $module_id = Modules::getModuleIdFromModuleFolder("form_builder");
+        $module_info = Modules::getModule($module_id);
+        if ($module_info["is_installed"] != "yes" && $module_info["is_enabled"] != "yes") {
+            return;
+        }
+
+        $L = ft_get_module_lang_file_contents("form_builder");
+
+        switch ($vars["location"])
+        {
+            // this adds the "Publish" tab to the Edit Form pages
+            case "admin_edit_form_tabs":
+                $tabs = $vars["data"];
+                $tabs["publish"] = array(
+                "tab_label" => $L["word_publish"],
+                "tab_link"  => "?page=publish",
+                "pages"     => array("publish")
+                );
+                return array("data" => $tabs);
+                break;
+
+            // this ensures the right code page is called when the user clicks on the Publish tab
+            case "admin_edit_form_page_name_include":
+                $request = array_merge($_POST, $_GET);
+                if (isset($request["page"]) && $request["page"] == "publish")
+                {
+                    $file = realpath(dirname(__FILE__) . "/../../admin/tab_publish.php");
+                    return array("data" => array("page_name" => $file));
+                }
+                break;
+        }
+    }
+
+
+    /**
+     * This deletes all form configurations and published forms when a form is deleted.
+     *
+     * @param array $info
+     */
+    public function deleteForm($info)
+    {
+        $form_id = $info["form_id"];
+        $published_forms = Forms::getPublishedForms($form_id);
+        foreach ($published_forms["results"] as $config)
+        {
+            $published_form_id = $config["published_form_id"];
+            list($success, $message) = Forms::deletePublishedForm($form_id, $published_form_id, "yes");
+
+            // if there was a problem with the last function call, there was probably just a problem deleting
+            // one of the files. Ignore this: just re-call the function with override "on". This ensures the configuration
+            // is at least deleted
+            if (!$success) {
+                Forms::deletePublishedForm($form_id, $published_form_id, "yes", true);
+            }
+        }
+    }
+
+
+    /**
+     * This is called whenever the administrator deletes a View. It checks to see if the View is being used for a published form.
+     * If it IS, it deletes that published form + configuration.
+     *
+     * @param array $info
+     */
+    public function fb_hook_delete_view($info)
+    {
+        $db = Core::$db;
+
+        if (!isset($info["view_id"]) || !is_numeric($info["view_id"])) {
+            return;
+        }
+
+        $db->query("
+            SELECT published_form_id, form_id
+            FROM   {PREFIX}module_form_builder_forms
+            WHERE  view_id = :view_id
+        ");
+        $db->bind("view_id", $info["view_id"]);
+        $db->execute();
+
+        $rows = $db->fetchAll();
+        foreach ($rows as $row) {
+            $published_form_id = $row["published_form_id"];
+            $form_id           = $row["form_id"];
+
+            // always attempt to delete the published form as well as the config first. If that fails, just delete the configuration
+            list($success, $message) = Forms::deletePublishedForm($form_id, $published_form_id, "yes", $L);
+            if (!$success) {
+                Forms::deletePublishedForm($form_id, $published_form_id, "yes", true);
+            }
+        }
+    }
 }
-
-

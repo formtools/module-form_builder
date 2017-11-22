@@ -89,7 +89,7 @@ class General
     /**
      * Creates a Form Builder form. Same as ft_create_internal_form(), except for the form type.
      *
-     * @param $info the POST request containing the form name, number of fields and access type.
+     * @param $info array POST request containing the form name, number of fields and access type.
      */
     public static function createForm($request)
     {
@@ -112,7 +112,8 @@ class General
         $config = array(
             "form_type"    => "form_builder",
             "form_name"    => $request["form_name"],
-            "access_type"  => $request["access_type"]
+            "access_type"  => $request["access_type"],
+            "submission_type" => "code"
         );
 
         // set up the entry for the form
@@ -133,7 +134,7 @@ class General
         $order = 1;
 
         // if the user just added a form with a lot of fields (over 50), the database row size will be too
-        // great. Varchar fields (which with utf-8 equates to 1220 bytes) in a table can have a combined row
+        // large. Varchar fields (which with utf-8 equates to 1220 bytes) in a table can have a combined row
         // size of 65,535 bytes, so 53 is the max. The client-side validation limits the number of fields to
         // 1000. Any more will throw an error.
         $field_size_clause = ($request["num_fields"] > 50) ? ", field_size = 'small'" : "";
@@ -142,8 +143,8 @@ class General
             if (preg_match("/field(\d+)/", $field_info["field_name"], $matches)) {
                 $db->query("
                     UPDATE {PREFIX}form_fields
-                    SET    field_title = :field_title
-                           col_name = :col_order
+                    SET    field_title = :field_title,
+                           col_name = :col_name
                            $field_size_clause
                     WHERE  field_id = :field_id
                 ");
@@ -152,6 +153,7 @@ class General
                     "col_name" => "col_$order",
                     "field_id" => $field_info["field_id"]
                 ));
+                $db->execute();
                 $order++;
             }
         }
