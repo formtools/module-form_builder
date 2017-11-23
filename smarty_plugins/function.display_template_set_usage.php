@@ -24,7 +24,7 @@ function smarty_function_display_template_set_usage($params, &$smarty)
         echo "<select>";
         while (list($form_id, $data) = each($results)) {
             $form_name = htmlspecialchars($data["form_name"]);
-            $usage     = $data["usage"];
+            $usage = $data["usage"];
 
             echo "<optgroup label=\"$form_name\"></optgroup>";
             foreach ($usage as $i) {

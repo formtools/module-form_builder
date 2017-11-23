@@ -13,8 +13,9 @@
  */
 function smarty_modifier_in($needle, $haystack)
 {
-	if (!isset($haystack) || !is_array($haystack))
-	  return false;
+    if (!isset($haystack) || !is_array($haystack)) {
+        return false;
+    }
 
-  return in_array($needle, $haystack);
+    return in_array($needle, $haystack);
 }

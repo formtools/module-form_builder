@@ -38,7 +38,7 @@ switch ($action) {
         $resource_name = $request["resource_name"];
         $placeholder = $request["placeholder"];
         $resource_type = $request["resource_type"];
-        $result = Resources::addResource($set_id, $resource_name, $placeholder, $resource_type);
+        $result = Resources::addNewResource($set_id, $resource_name, $placeholder, $resource_type);
         echo json_encode($result);
         break;
 

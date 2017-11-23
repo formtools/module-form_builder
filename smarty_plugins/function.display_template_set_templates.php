@@ -1,6 +1,8 @@
 <?php
 
+use FormTools\Modules\FormBuilder\Templates;
+
 function smarty_function_display_template_set_templates($params, &$smarty)
 {
-  echo fb_generate_template_set_templates_html($params["set_id"], $params["selected_templates"]);
+    echo Templates::generateTemplateSetTemplatesHtml($params["set_id"], $params["selected_templates"]);
 }

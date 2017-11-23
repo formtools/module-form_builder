@@ -8,7 +8,7 @@
  */
 function smarty_function_error_message($params, &$smarty)
 {
-  $template_info = $smarty->_tpl_vars["templates"]["error_message"];
-  $smarty->assign("eval_str", $template_info["content"]);
-  return $smarty->fetch("../../modules/form_builder/smarty/eval.tpl");
+    $template_info = $smarty->_tpl_vars["templates"]["error_message"];
+    $smarty->assign("eval_str", $template_info["content"]);
+    return $smarty->fetch("../../modules/form_builder/smarty/eval.tpl");
 }

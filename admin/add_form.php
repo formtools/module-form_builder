@@ -26,7 +26,7 @@ $page_values = array(
     "L" => $L
 );
 
-$page_vars["head_js"] = <<< END
+$page_vars["head_js"] =<<< END
 ft.click([
   { el: "at1", targets: [{ el: "custom_clients", action: "hide" }] },
   { el: "at2", targets: [{ el: "custom_clients", action: "hide" }] },

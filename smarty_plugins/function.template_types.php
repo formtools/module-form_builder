@@ -5,6 +5,7 @@ use FormTools\General;
 use FormTools\Modules;
 use FormTools\Modules\FormBuilder\TemplateSets;
 
+
 function smarty_function_template_types($params, &$smarty)
 {
     $LANG = Core::$L;

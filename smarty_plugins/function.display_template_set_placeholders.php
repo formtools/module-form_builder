@@ -1,7 +1,10 @@
 <?php
 
+use FormTools\Modules\FormBuilder\Placeholders;
+
 function smarty_function_display_template_set_placeholders($params, &$smarty)
 {
-  echo fb_generate_template_set_placeholders_html($params["set_id"], $params["placeholders"], $params["placeholder_hash"]);
+    echo Placeholders::generateTemplateSetPlaceholdersHtml($params["set_id"], $params["placeholders"],
+        $params["placeholder_hash"]);
 }
 

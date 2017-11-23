@@ -1,11 +1,13 @@
 <?php
 
-error_reporting(2047);
-ft_include_module("form_builder");
+use FormTools\Modules;
+use FormTools\Modules\FormBuilder\Forms;
+
+$module = Modules::getModuleInstance("form_builder");
 $namespace = "form_builder_{$published_form_id}";
 
 // find out about the page: form / review / thanks. That determines what values we pass to ft_api_process_form_builder_page()
-$config  = fb_get_form_configuration($published_form_id);
+$config  = Forms::getFormConfiguration($published_form_id);
 $form_id = $config["form_id"];
 $view_id = $config["view_id"];
 

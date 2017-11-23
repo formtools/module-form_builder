@@ -8,7 +8,12 @@ namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
 use FormTools\Forms as CoreForms;
+use FormTools\Hooks as CoreHooks;
+use FormTools\Modules\FormBuilder\Placeholders;
+use FormTools\Modules\FormBuilder\Resources;
 use FormTools\Views;
+use FormTools\ViewFields;
+use FormTools\ViewTabs;
 
 
 class FormGenerator
@@ -104,9 +109,6 @@ class FormGenerator
         $root_dir = Core::getRootDir();
         $root_url = Core::getRootUrl();
 
-//        $g_smarty_use_sub_dirs
-//        $g_smarty;
-
         $mode    = $settings["mode"]; // preview / live
         $form_id = $settings["form_id"];
         $view_id = $settings["view_id"];
@@ -127,7 +129,7 @@ class FormGenerator
         $form_info = CoreForms::getForm($form_id);
         $view_info = Views::getView($view_id);
 
-        // a little helper function to make sense of the awful crap returned by ft_get_view
+        // a little helper function to make sense of the awful crap returned by Views::getView
         $view_tabs = General::getViewTabsFromViewInfo($view_info);
 
         // now figure out what page type we're dealing with. We figure this out by looking at the $settings["page"]
@@ -187,8 +189,8 @@ class FormGenerator
         $smarty->assign("view_info", $view_info);
         $smarty->assign("num_form_pages", count($view_tabs));
         $smarty->assign("page_titles", $view_tabs);
-        $smarty->assign("g_root_url", $g_root_url);
-        $smarty->assign("g_root_dir", $g_root_dir);
+        $smarty->assign("g_root_url", $root_url);
+        $smarty->assign("g_root_dir", $root_dir);
         $smarty->assign("thankyou_page_content", $settings["thankyou_page_content"]);
         $smarty->assign("form_offline_page_content", $settings["form_offline_page_content"]);
 
@@ -201,34 +203,34 @@ class FormGenerator
   <script>
   //<![CDATA[
   var g = {
-    root_url:       "$g_root_url",
+    root_url:       "$root_url",
     error_colours:  ["ffbfbf", "ffb5b5"],
     notify_colours: ["c6e2ff", "97c7ff"]
   };
   //]]>
   </script>
-  <script src="$g_root_url/global/scripts/jquery.js"></script>
-  <link href="$g_root_url/themes/default/css/smoothness/jquery-ui-1.8.6.custom.css" rel="stylesheet" type="text/css"/>
-  <script src="$g_root_url/themes/default/scripts/jquery-ui-1.8.6.custom.min.js"></script>
-  <script src="$g_root_url/global/scripts/general.js"></script>
-  <script src="$g_root_url/global/scripts/rsv.js"></script>
-  <script src="$g_root_url/global/scripts/field_types.php"></script>
-  <link rel="stylesheet" href="$g_root_url/global/css/field_types.php" type="text/css" />
-	<script src="$g_root_url/global/codemirror/js/codemirror.js"></script>
-	<script src="$g_root_url/global/scripts/jquery-ui-timepicker-addon.js"></script>
-	<script src="$g_root_url/global/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-	<link rel="stylesheet" href="$g_root_url/global/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+  <script src="$root_url/global/scripts/jquery.js"></script>
+  <link href="$root_url/themes/default/css/smoothness/jquery-ui-1.8.6.custom.css" rel="stylesheet" type="text/css"/>
+  <script src="$root_url/themes/default/scripts/jquery-ui-1.8.6.custom.min.js"></script>
+  <script src="$root_url/global/scripts/general.js"></script>
+  <script src="$root_url/global/scripts/rsv.js"></script>
+  <script src="$root_url/global/scripts/field_types.php"></script>
+  <link rel="stylesheet" href="$root_url/global/css/field_types.php" type="text/css" />
+	<script src="$root_url/global/codemirror/js/codemirror.js"></script>
+	<script src="$root_url/global/scripts/jquery-ui-timepicker-addon.js"></script>
+	<script src="$root_url/global/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+	<link rel="stylesheet" href="$root_url/global/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 END;
 
         // shame, but we need to use buffering to capture the standalone hook outputs. Otherwise, we'd need
         // users to add the template hooks directly in their templates, which would be confusing
         ob_start();
-        ft_process_template_hook_calls("standalone_form_fields_head_top", $smarty->_tpl_vars, array());
+        CoreHooks::processTemplateHookCalls("standalone_form_fields_head_top", $smarty->_tpl_vars, array());
         $standalone_head_top = ob_get_contents();
         ob_end_clean();
 
         ob_start();
-        ft_process_template_hook_calls("standalone_form_fields_head_bottom", $smarty->_tpl_vars, array());
+        CoreHooks::processTemplateHookCalls("standalone_form_fields_head_bottom", $smarty->_tpl_vars, array());
         $standalone_head_bottom = ob_get_contents();
         ob_end_clean();
 
@@ -236,7 +238,7 @@ END;
         $smarty->assign("required_resources", $required_resources);
 
         // add the template set resources
-        $resources = fb_get_resources($template_set_id);
+        $resources = Resources::getResources($template_set_id);
         $resource_placeholders = array();
 
         // TODO to prevent caching in "real" browsers
@@ -244,35 +246,31 @@ END;
 
         // used when editing in the Form Builder. Placeholders info needs to be passed to the css.php generation file
         $query_str = "";
-        if ($mode == "preview")
-        {
+        if ($mode == "preview") {
             $query_str = "&source=sessions";
-        }
-        else
-        {
+        } else {
             $query_str = "&published_form_id={$settings["published_form_id"]}";
         }
 
-        foreach ($resources as $resource_info)
-        {
+        foreach ($resources as $resource_info) {
             $resource_id = $resource_info["resource_id"];
             $placeholder = $resource_info["placeholder"];
-            $link = "<link type=\"text/css\" rel=\"stylesheet\" href=\"$g_root_url/modules/form_builder/global/form_resources/css.php?resource_id=$resource_id&nocache=$now{$query_str}\">";
+            $link = "<link type=\"text/css\" rel=\"stylesheet\" href=\"$root_url/modules/form_builder/form_resources/css.php?resource_id=$resource_id&nocache=$now{$query_str}\">";
             $resource_placeholders[$placeholder] = $link;
         }
         $smarty->assign("R", $resource_placeholders);
 
         // add the Template Set placeholders
-        $placeholders = fb_get_placeholders($template_set_id);
+        $placeholders = Placeholders::getPlaceholders($template_set_id);
         $P = array();
-        foreach ($placeholders as $placeholder_info)
-        {
+        foreach ($placeholders as $placeholder_info) {
             $placeholder_id = $placeholder_info["placeholder_id"];
             $placeholder    = $placeholder_info["placeholder"];
 
             // this shouldn't ever occur
-            if (!array_key_exists($placeholder_id, $settings["placeholders"]))
+            if (!array_key_exists($placeholder_id, $settings["placeholders"])) {
                 continue;
+            }
 
             // TODO multi-select + checkboxes...
             $P[$placeholder] = (isset($settings["placeholders"][$placeholder_id])) ? $settings["placeholders"][$placeholder_id] : "";
@@ -281,8 +279,9 @@ END;
 
 
         // if there's a validation error, add that too
-        if (isset($settings["validation_error"]) && !empty($settings["validation_error"]))
+        if (isset($settings["validation_error"]) && !empty($settings["validation_error"])) {
             $smarty->assign("validation_error", $settings["validation_error"]);
+        }
 
         // now generate the page content
         $smarty->assign("num_pages", count($nav_pages));
@@ -293,198 +292,196 @@ END;
         return $page_content;
     }
 
-}
 
-
-
-/**
- * Processes a form submission from a Form Builder page. This is actually a simplified version of the ft_api_process_form_page()
- * function, with all unnecessary code removed. Since we're controlling the actual form creation, much of the code is no longer
- * necessary.
- *
- * @param array $params
- *
- *     Required keys:
- *        "submit_button": the "name" attribute value of the form submit button
- *        "form_data": the contents of $_POST (or $_GET, if "method" setting is set to "GET" ... )
- *        "file_data": the contents of $_FILES (only needed if your form contained file fields)
- *        "next_page": the URL (relative or absolute) of which page to redirect to (e.g. the next page
- *               in the form or the "thankyou" page).
- *        "finalize": this tells the function to finalize the submission. This prevents it being subsequently
- *               editable via this function and makes the submission appear in the Form Tools UI.
- *        "no_sessions_url": for multi-page forms it's a good idea to pass along this value. It should be the URL
- *               of a page (usually the FIRST page in the form sequence) where the user will be redirected to if
- *               they didn't start the form from the first page. It ensures the form submission gets created &
- *               submitted properly.
- *        "namespace": if you specified a custom namespace for ft_api_init_form_page, for where the form values will
- *               be stored temporarily in sessions, you need to pass that same value to this function - otherwise
- *               it won't be able to retrieve the form and submission ID
- *        "send_emails": (boolean). By default, Form Tools will trigger any emails that have been attached to the
- *               "on submission" event ONLY when the submission is finalized (finalize=true). This setting provides
- *               you with direct control over when the emails get sent. If not specified, will use the default
- *               behaviour.
- *
- * @return mixed ordinarily, this function will just redirect the user to whatever URL is specified in the
- *        "next_page" key. But if that value isn't set, it returns an array:
- *               [0] success / false
- *               [1] if failure, the API Error Code, otherwise blank
- */
-function fb_process_form_builder_page($params)
-{
-  global $g_table_prefix, $g_root_url, $g_multi_val_delimiter, $LANG, $g_api_recaptcha_private_key;
-
-  if (!isset($params["form_data"][$params["submit_button"]]))
-    return;
-
-  $namespace          = $params["namespace"];
-  $submission_id      = $params["submission_id"];
-  $config             = $params["config"];
-  $page               = $params["page"];
-  $page_type          = $params["page_type"];
-  $form_id            = $params["form_id"];
-  $view_id            = $params["view_id"];
-  $form_data          = $params["form_data"];
-  $no_sessions_url    = $params["no_sessions_url"];
-  $submit_button_name = $params["submit_button"];
-  $next_page          = $params["next_page"];
-  $file_data          = $params["file_data"];
-  $finalize           = isset($params["finalize"]) ? $params["finalize"] : false;
-
-  $form_info = ft_get_form($form_id);
-
-  $failed_validation = false;
-  $validation_error = "";
-  $update_successful = "";
-  if ($page_type == "form")
-  {
-    $tabs = ft_get_view_tabs($view_id, true);
-    $curr_page = $page;
-    if (empty($tabs))
-      $curr_page = "";
-
-	  $view_fields = ft_get_grouped_view_fields($view_id, $curr_page);
-
-	  $field_ids = array();
-	  $editable_field_ids = array();
-	  foreach ($view_fields as $view_field_group)
-	  {
-	  	foreach ($view_field_group["fields"] as $field_info)
-	  	{
-	  		$field_id = $field_info["field_id"];
-	  	  $field_ids[] = $field_id;
-	  	  if ($field_info["is_editable"] == "yes")
-	  	    $editable_field_ids[] = $field_id;
-	  	}
-	  }
-
-	  $form_data["view_id"] = $view_id;
-
-	  // this is awful. It's a problem with the Core, not so much this module.
-	  $form_data["field_ids"] = implode(",", $field_ids); // *sigh*
-	  $form_data["editable_field_ids"] = $editable_field_ids;
-
-	  list($update_successful, $validation_error) = ft_update_submission($form_id, $submission_id, $form_data);
-
-    // if there was any problem udpating this submission, make a special note of it: we'll use that info to merge the current POST request
-    // info with the original field values to ensure the page contains the latest data (i.e. for cases where they fail server-side validation)
-    if (!$update_successful)
+    /**
+     * Processes a form submission from a Form Builder page. This is actually a simplified version of the ft_api_process_form_page()
+     * function, with all unnecessary code removed. Since we're controlling the actual form creation, much of the code is no longer
+     * necessary.
+     *
+     * @param array $params
+     *
+     *     Required keys:
+     *        "submit_button": the "name" attribute value of the form submit button
+     *        "form_data": the contents of $_POST (or $_GET, if "method" setting is set to "GET" ... )
+     *        "file_data": the contents of $_FILES (only needed if your form contained file fields)
+     *        "next_page": the URL (relative or absolute) of which page to redirect to (e.g. the next page
+     *               in the form or the "thankyou" page).
+     *        "finalize": this tells the function to finalize the submission. This prevents it being subsequently
+     *               editable via this function and makes the submission appear in the Form Tools UI.
+     *        "no_sessions_url": for multi-page forms it's a good idea to pass along this value. It should be the URL
+     *               of a page (usually the FIRST page in the form sequence) where the user will be redirected to if
+     *               they didn't start the form from the first page. It ensures the form submission gets created &
+     *               submitted properly.
+     *        "namespace": if you specified a custom namespace for ft_api_init_form_page, for where the form values will
+     *               be stored temporarily in sessions, you need to pass that same value to this function - otherwise
+     *               it won't be able to retrieve the form and submission ID
+     *        "send_emails": (boolean). By default, Form Tools will trigger any emails that have been attached to the
+     *               "on submission" event ONLY when the submission is finalized (finalize=true). This setting provides
+     *               you with direct control over when the emails get sent. If not specified, will use the default
+     *               behaviour.
+     *
+     * @return mixed ordinarily, this function will just redirect the user to whatever URL is specified in the
+     *        "next_page" key. But if that value isn't set, it returns an array:
+     *               [0] success / false
+     *               [1] if failure, the API Error Code, otherwise blank
+     */
+    public static function processFormBuilderPage($params)
     {
-      $failed_validation = true;
-    }
-  }
+        //global $g_table_prefix, $g_root_url, $g_multi_val_delimiter, $LANG, $g_api_recaptcha_private_key;
 
-  // the reCAPTCHA can be placed on the form or review page (only!)
-  $has_captcha = isset($form_data["recaptcha_response_field"]) ? true : false;
-  if ($has_captcha && ($page_type == "form" || $page_type == "review"))
-  {
-    // was there a reCAPTCHA response? If so, a recaptcha was just submitted, check it was entered correctly
-    $passes_captcha = true;
-    if ($has_captcha)
+        if (!isset($params["form_data"][$params["submit_button"]])) {
+            return;
+        }
+
+        $namespace          = $params["namespace"];
+        $submission_id      = $params["submission_id"];
+        $config             = $params["config"];
+        $page               = $params["page"];
+        $page_type          = $params["page_type"];
+        $form_id            = $params["form_id"];
+        $view_id            = $params["view_id"];
+        $form_data          = $params["form_data"];
+        $no_sessions_url    = $params["no_sessions_url"];
+        $submit_button_name = $params["submit_button"];
+        $next_page          = $params["next_page"];
+        $file_data          = $params["file_data"];
+        $finalize           = isset($params["finalize"]) ? $params["finalize"] : false;
+
+        $form_info = CoreForms::getForm($form_id);
+
+        $failed_validation = false;
+        $validation_error = "";
+        $update_successful = "";
+        if ($page_type == "form") {
+            $tabs = ViewTabs::getViewTabs($view_id, true);
+            $curr_page = $page;
+            if (empty($tabs))
+                $curr_page = "";
+
+            $view_fields = ViewFields::getGroupedViewFields($view_id, $curr_page);
+
+            $field_ids = array();
+            $editable_field_ids = array();
+            foreach ($view_fields as $view_field_group)
+            {
+                foreach ($view_field_group["fields"] as $field_info)
+                {
+                    $field_id = $field_info["field_id"];
+                    $field_ids[] = $field_id;
+                    if ($field_info["is_editable"] == "yes")
+                        $editable_field_ids[] = $field_id;
+                }
+            }
+
+            $form_data["view_id"] = $view_id;
+
+            // this is awful. It's a problem with the Core, not so much this module.
+            $form_data["field_ids"] = implode(",", $field_ids); // *sigh*
+            $form_data["editable_field_ids"] = $editable_field_ids;
+
+            list($update_successful, $validation_error) = ft_update_submission($form_id, $submission_id, $form_data);
+
+            // if there was any problem udpating this submission, make a special note of it: we'll use that info to merge the current POST request
+            // info with the original field values to ensure the page contains the latest data (i.e. for cases where they fail server-side validation)
+            if (!$update_successful)
+            {
+                $failed_validation = true;
+            }
+        }
+
+        // the reCAPTCHA can be placed on the form or review page (only!)
+        $has_captcha = isset($form_data["recaptcha_response_field"]) ? true : false;
+        if ($has_captcha && ($page_type == "form" || $page_type == "review"))
+        {
+            // was there a reCAPTCHA response? If so, a recaptcha was just submitted, check it was entered correctly
+            $passes_captcha = true;
+            if ($has_captcha)
+            {
+                $passes_captcha = false;
+                $recaptcha_challenge_field = $form_data["recaptcha_challenge_field"];
+                $recaptcha_response_field  = $form_data["recaptcha_response_field"];
+
+                require_once(realpath(dirname(__FILE__) . "/../../../../global/api/recaptchalib.php"));
+                $resp = recaptcha_check_answer($g_api_recaptcha_private_key, $_SERVER["REMOTE_ADDR"], $recaptcha_challenge_field, $recaptcha_response_field);
+
+                if ($resp->is_valid)
+                {
+                    // keep track of the fact that the user has entered the CAPTCHA properly so they aren't shown the captcha again
+                    $passes_captcha = true;
+                    $_SESSION[$namespace]["passed_captcha"] = true;
+                }
+                else
+                {
+                    // if the main update was successful, but they failed validation, just display the single "wrong captcha" error
+                    if ($update_successful)
+                    {
+                        $validation_error = "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
+                    }
+                    else
+                    {
+                        $br = (!empty($validation_error)) ? "<br />" : "";
+                        $validation_error .= $br . "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
+                    }
+
+                    $failed_validation = true;
+                }
+            }
+        }
+
+        if (!$failed_validation)
+        {
+            // this automatically sends any emails set to the on_submission trigger.
+            if ($finalize)
+            {
+                ft_finalize_submission($form_id, $submission_id);
+            }
+
+            if (!empty($next_page))
+            {
+                if (!in_array($page, $_SESSION[$namespace]["form_tools_completed_pages"]))
+                {
+                    $_SESSION[$namespace]["form_tools_completed_pages"][] = $page;
+                }
+                header("location: $next_page");
+                exit;
+            }
+        }
+
+        return array(false, $validation_error);
+    }
+
+
+    /**
+     * Initializes a Form Builder page. If the sessions are being newly created (i.e. they just arrived at the form)
+     * the first return array index contains true. False otherwise.
+     *
+     * @param integer $form_id
+     * @param integer $view_id
+     * @param string $namespace
+     * @return array [0] whether the sessions were just created or not
+     *               [1] the current form data
+     */
+    function fb_init_form_builder_page($form_id, $view_id, $namespace)
     {
-      $passes_captcha = false;
-      $recaptcha_challenge_field = $form_data["recaptcha_challenge_field"];
-      $recaptcha_response_field  = $form_data["recaptcha_response_field"];
+        global $g_session_type, $g_session_save_path;
 
-      require_once(realpath(dirname(__FILE__) . "/../../../../global/api/recaptchalib.php"));
-      $resp = recaptcha_check_answer($g_api_recaptcha_private_key, $_SERVER["REMOTE_ADDR"], $recaptcha_challenge_field, $recaptcha_response_field);
+        $header_charset = "UTF-8";
 
-      if ($resp->is_valid)
-      {
-        // keep track of the fact that the user has entered the CAPTCHA properly so they aren't shown the captcha again
-      	$passes_captcha = true;
-        $_SESSION[$namespace]["passed_captcha"] = true;
-      }
-      else
-      {
-      	// if the main update was successful, but they failed validation, just display the single "wrong captcha" error
-      	if ($update_successful)
-      	{
-      	  $validation_error = "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
-      	}
-      	else
-      	{
-          $br = (!empty($validation_error)) ? "<br />" : "";
-      		$validation_error .= $br . "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
-      	}
+        $newly_created = false;
+        if (!isset($_SESSION[$namespace]) || empty($_SESSION[$namespace]))
+        {
+            $newly_created = true;
+            $_SESSION[$namespace] = array();
+            $submission_id = ft_create_blank_submission($form_id, $view_id, false);
 
-        $failed_validation = true;
-      }
+            $_SESSION[$namespace]["form_tools_form_id"]         = $form_id;
+            $_SESSION[$namespace]["form_tools_view_id"]         = $view_id;
+            $_SESSION[$namespace]["form_tools_submission_id"]   = $submission_id;
+            $_SESSION[$namespace]["form_tools_completed_pages"] = array();
+        }
+
+        return array($newly_created, $_SESSION[$namespace]);
     }
-  }
-
-  if (!$failed_validation)
-  {
-	  // this automatically sends any emails set to the on_submission trigger.
-	  if ($finalize)
-	  {
-	  	ft_finalize_submission($form_id, $submission_id);
-	  }
-
-	  if (!empty($next_page))
-	  {
-	  	if (!in_array($page, $_SESSION[$namespace]["form_tools_completed_pages"]))
-	  	{
-	  	  $_SESSION[$namespace]["form_tools_completed_pages"][] = $page;
-	  	}
-	    header("location: $next_page");
-	    exit;
-	  }
-  }
-
-  return array(false, $validation_error);
-}
-
-
-/**
- * Initializes a Form Builder page. If the sessions are being newly created (i.e. they just arrived at the form)
- * the first return array index contains true. False otherwise.
- *
- * @param integer $form_id
- * @param integer $view_id
- * @param string $namespace
- * @return array [0] whether the sessions were just created or not
- *               [1] the current form data
- */
-function fb_init_form_builder_page($form_id, $view_id, $namespace)
-{
-  global $g_session_type, $g_session_save_path;
-
-  $header_charset = "UTF-8";
-
-  $newly_created = false;
-  if (!isset($_SESSION[$namespace]) || empty($_SESSION[$namespace]))
-  {
-  	$newly_created = true;
-    $_SESSION[$namespace] = array();
-    $submission_id = ft_create_blank_submission($form_id, $view_id, false);
-
-    $_SESSION[$namespace]["form_tools_form_id"]         = $form_id;
-    $_SESSION[$namespace]["form_tools_view_id"]         = $view_id;
-    $_SESSION[$namespace]["form_tools_submission_id"]   = $submission_id;
-    $_SESSION[$namespace]["form_tools_completed_pages"] = array();
-  }
-
-  return array($newly_created, $_SESSION[$namespace]);
 }
 
 

@@ -352,12 +352,13 @@ END;
         $message =<<< END
 {$L["notify_form_builder_form_created"]}
 <ul style="margin-bottom: 0px">
-  <li><a href="http://modules.formtools.org/form_builder/index.php?page=tutorials" target="_blank">{$L["phrase_quick_intro"]}</a></li>
-  <li><a href="http://modules.formtools.org/form_builder/index.php?page=index" target="_blank">{$L["phrase_form_builder_doc"]}</a></li>
+  <li><a href="https://docs.formtools.org/modules/form_builder/usage/tutorials/" target="_blank">{$L["phrase_quick_intro"]}</a></li>
+  <li><a href="https://docs.formtools.org/modules/form_builder/" target="_blank">{$L["phrase_form_builder_doc"]}</a></li>
 </ul>
 END;
 
         return array(
+            "found" => true,
             "g_success" => true,
             "g_message" => $message
         );

@@ -33,35 +33,18 @@ class Resources
     }
 
 
-//    public static function addResource($set_id, $resource_name, $placeholder, $resource_type)
-//    {
-//        $db = Core::$db;
-//
-//        // get the next list_order for this template set
-//        $list_order = fb_get_next_resource_list_order($set_id);
-//        $now = ft_get_current_datetime();
-//
-//        $query = mysql_query("
-//    INSERT INTO {PREFIX}module_form_builder_template_set_resources (resource_type, template_set_id,
-//      resource_name, placeholder, content, last_updated, list_order)
-//    VALUES ('$resource_type', $set_id, '$resource_name', '$placeholder', '', '$now', $list_order)
-//  ");
-//
-//        if ($query)
-//        {
-//            return array(
-//            "success" => 1,
-//            "message" => mysql_insert_id()
-//            );
-//        }
-//        else
-//        {
-//            return array(
-//            "success" => 0,
-//            "message" => ""
-//            );
-//        }
-//    }
+    public static function addNewResource($set_id, $resource_name, $placeholder, $resource_type)
+    {
+        $list_order = self::getNextResourceListOrder($set_id);
+        $now = CoreGeneral::getCurrentDatetime();
+
+        $id = self::addResource($set_id, $resource_type, $resource_name, $placeholder, '', $now, $list_order);
+
+        return array(
+            "success" => 1,
+            "message" => $id
+        );
+    }
 
 
     public static function getResources($set_id)
