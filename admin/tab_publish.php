@@ -5,6 +5,7 @@ use FormTools\Forms as CoreForms;
 use FormTools\General as CoreGeneral;
 use FormTools\Pages;
 use FormTools\Settings;
+use FormTools\Themes;
 use FormTools\Modules;
 use FormTools\Modules\FormBuilder\Forms;
 
@@ -13,25 +14,27 @@ use FormTools\Modules\FormBuilder\Forms;
  * actual tab content is created with /global/code/hooks.php -> fb_display_publish_tab().
  */
 
-$settings = Settings::getSettings();
+$settings = Settings::get();
 $module = Modules::getModuleInstance("form_builder");
 $L = $module->getLangStrings();
 $root_url = Core::getRootUrl();
 
+$success = true;
+$message = "";
 if (isset($_POST["set_as_form_builder"])) {
-    list($g_success, $g_message) = Forms::convertFormToFormBuilderForm($form_id, $L);
+    list($success, $message) = Forms::convertFormToFormBuilderForm($form_id, $L);
 } else {
     if (isset($_GET["delete"])) {
-        list($g_success, $g_message) = Forms::deleteFormConfiguration($form_id, $_GET["delete"], $L);
+        list($success, $message) = Forms::deleteFormConfiguration($form_id, $_GET["delete"], $L);
     } else {
         if (isset($_GET["delete_published_form"])) {
             $override = (isset($_GET["override"])) ? true : false;
             $published_form_id = $_GET["delete_published_form"];
-            list($g_success, $g_message) = $module->deletePublishedForm($form_id, $published_form_id,
+            list($success, $message) = $module->deletePublishedForm($form_id, $published_form_id,
             $_GET["delete_form_config"], $override);
         } else {
             if (isset($_POST["update_order"])) {
-                list($g_success, $g_message) = Forms::updatePublishedFormOrder($form_id, $_POST, $L);
+                list($success, $message) = Forms::updatePublishedFormOrder($form_id, $_POST, $L);
             }
         }
     }
@@ -44,6 +47,8 @@ $width = $module_settings["form_builder_width"];
 $height = $module_settings["form_builder_height"];
 
 // compile the templates information
+$page_vars["g_success"] = $success;
+$page_vars["g_message"] = $message;
 $page_vars["page"] = "publish";
 $page_vars["page_url"] = Pages::getPageUrl("edit_form_main", array("form_id" => $form_id));
 $page_vars["head_title"] = "{$LANG["phrase_edit_form"]} - {$L["word_publish"]}";
@@ -59,10 +64,10 @@ $page_vars["js_messages"] = array(
 );
 
 $page_vars["head_string"] = <<< END
-<script src="$root_url/scripts/manage_forms.js?v=2"></script>
+<script src="$root_url/global/scripts/manage_forms.js?v=2"></script>
 <script src="$root_url/global/scripts/sortable.js"></script>
-<link type="text/css" rel="stylesheet" href="$root_url/modules/form_builder/global/css/edit_form.css">
-<script src="{$root_url}/modules/form_builder/global/scripts/manage_forms.js"></script>
+<link type="text/css" rel="stylesheet" href="$root_url/modules/form_builder/css/edit_form.css">
+<script src="{$root_url}/modules/form_builder/scripts/manage_forms.js"></script>
 END;
 
 $default_timezone_offset = $settings["default_timezone_offset"];
@@ -108,4 +113,4 @@ g.current_server_time = "$server_time";
 END;
 
 // N.B. the actual tab_publish.tpl is loaded via a hook
-$module->displayPage("admin/forms/edit.tpl", $page_vars);
+Themes::displayPage("admin/forms/edit/index.tpl", $page_vars);

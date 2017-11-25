@@ -178,7 +178,7 @@ $L["notify_placeholder_added"] = "The placeholder has been added. You may now us
 $L["notify_placeholder_deleted"] = "The placeholder has been deleted.";
 $L["notify_placeholder_not_deleted"] = "The placeholder could not be deleted.";
 $L["notify_delete_invalid_placeholder_id"] = "Sorry, we cannot delete this placeholder because the placeholder ID does not appear to be valid.";
-$L["notify_form_converted_to_form_builder"] = "The form has been set as a <b>Form Builder</b> form. You may now publish it on your site.";
+$L["notify_form_converted_to_form_builder"] = "The form has been set as a <b>Form Builder</b> form. You can now publish it on your site.";
 $L["notify_no_complete_template"] = "Sorry, there are no completed template sets available. You will need to go to the Form Builder module (listed on your Modules page) and create or complete an existing template set.";
 $L["notify_template_set_order_updated"] = "The order has been updated.";
 $L["notify_settings_updated"] = "The settings have been updated.";
@@ -222,7 +222,7 @@ $L["text_form_builder_add_form_section"] = "This creates a new form that's been 
 $L["text_resources_tab_intro"] = "This tab lets you add CSS and javascript files for use in your templates.";
 $L["text_add_form_intro"] = "Use the form below to create a new form that's configured with the Form Builder. Form Builder forms are edited and managed through the same interface as Internal and External forms, but they are published on your website at whatever location you want, using customizable templates to control their appearance.";
 $L["text_resource_placeholder_hint"] = "The placeholder lets you access the value stored in this field for all generated forms. It can only contain a-Z and 0-9, and must start with a character. It can be used in your templates like this: <b>{\$var}</b>";
-$L["text_publish_tab_intro"] = "This tab uses the Form Builder module to publish this form on your website. You can control everything about the published form styles and appearance by <a href=\"../../modules/form_builder/\">editing the available template sets</a>.";
+$L["text_publish_tab_intro"] = "This tab uses the Form Builder module to publish this form on your website. You can control everything about the published form styles and appearance by <a href=\"../../../modules/form_builder/\">editing the available template sets</a>.";
 $L["text_publish_form_intro"] = "This final step creates the actual form on your website. Fill in the fields below to publish your form.";
 $L["text_publish_settings_dialog_intro"] = "This dialog window lets you change the publish settings for this form. Please note: if you change the publish settings, the file at the old location (filename and folder) will be removed, so any pages linking to it will need to be updated.";
 $L["text_template_set_not_used"] = "This template set is not currently being used by any published forms.";

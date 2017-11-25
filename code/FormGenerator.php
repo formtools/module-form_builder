@@ -105,11 +105,8 @@ class FormGenerator
      *      "placeholders"     => an array of IDs
      *      "error_code"       => for serious errors
      *      "validation_error" => when the page just failed server side validation, this contains the error message.
-     *
-     * @return array an indexed array of page content. If there's only a single tab in the View, the array will only contain
-     *    a single index.
      */
-    public function generateForm($settings)
+    public static function generateForm($settings)
     {
         $root_dir = Core::getRootDir();
         $root_url = Core::getRootUrl();
@@ -199,43 +196,42 @@ class FormGenerator
         $smarty->assign("thankyou_page_content", $settings["thankyou_page_content"]);
         $smarty->assign("form_offline_page_content", $settings["form_offline_page_content"]);
 
-        if (isset($settings["submission_id"]) && !empty($settings["submission_id"]))
+        if (isset($settings["submission_id"]) && !empty($settings["submission_id"])) {
             $smarty->assign("submission_id", $settings["submission_id"]);
+        }
 
 
         // TODO, only include codemirror if needed. It's a fringe case.
         $required_resources =<<< END
-  <script>
-  //<![CDATA[
-  var g = {
-    root_url:       "$root_url",
-    error_colours:  ["ffbfbf", "ffb5b5"],
-    notify_colours: ["c6e2ff", "97c7ff"]
-  };
-  //]]>
-  </script>
-  <script src="$root_url/global/scripts/jquery.js"></script>
-  <link href="$root_url/themes/default/css/smoothness/jquery-ui-1.8.6.custom.css" rel="stylesheet" type="text/css"/>
-  <script src="$root_url/themes/default/scripts/jquery-ui-1.8.6.custom.min.js"></script>
-  <script src="$root_url/global/scripts/general.js"></script>
-  <script src="$root_url/global/scripts/rsv.js"></script>
-  <script src="$root_url/global/scripts/field_types.php"></script>
-  <link rel="stylesheet" href="$root_url/global/css/field_types.php" type="text/css" />
-	<script src="$root_url/global/codemirror/js/codemirror.js"></script>
-	<script src="$root_url/global/scripts/jquery-ui-timepicker-addon.js"></script>
-	<script src="$root_url/global/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-	<link rel="stylesheet" href="$root_url/global/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+    <script>
+    var g = {
+        root_url:       "$root_url",
+        error_colours:  ["ffbfbf", "ffb5b5"],
+        notify_colours: ["c6e2ff", "97c7ff"]
+    };
+    </script>
+    <script src="$root_url/global/scripts/jquery.js"></script>
+    <link href="$root_url/themes/default/css/smoothness/jquery-ui-1.8.6.custom.css" rel="stylesheet" type="text/css"/>
+    <script src="$root_url/themes/default/scripts/jquery-ui-1.8.6.custom.min.js"></script>
+    <script src="$root_url/global/scripts/general.js"></script>
+    <script src="$root_url/global/scripts/rsv.js"></script>
+    <script src="$root_url/global/scripts/field_types.php"></script>
+    <link rel="stylesheet" href="$root_url/global/css/field_types.php" type="text/css" />
+    <script src="$root_url/global/codemirror/lib/codemirror.js"></script>
+    <script src="$root_url/global/scripts/jquery-ui-timepicker-addon.js"></script>
+    <script src="$root_url/global/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+    <link rel="stylesheet" href="$root_url/global/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 END;
 
         // shame, but we need to use buffering to capture the standalone hook outputs. Otherwise, we'd need
         // users to add the template hooks directly in their templates, which would be confusing
         ob_start();
-        CoreHooks::processTemplateHookCalls("standalone_form_fields_head_top", $smarty->_tpl_vars, array());
+        CoreHooks::processTemplateHookCalls("standalone_form_fields_head_top", $smarty->getTemplateVars(), array());
         $standalone_head_top = ob_get_contents();
         ob_end_clean();
 
         ob_start();
-        CoreHooks::processTemplateHookCalls("standalone_form_fields_head_bottom", $smarty->_tpl_vars, array());
+        CoreHooks::processTemplateHookCalls("standalone_form_fields_head_bottom", $smarty->getTemplateVars(), array());
         $standalone_head_bottom = ob_get_contents();
         ob_end_clean();
 
@@ -250,7 +246,6 @@ END;
         $now = date("U");
 
         // used when editing in the Form Builder. Placeholders info needs to be passed to the css.php generation file
-        $query_str = "";
         if ($mode == "preview") {
             $query_str = "&source=sessions";
         } else {
@@ -282,17 +277,14 @@ END;
         }
         $smarty->assign("P", $P);
 
-
-        // if there's a validation error, add that too
-        if (isset($settings["validation_error"]) && !empty($settings["validation_error"])) {
-            $smarty->assign("validation_error", $settings["validation_error"]);
-        }
+        $validation_error = isset($settings["validation_error"]) && !empty($settings["validation_error"]) ? $settings["validation_error"] : "";
+        $smarty->assign("validation_error", $validation_error);
 
         // now generate the page content
         $smarty->assign("num_pages", count($nav_pages));
         $smarty->assign("current_page", $current_page);
         $smarty->assign("eval_str", $templates["page_layout"]["content"]);
-        $page_content = $smarty->fetch("../../modules/form_builder/smarty/eval.tpl");
+        $page_content = $smarty->fetch("../../modules/form_builder/smarty_plugins/eval.tpl");
 
         return $page_content;
     }

@@ -1,30 +1,31 @@
 <!doctype html>
 <html>
 <head>
-  <title>{$L.module_name}</title>
-  <link type="text/css" rel="stylesheet" href="{$g_root_url}/modules/form_builder/global/css/builder.css">
-  <script src="{$g_root_url}/global/scripts/jquery.js"></script>
-  <script src="{$g_root_url}/themes/default/scripts/jquery-ui-1.8.6.custom.min.js"></script>
-  <link href="{$g_root_url}/themes/default/css/smoothness/jquery-ui-1.8.6.custom.css" rel="stylesheet" type="text/css"/>
-  <script src="{$g_root_url}/global/scripts/general.js"></script>
-  <script src="{$g_root_url}/global/scripts/jquery-ui-timepicker-addon.js"></script>
-  <script src="{$g_root_url}/modules/form_builder/global/scripts/builder.js"></script>
-  <script src="{$g_root_url}/global/codemirror/js/codemirror.js"></script>
-  <script>
-  {literal}
-  var g = {
-    error_colours:  ["ffbfbf", "ffb5b5"],
-    notify_colours: ["c6e2ff", "97c7ff"],
-    messages: {}
-  };
-  {/literal}
-  g.root_url = "{$g_root_url}";
-  g.sidebar_width = {$sidebar_width};
-  g.header_height = {$header_height};
-  g.footer_height = {$footer_height};
-  g.iframe_header_height = {$iframe_header_height};
-  g.demo_mode = {if $module_settings.demo_mode == "on"}true{else}false{/if};
-  g.messages = {literal}{{/literal}
+    <title>{$L.module_name}</title>
+    <link type="text/css" rel="stylesheet" href="{$g_root_url}/modules/form_builder/css/builder.css">
+    <script src="{$g_root_url}/global/scripts/jquery.js"></script>
+    <script src="{$g_root_url}/themes/default/scripts/jquery-ui-1.8.6.custom.min.js"></script>
+    <link href="{$g_root_url}/themes/default/css/smoothness/jquery-ui-1.8.6.custom.css" rel="stylesheet" type="text/css"/>
+    <link href="{$g_root_url}/global/codemirror/lib/codemirror.css" rel="stylesheet" type="text/css"/>
+    <script src="{$g_root_url}/global/scripts/general.js"></script>
+    <script src="{$g_root_url}/global/scripts/jquery-ui-timepicker-addon.js"></script>
+    <script src="{$g_root_url}/modules/form_builder/scripts/builder.js"></script>
+    <script src="{$g_root_url}/global/codemirror/lib/codemirror.js"></script>
+    <script>
+    {literal}
+    var g = {
+        error_colours:  ["ffbfbf", "ffb5b5"],
+        notify_colours: ["c6e2ff", "97c7ff"],
+        messages: {}
+    };
+    {/literal}
+    g.root_url = "{$g_root_url}";
+    g.sidebar_width = {$sidebar_width};
+    g.header_height = {$header_height};
+    g.footer_height = {$footer_height};
+    g.iframe_header_height = {$iframe_header_height};
+    g.demo_mode = {if $module_settings.demo_mode == "on"}true{else}false{/if};
+    g.messages = {literal}{{/literal}
     word_cancel: "{$LANG.word_cancel}",
     word_update: "{$LANG.word_update}",
     word_help: "{$LANG.word_help}",
@@ -53,192 +54,191 @@
     validation_no_folder_url: "{$L.validation_no_folder_url}",
     validation_no_folder_path: "{$L.validation_no_folder_path}",
     validation_no_publish_setting_changes: "{$L.validation_no_publish_setting_changes}"
-  {literal}}{/literal}
-  g.loading = new Image();
-  g.loading.src = "{$g_root_url}/modules/form_builder/images/sidebar_section_loading.gif";
-  {$js}
-  </script>
-  <style type="text/css">
-  #header {literal}{{/literal}
-    height: {$header_height}px;
-  {literal}}{/literal}
-  #footer {literal}{{/literal}
-    height: {$footer_height}px;
-  {literal}}{/literal}
-  #sidebar {literal}{{/literal}
-    width: {$sidebar_width}px;
-    height: {$content_height}px;
-    top: {$header_height}px;
-  {literal}}{/literal}
-  #preview_iframe {literal}{{/literal}
-    left: {$sidebar_width}px;
-    top: {$iframe_header_height+$header_height}px;
-    height: {$content_height-$iframe_header}px;
-    width: {$iframe_width}px;
-  {literal}}{/literal}
-  #iframe_header {literal}{{/literal}
-    left: {$sidebar_width}px;
-    height: {$iframe_header_height}px;
-    width: {$iframe_width}px;
-  {literal}}{/literal}
-  </style>
+    {literal}}{/literal}
+    g.loading = new Image();
+    g.loading.src = "{$g_root_url}/modules/form_builder/images/sidebar_section_loading.gif";
+    {$js}
+    </script>
+
+    <style>
+    #header {literal}{{/literal}
+        height: {$header_height}px;
+    {literal}}{/literal}
+    #footer {literal}{{/literal}
+        height: {$footer_height}px;
+    {literal}}{/literal}
+    #sidebar {literal}{{/literal}
+        width: {$sidebar_width}px;
+        height: {$content_height}px;
+        top: {$header_height}px;
+    {literal}}{/literal}
+    #preview_iframe {literal}{{/literal}
+        left: {$sidebar_width}px;
+        top: {$iframe_header_height+$header_height}px;
+        height: {$content_height-$iframe_header_height}px;
+        width: {$iframe_width}px;
+    {literal}}{/literal}
+    #iframe_header {literal}{{/literal}
+        left: {$sidebar_width}px;
+        height: {$iframe_header_height}px;
+        width: {$iframe_width}px;
+    {literal}}{/literal}
+    </style>
 </head>
 <body class="body">
 
 {if $major_error}
 
-  <div id="header">
-    <h1>{$L.module_name}</h1>
-  </div>
-  <div class="clear"></div>
-  <div id="major_error">
-    <div>
-      {$major_error}
+    <div id="header">
+        <h1>{$L.module_name}</h1>
     </div>
-    <span class="close">{$L.phrase_close_window}</span>
-    <span class="goto_form_builder">{$L.phrase_go_to_form_builder}</span>
-  </div>
+    <div class="clear"></div>
+
+    <div id="major_error">
+        <div>{$major_error}</div>
+        <span class="close">{$L.phrase_close_window}</span>
+        <span class="goto_form_builder">{$L.phrase_go_to_form_builder}</span>
+    </div>
 
 {else}
 
-  <div id="header">
-    <h1>{$L.module_name}</h1>
-    <a class="close_window ui-widget-header ui-icon"><span class="ui-icon ui-icon-closethick"></span></a>
-    <div id="publish_url" {if $is_published == "no"}class="hidden"{/if}>
-      <a href="{$published_folder_url}/{$published_filename}.php" target="_blank">{$published_folder_url}/{$published_filename}.php</a>
+    <div id="header">
+        <h1>{$L.module_name}</h1>
+        <a class="close_window ui-widget-header ui-icon"><span class="ui-icon ui-icon-closethick"></span></a>
+        <div id="publish_url" {if $is_published == "no"}class="hidden"{/if}>
+            <a href="{$published_folder_url}/{$published_filename}.php" target="_blank">{$published_folder_url}/{$published_filename}.php</a>
+        </div>
     </div>
-  </div>
-  <div id="sidebar">
-    <form action="preview_form.php" id="f" method="post" target="preview_iframe">
-      <input type="hidden" name="published_form_id" id="published_form_id" value="{$published_form_id}" />
-      <input type="hidden" name="form_id" id="form_id" value="{$form_id}" />
-      <input type="hidden" name="page" id="page" value="1" />
+    <div id="sidebar">
 
-      <div class="section">
-        <h2 id="main_settings_heading" class="first">{$LANG.phrase_main_settings|upper}</h2>
-        <div class="section_options" id="main_settings">
-          <div>
-            <label for="view_id">{$LANG.word_view}</label>
-            {views_dropdown name_id="view_id" form_id=$form_id selected=$view_id class="full"}
-          </div>
-          <div>
-            <label for="template_set_id">{$L.phrase_template_set}</label>
-            <div>{template_sets name_id="template_set_id" default=$set_id class="full"}</div>
-          </div>
-          <div>
-            <input type="checkbox" name="is_online" id="is_online" {if $is_online == "yes"}checked="checked"{/if} />
-            <label for="is_online">{$L.phrase_form_is_online}</label>
-          </div>
-          <div>
-            <input type="checkbox" name="include_review_page" id="irp" {if $include_review_page == "yes"}checked="checked"{/if} />
-            <label for="irp">{$L.phrase_include_review_page}</label>
-          </div>
-          <div>
-            <input type="checkbox" name="include_thanks_page_in_nav" id="itpin" {if $include_thanks_page_in_nav == "yes"}checked="checked"{/if} />
-            <label for="itpin">{$L.phrase_include_thanks_page_in_nav}</label>
-          </div>
-        </div>
-      </div>
+        <form action="preview_form.php" id="f" method="post" target="preview_iframe">
+            <input type="hidden" name="published_form_id" id="published_form_id" value="{$published_form_id}" />
+            <input type="hidden" name="form_id" id="form_id" value="{$form_id}" />
+            <input type="hidden" name="page" id="page" value="1" />
 
-      <div class="section">
-        <h2 id="template_settings_heading">
-          {$L.word_templates|upper}
-          <span id="template_count">({$num_configurable_templates})</span>
-          <span class="section_loading"></span>
-        </h2>
-        <div class="section_options" id="template_settings" style="display:none">
-          {display_template_set_templates set_id=$set_id selected_templates=$selected_templates}
-        </div>
-      </div>
-
-      <div class="section">
-        <h2 id="placeholders_heading">
-          {$L.word_placeholders|upper}
-          <span id="placeholder_count">({$placeholders|@count})</span>
-          <span class="section_loading"></span>
-        </h2>
-        <div class="section_options" id="placeholders" style="display:none">
-          {display_template_set_placeholders set_id=$set_id placeholders=$placeholders
-            placeholder_hash=$placeholder_hash}
-        </div>
-      </div>
-
-      <div class="section">
-        <h2 id="thankyou_page_heading">{$L.phrase_thankyou_page_content|upper}</h2>
-        <div id="thankyou_page" style="display:none">
-          <textarea name="thankyou_page_content" id="thankyou_page_content">{$thankyou_page_content|escape}</textarea>
-          <div id="thankyou_page_edit_full_screen">edit full screen</div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h2 id="form_offline_heading">{$L.phrase_form_offline_page_content|upper}</h2>
-        <div id="form_offline" style="display:none">
-          <textarea name="form_offline_page_content" class="monospace" id="form_offline_page_content">{$form_offline_page_content|escape}</textarea>
-          <div id="form_offline_page_edit_full_screen">edit full screen</div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h2 id="advanced_heading">{$L.phrase_other_settings|upper}</h2>
-        <div id="advanced" class="section_options" style="display:none">
-          <div>
-            <label for="fod">{$L.phrase_automatically_take_form_offline_on_c}</label>
-            <div>
-              <input type="text" name="offline_date" id="fod" size="18" value="{$offline_date|escape}" />
-              <img class="ui-datepicker-trigger" src="{$g_root_url}/global/images/calendar.png" id="fod_icon_id" />
-              <span id="clear_offline_form"{if $offline_date == ""}style="display:none"{/if}>clear</span>
+            <div class="section">
+                <h2 id="main_settings_heading" class="first">{$LANG.phrase_main_settings|upper}</h2>
+                <div class="section_options" id="main_settings">
+                    <div>
+                        <label for="view_id">{$LANG.word_view}</label>
+                        {views_dropdown name_id="view_id" form_id=$form_id selected=$view_id class="full"}
+                    </div>
+                    <div>
+                        <label for="template_set_id">{$L.phrase_template_set}</label>
+                        <div>{template_sets name_id="template_set_id" default=$set_id class="full"}</div>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="is_online" id="is_online" {if $is_online == "yes"}checked="checked"{/if} />
+                        <label for="is_online">{$L.phrase_form_is_online}</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="include_review_page" id="irp" {if $include_review_page == "yes"}checked="checked"{/if} />
+                        <label for="irp">{$L.phrase_include_review_page}</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="include_thanks_page_in_nav" id="itpin" {if $include_thanks_page_in_nav == "yes"}checked="checked"{/if} />
+                        <label for="itpin">{$L.phrase_include_thanks_page_in_nav}</label>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div>
-            <label for="rpt">{$L.phrase_review_page_nav_title}</label>
-            <div><input type="text" name="review_page_title" value="{$review_page_title|escape}" id="rpt" class="full" /></div>
-          </div>
-          <div>
-            <label for="tpt">{$L.phrase_thankyou_page_nav_title}</label>
-            <div><input type="text" name="thankyou_page_title" value="{$thankyou_page_title|escape}" id="tpt" class="full" /></div>
-          </div>
-        </div>
-      </div>
 
-      <div class="btn apply_btn">{$L.phrase_apply_changes|upper} &raquo;</div>
+            <div class="section">
+                <h2 id="template_settings_heading">
+                    {$L.word_templates|upper}
+                    <span id="template_count">(N)</span>
+                    <span class="section_loading"></span>
+                </h2>
+                <div class="section_options" id="template_settings" style="display:none">
+                    {display_template_set_templates set_id=$set_id selected_templates=$selected_templates}
+                </div>
+            </div>
 
-      {* these are used to pass the content from the publish dialog when the user saves *}
-      <input type="hidden" name="filename" id="filename" value="{$published_filename|escape}" />
-      <input type="hidden" name="folder_url" id="folder_url" value="{$published_folder_url|escape}" />
-      <input type="hidden" name="folder_path" id="folder_path" value="{$published_folder_path|escape}" />
+            <div class="section">
+                <h2 id="placeholders_heading">
+                    {$L.word_placeholders|upper}
+                    <span id="placeholder_count">({$placeholders|@count})</span>
+                    <span class="section_loading"></span>
+                </h2>
+                <div class="section_options" id="placeholders" style="display:none">
+                    {display_template_set_placeholders set_id=$set_id placeholders=$placeholders placeholder_hash=$placeholder_hash}
+                </div>
+            </div>
 
-    </form>
-  </div>
+            <div class="section">
+                <h2 id="thankyou_page_heading">{$L.phrase_thankyou_page_content|upper}</h2>
+                <div id="thankyou_page" style="display:none">
+                    <textarea name="thankyou_page_content" id="thankyou_page_content">{$thankyou_page_content|escape}</textarea>
+                    <div id="thankyou_page_edit_full_screen">edit full screen</div>
+                </div>
+            </div>
 
-  <div id="iframe_header">
-    <div id="page_loading"></div>
-    <h2>{$L.phrase_preview_page_c}</h2>
-    <div id="pages"></div>
-    <div class="clear"></div>
-  </div>
+            <div class="section">
+                <h2 id="form_offline_heading">{$L.phrase_form_offline_page_content|upper}</h2>
+                <div id="form_offline" style="display:none">
+                    <textarea name="form_offline_page_content" class="monospace" id="form_offline_page_content">{$form_offline_page_content|escape}</textarea>
+                    <div id="form_offline_page_edit_full_screen">edit full screen</div>
+                </div>
+            </div>
 
-  <iframe name="preview_iframe" id="preview_iframe"></iframe>
+            <div class="section">
+                <h2 id="advanced_heading">{$L.phrase_other_settings|upper}</h2>
+                <div id="advanced" class="section_options" style="display:none">
+                    <div>
+                        <label for="fod">{$L.phrase_automatically_take_form_offline_on_c}</label>
+                        <div>
+                            <input type="text" name="offline_date" id="fod" size="18" value="{$offline_date|escape}" />
+                            <img class="ui-datepicker-trigger" src="{$g_root_url}/global/images/calendar.png" id="fod_icon_id" />
+                            <span id="clear_offline_form"{if $offline_date == ""}style="display:none"{/if}>clear</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="rpt">{$L.phrase_review_page_nav_title}</label>
+                        <div><input type="text" name="review_page_title" value="{$review_page_title|escape}" id="rpt" class="full" /></div>
+                    </div>
+                    <div>
+                        <label for="tpt">{$L.phrase_thankyou_page_nav_title}</label>
+                        <div><input type="text" name="thankyou_page_title" value="{$thankyou_page_title|escape}" id="tpt" class="full" /></div>
+                    </div>
+                </div>
+            </div>
 
+            <div class="btn apply_btn">{$L.phrase_apply_changes|upper} &raquo;</div>
 
-  <div id="footer">
-    <div id="toggle_sidebar">{$L.phrase_hide_sidebar}</div>
-    {if $is_published == "no"}
-      <span class="btn publish_btn">{$L.word_publish|upper}</span>
-    {else}
-      <span class="btn publish_settings_btn">{$L.phrase_publish_settings|upper}</span>
-    {/if}
-    <span class="btn save_btn">{$L.word_save|upper}</span>
-    <span class="btn help_btn">{$LANG.word_help|upper}</span>
-  </div>
+            {* these are used to pass the content from the publish dialog when the user saves *}
+            <input type="hidden" name="filename" id="filename" value="{$published_filename|escape}" />
+            <input type="hidden" name="folder_url" id="folder_url" value="{$published_folder_url|escape}" />
+            <input type="hidden" name="folder_path" id="folder_path" value="{$published_folder_path|escape}" />
 
-  <div class="paged_dialogs" id="edit_thankyou_page_dialog" style="display:none">
-    <ul class="main_nav">
-      <li class="row1">The Thankyou Page</li>
-      <li class="row2 selected">Editor</li>
-      <li class="row3">Placeholders</li>
-      <li class="rowN"></li>
-    </ul>
+        </form>
+    </div>
+
+    <div id="iframe_header">
+        <div id="page_loading"></div>
+        <h2>{$L.phrase_preview_page_c}</h2>
+        <div id="pages"></div>
+        <div class="clear"></div>
+    </div>
+
+    <iframe name="preview_iframe" id="preview_iframe"></iframe>
+
+    <div id="footer">
+        <div id="toggle_sidebar">{$L.phrase_hide_sidebar}</div>
+        {if $is_published == "no"}
+            <span class="btn publish_btn">{$L.word_publish|upper}</span>
+        {else}
+            <span class="btn publish_settings_btn">{$L.phrase_publish_settings|upper}</span>
+        {/if}
+        <span class="btn save_btn">{$L.word_save|upper}</span>
+        <span class="btn help_btn">{$LANG.word_help|upper}</span>
+    </div>
+
+    <div class="paged_dialogs" id="edit_thankyou_page_dialog" style="display:none">
+        <ul class="main_nav">
+            <li class="row1">The Thankyou Page</li>
+            <li class="row2 selected">Editor</li>
+            <li class="row3">Placeholders</li>
+            <li class="rowN"></li>
+        </ul>
 
     <div class="row1_page dialog_page" style="display:none">
       <h3>The Thankyou Page</h3>
@@ -556,8 +556,6 @@
 
 
     <div class="row3_page dialog_page" style="display:none">
-      <img src="images/form_builder_sections.jpg" style="float:right; border: 1px solid #999999; margin: 0px 0px 10px 10px" />
-
       <h3>The Form Builder window</h3>
       <p>
         The Form Builder window (which you are in right now) is arranged into several panels, each performing a specific purpose.

@@ -19,7 +19,7 @@
 
   {if $form_info.form_type != "form_builder"}
 
-    <form action="{$same_page}" method="post">
+    <form action="?page=publish" method="post">
       <div class="notify margin_bottom_large">
         <div style="padding:6px">
           <div class="margin_bottom">

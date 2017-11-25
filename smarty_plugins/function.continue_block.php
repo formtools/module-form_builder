@@ -8,7 +8,7 @@
  */
 function smarty_function_continue_block($params, &$smarty)
 {
-    $template_info = $smarty->_tpl_vars["templates"]["continue_block"];
-    $smarty->assign("eval_str", $template_info["content"]);
-    return $smarty->fetch("../../modules/form_builder/smarty/eval.tpl");
+    $template_info = $smarty->getTemplateVars("templates");
+    $smarty->assign("eval_str", $template_info["continue_block"]["content"]);
+    return $smarty->fetch("../../modules/form_builder/smarty_plugins/eval.tpl");
 }

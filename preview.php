@@ -1,11 +1,17 @@
 <?php
 
-require_once("../../global/session_start.php");
+//require_once("../../global/session_start.php");
+require_once("../../global/library.php");
 
-ft_init_module_page();
+use FormTools\Modules;
+use FormTools\Modules\FormBuilder\Forms;
+use FormTools\Modules\FormBuilder\General;
+use FormTools\Modules\FormBuilder\FormGenerator;
+use FormTools\Modules\FormBuilder\Placeholders;
+use FormTools\Modules\FormBuilder\TemplateSets;
+use FormTools\Views;
 
-$permissions = ft_check_permission("admin", false); // TODO
-$request = array_merge($_POST, $_GET);
+$module = Modules::initModulePage("admin");
 
 $major_error = "";
 if (!isset($request["form_id"]) || empty($request["form_id"])) {
@@ -15,11 +21,9 @@ if (!isset($request["form_id"]) || empty($request["form_id"])) {
 }
 
 // if the URL includes the published form ID, the admin is editing an existing configuration
-$published_form_id = "";
-if (isset($request["published_form_id"])) {
-    $published_form_id = $request["published_form_id"];
-}
-$module_settings = ft_get_module_settings("", "form_builder");
+$published_form_id = isset($request["published_form_id"]) ? $request["published_form_id"] : "";
+
+$module_settings = $module->getSettings();
 
 $selected_templates = array();
 $config_info = array();
@@ -39,7 +43,7 @@ $offline_date = "";
 
 // if we're editing an existing configuration, override all the defaults with whatever's been saved
 if (!empty($published_form_id)) {
-    $config_info = fb_get_form_configuration($published_form_id);
+    $config_info = Forms::getFormConfiguration($published_form_id);
     $is_published = $config_info["is_published"];
     $is_online = $config_info["is_online"];
     $set_id = $config_info["set_id"];
@@ -68,18 +72,18 @@ if (!empty($published_form_id)) {
 } else {
     // here, the admin is publishing a new form. There are no templates or other settings specified yet, so
     // we just pick the first set ID
-    $set_id = fb_get_first_template_set_id();
+    $set_id = TemplateSets::getFirstTemplateSetId();
     if (empty($set_id)) {
         $major_error = $L["notify_no_complete_template"];
     }
 
-    $views = ft_get_form_views($form_id);
+    $views = Views::getFormViews($form_id);
     if (!empty($views)) {
         $view_id = $views[0]["view_id"];
     }
 }
 
-if (!ft_check_view_exists($view_id)) {
+if (!Views::checkViewExists($view_id)) {
     $major_error = "Sorry, the View that was assigned to this form no longer exists. You will need to delete this form configuration and publish a new form.";
 }
 
@@ -118,13 +122,13 @@ $page_vars["review_page_title"] = $review_page_title;
 $page_vars["thankyou_page_title"] = $thankyou_page_title;
 
 if (empty($major_error)) {
-    $placeholders = fb_get_placeholders($set_id);
+    $placeholders = Placeholders::getPlaceholders($set_id);
     $page_vars["form_id"] = $form_id;
     $page_vars["view_id"] = $view_id;
     $page_vars["set_id"] = $set_id;
     $page_vars["selected_templates"] = $selected_templates;
     $page_vars["placeholders"] = $placeholders;
-    $page_vars["js"] = "g.view_tabs = [" . fb_get_num_view_tabs_js($form_id) . "];";
+    $page_vars["js"] = "g.view_tabs = [" . General::getNumViewTabsJs($form_id) . "];";
 
     $placeholder_hash = array();
     if (empty($config_info)) {
@@ -140,4 +144,4 @@ if (empty($major_error)) {
     $page_vars["placeholder_hash"] = $placeholder_hash;
 }
 
-ft_display_module_page("templates/preview.tpl", $page_vars);
+$module->displayPage("templates/preview.tpl", $page_vars);

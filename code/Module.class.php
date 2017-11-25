@@ -375,8 +375,8 @@ END;
     {
         $root_dir = Core::getRootDir();
         $LANG = Core::$L;
-
-        echo "!";
+        $module = Modules::getModuleInstance("form_builder");
+        $L = $module->getLangStrings();
 
         $form_id = $vars["form_info"]["form_id"];
         $published_forms = Forms::getPublishedForms($form_id);
@@ -411,6 +411,7 @@ END;
         $smarty->assign("published_forms", $published_forms);
         $smarty->assign("demo_mode", $demo_mode);
         $smarty->assign("text_non_form_builder_form", $text_non_form_builder_form);
+        $smarty->assign("same_page", CoreGeneral::getCleanPhpSelf());
 
         $output = $smarty->fetch("$root_dir/modules/form_builder/templates/admin/tab_publish.tpl");
 
@@ -470,7 +471,7 @@ END;
             case "admin_edit_form_page_name_include":
                 $request = array_merge($_POST, $_GET);
                 if (isset($request["page"]) && $request["page"] == "publish") {
-                    $file = realpath(dirname(__FILE__) . "/../../admin/tab_publish.php");
+                    $file = realpath(__DIR__ . "/../admin/tab_publish.php");
                     return array("data" => array("page_name" => $file));
                 }
                 break;

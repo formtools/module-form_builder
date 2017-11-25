@@ -11,7 +11,7 @@ function smarty_function_captcha($params, &$smarty)
 {
     include_once(realpath(__FILE__ . "/../../../global/api/api.php"));
 
-    $form_namespace = $smarty->_tpl_vars["namespace"];
+    $form_namespace = $smarty->getTemplateVars("namespace");
 
     // if the user has already passed this CAPTCHA, add nothing to the page!
     if (isset($_SESSION[$form_namespace]["passed_captcha"])) {

@@ -15,12 +15,9 @@ use FormTools\Modules\FormBuilder\General;
 use FormTools\Modules\FormBuilder\Placeholders;
 use FormTools\Modules\FormBuilder\Resources;
 
-header("Content-Type: text/css");
-header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+require_once(realpath(__DIR__ . "/../../../global/library.php"));
 
-$g_check_ft_sessions = false;
-require_once(realpath(__DIR__ . "/../../../../global/library.php"));
-
+Core::init(array("start_sessions" => false));
 Modules::includeModule("form_builder");
 
 $resource_id = $_GET["resource_id"];
@@ -81,4 +78,7 @@ if ($source == "sessions") {
 $smarty->assign("P", $P);
 $smarty->assign("eval_str", $css);
 
-echo $smarty->fetch("../../modules/form_builder/smarty/eval.tpl");
+header("Content-Type: text/css");
+header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+
+echo $smarty->fetch("../../modules/form_builder/smarty_plugins/eval.tpl");

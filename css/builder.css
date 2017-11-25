@@ -20,10 +20,10 @@ html,body,div,option,select,input,textarea,span {
 /* header */
 #header {
   padding-left: 1px;
-  background: #333333 url(../../images/dialog_header_bg.png) repeat-x scroll 0% 70%;
+  background: #333333 url(../images/dialog_header_bg.png) repeat-x scroll 0% 70%;
 }
 #header h1 {
-  background: transparent url(../../images/icon26.png) no-repeat 5px 4px;
+  background: transparent url(../images/icon26.png) no-repeat 5px 4px;
   padding: 6px 0px 6px 37px;
   font: 14px/20px Verdana,sans-serif;
   margin: 0px;
@@ -58,15 +58,15 @@ html,body,div,option,select,input,textarea,span {
   margin: 1px 3px 1px 1px;
   width: 28px;
   height: 28px;
-  background: #666666 url(../../images/loading.gif) no-repeat;
+  background: #666666 url(../images/loading.gif) no-repeat;
 }
 .section_loading {
   display:none;
   float: right;
   width: 16px;
   height: 16px;
-  background: #666666 url(../../images/sidebar_section_loading.gif) no-repeat;
-  margin: 2px 3px 0px 0px;
+  background: #666666 url(../images/sidebar_section_loading.gif) no-repeat;
+  margin: 2px 3px 0 0;
 }
 h2.loading .section_loading {
   display: block;
@@ -255,18 +255,18 @@ input.full {
   float: left;
 }
 .popup_type_warning {
-  background-image: url(../../../../global/images/alert.png);
+  background-image: url(../../../global/images/alert.png);
 }
 .popup_type_error {
-  background-image: url(../../../../global/images/error.png);
+  background-image: url(../../../global/images/error.png);
 }
 .popup_type_info {
-  background-image: url(../../../../global/images/info.png);
+  background-image: url(../../../global/images/info.png);
 }
 
 /* full screen editor window. Used for Help, Edit Thankyou Page content */
 .paged_dialogs h3 {
-  margin-top: 0px;
+  margin-top: 0;
   font-size: 11pt;
 }
 .paged_dialogs h4 {
@@ -319,10 +319,10 @@ body.body div.paged_dialogs ul.main_nav li {
   cursor: pointer;
 }
 body.body div.paged_dialogs ul.main_nav li:hover {
-  background: #dddddd url(../../images/dialog_option.png) no-repeat 96% center;
+  background: #dddddd url(../images/dialog_option.png) no-repeat 96% center;
 }
 body.body div.paged_dialogs ul.main_nav li.selected {
-  background: #ffffff url(../../images/dialog_selected_option.png) no-repeat 96% center;
+  background: #ffffff url(../images/dialog_selected_option.png) no-repeat 96% center;
 }
 body.body div.paged_dialogs ul.main_nav li.row1 {
   border-top: none;
@@ -341,12 +341,12 @@ body.body div.paged_dialogs ul.main_nav li.rowN:hover {
 .tip {
   padding: 6px 6px 6px 40px;
   border: 1px solid #fcd53e;
-  background: #fffbe9 url(../../images/tip.png) no-repeat 2px center;
+  background: #fffbe9 url(../images/tip.png) no-repeat 2px center;
 }
 
 /* footer */
 #footer {
-  background: #333333 url(../../images/dialog_header_bg.png) repeat-x scroll 0% 70%;
+  background: #333333 url(../images/dialog_header_bg.png) repeat-x scroll 0% 70%;
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -354,7 +354,7 @@ body.body div.paged_dialogs ul.main_nav li.rowN:hover {
 
 /* overridden jQuery dialog styles */
 body .ui-widget-header {
-  background: #666666 url(../../images/dialog_header_bg.png) repeat-x scroll 50% 50%;
+  background: #666666 url(../images/dialog_header_bg.png) repeat-x scroll 50% 50%;
 }
 body #header .close_window {
   float: right;
@@ -368,7 +368,7 @@ body #header .close_window {
   cursor: pointer;
 }
 body #header .close_window:hover {
-  background: url(../../../../themes/default/css/smoothness/images/ui-bg_glass_75_dadada_1x400.png) repeat-x scroll 50% 50% #DADADA;
+  background: url(../../../themes/default/css/smoothness/images/ui-bg_glass_75_dadada_1x400.png) repeat-x scroll 50% 50% #DADADA;
   border: 1px solid #999999;
 }
 body .ui-dialog-title {
@@ -377,10 +377,10 @@ body .ui-dialog-title {
   font: 14px/20px Verdana,sans-serif;
   font-weight: normal;
   padding-left: 30px;
-  background: transparent url("../../images/icon24.png") no-repeat scroll 0px center;
+  background: transparent url("../images/icon24.png") no-repeat scroll 0px center;
 }
 body .ui-dialog .ui-dialog-buttonpane {
-  margin-top: 0px;
+  margin-top: 0;
 }
 body .ui-widget-overlay {
   /*background: url(images/ui-bg_flat_0_aaaaaa_40x100.png) repeat-x scroll 53% 155% #222222;*/

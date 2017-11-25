@@ -17,16 +17,17 @@ use FormTools\Modules\FormBuilder\General;
  */
 function smarty_function_page($params, &$smarty)
 {
-    $form_id = $smarty->_tpl_vars["form_id"];
-    $view_id = $smarty->_tpl_vars["view_id"];
-    $current_page = $smarty->_tpl_vars["current_page"];
+    $template_vars = $smarty->getTemplateVars();
+    $form_id = $template_vars["form_id"];
+    $view_id = $template_vars["view_id"];
+    $current_page = $template_vars["current_page"];
 
     // this is only set for when the form is actually in use
-    $submission_id = isset($smarty->_tpl_vars["submission_id"]) ? $smarty->_tpl_vars["submission_id"] : "";
+    $submission_id = isset($template_vars["submission_id"]) ? $template_vars["submission_id"] : "";
 
     // a little odd, but we renamed "template_type" to "page_type" here, because it's a little clearer.
     // We already know we're dealing with a page
-    $template_info = $smarty->_tpl_vars["templates"]["page"];
+    $template_info = $template_vars["templates"]["page"];
     $page_type = $template_info["template_type"];
 
     // form and review pages are special: they get info about the view fields
@@ -43,7 +44,7 @@ function smarty_function_page($params, &$smarty)
         $grouped_fields = ViewFields::getGroupedViewFields($view_id, $current_page, $form_id, $submission_id);
 
         // if the user just failed server-side validation, merge in whatever info was in the POST request with what's in $grouped_fields
-        if (isset($smarty->_tpl_vars["validation_error"]) && !empty($smarty->_tpl_vars["validation_error"])) {
+        if (isset($template_vars["validation_error"]) && !empty($template_vars["validation_error"])) {
             $grouped_fields = FieldValidation::mergeFormSubmission($grouped_fields, $_POST);
         }
 
@@ -107,10 +108,10 @@ function smarty_function_page($params, &$smarty)
     $smarty->right_delimiter = '}}';
 
     $smarty->assign("eval_str", $template_info["content"]);
-    $smarty->assign("page_name", $smarty->_tpl_vars["nav_pages"][$current_page - 1]["page_name"]);
+    $smarty->assign("page_name", $template_vars["nav_pages"][$current_page - 1]["page_name"]);
     $smarty->assign("page_type", $page_type);
 
-    $page = $smarty->fetch("../../modules/form_builder/smarty/eval.tpl");
+    $page = $smarty->fetch("../../modules/form_builder/smarty_plugins/eval.tpl");
     if (!empty($validation_js)) {
         $error_handler_js = General::getFormValidationCustomErrorHandlerJs();
         $page = "<script>$error_handler_js\n$validation_js</script>" . $page;

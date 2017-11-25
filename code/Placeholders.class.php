@@ -373,7 +373,7 @@ class Placeholders
         $smarty->assign("placeholder_hash", $placeholder_hash);
         $smarty->assign("L", $L);
 
-        $html = $smarty->fetch("../../modules/form_builder/smarty/placeholders_html.tpl");
+        $html = $smarty->fetch("../../modules/form_builder/smarty_plugins/placeholders_html.tpl");
 
         return $html;
     }

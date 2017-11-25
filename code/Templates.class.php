@@ -311,12 +311,12 @@ class Templates
     {
         $grouped_templates = Templates::getTemplatesGroupedByType($set_id);
 
-        $smarty = fb_create_new_smarty_instance("single");
+        $smarty = General::createNewSmartyInstance("single");
         $smarty->assign("grouped_templates", $grouped_templates);
         $smarty->assign("selected_templates", $selected_templates);
         $smarty->assign("L", $L);
 
-        $html = $smarty->fetch("../../modules/form_builder/smarty/templates_html.tpl");
+        $html = $smarty->fetch("./smarty_plugins/templates_html.tpl");
 
         return $html;
     }

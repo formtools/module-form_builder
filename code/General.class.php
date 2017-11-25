@@ -53,9 +53,9 @@ class General
         $smarty->setUseSubDirs(Core::shouldUseSmartySubDirs());
         $smarty->left_delimiter = $left_delimiter;
         $smarty->right_delimiter = $right_delimiter;
-        $smarty->setPluginsDir(array(
-            "$root_dir/global/smarty",
-            "$root_dir/modules/form_builder/smarty"
+        $smarty->addPluginsDir(array(
+            "$root_dir/global/smarty_plugins",
+            "$root_dir/modules/form_builder/smarty_plugins"
         ));
 
         return $smarty;

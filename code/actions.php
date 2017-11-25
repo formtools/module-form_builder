@@ -61,7 +61,7 @@ switch ($action) {
         foreach ($placeholders as $p_info) {
             $placeholder_hash[$p_info["placeholder_id"]] = $p_info["default_value"];
         }
-        echo Placeholders::generateTemplateSetPlaceholdersHtml($set_id, $placeholders, $placeholder_hash);
+        echo Placeholders::generateTemplateSetPlaceholdersHtml($set_id, $placeholders, $placeholder_hash, $L);
         break;
 
     case "publish_form":

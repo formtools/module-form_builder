@@ -19,14 +19,14 @@ function smarty_function_form_builder_edit_link($params, &$smarty)
         return;
     }
 
-    if ($smarty->_tpl_vars["mode"] != "live") {
+    if ($smarty->getTemplateVars("mode") != "live") {
         return;
     }
 
     global $g_root_url;
 
-    $published_form_id = $smarty->_tpl_vars["published_form_id"];
-    $form_id = $smarty->_tpl_vars["form_id"];
+    $published_form_id = $smarty->getTemplateVars("published_form_id");
+    $form_id = $smarty->getTemplateVars("form_id");
 
     $action = Modules::getModuleSettings("edit_form_builder_link_action", "form_builder");
     $target = ($action == "new_window") ? "target=\"_blank\"" : "";

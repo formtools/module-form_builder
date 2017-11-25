@@ -5,6 +5,7 @@
  * is passed the placeholder info directly from the builder, not pulling it from the database.
  */
 
+use FormTools\Core;
 use FormTools\Modules;
 use FormTools\Modules\FormBuilder\General;
 use FormTools\Modules\FormBuilder\Resources;
@@ -12,10 +13,9 @@ use FormTools\Modules\FormBuilder\Resources;
 header("Content-Type: text/css");
 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 
-$g_check_ft_sessions = false;
+require_once(realpath(__DIR__ . "/../../../global/library.php"));
 
-require_once(realpath(__DIR__ . "/../../../../global/library.php"));
-
+Core::init(array("start_sessions" => false));
 Modules::includeModule("form_builder");
 
 $resource_id = $_GET["resource_id"];
@@ -28,4 +28,4 @@ $smarty = General::createNewSmartyInstance();
 
 $smarty->assign("eval_str", $css);
 
-echo $smarty->fetch("../../modules/form_builder/smarty/eval.tpl");
+echo $smarty->fetch("../../modules/form_builder/smarty_plugins/eval.tpl");
