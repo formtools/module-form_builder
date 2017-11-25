@@ -7,14 +7,19 @@
 namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
+use FormTools\Fields;
 use FormTools\Forms as CoreForms;
+use FormTools\General as CoreGeneral;
 use FormTools\Hooks as CoreHooks;
+use FormTools\Modules;
 use FormTools\Modules\FormBuilder\Placeholders;
 use FormTools\Modules\FormBuilder\Resources;
+use FormTools\Settings;
+use FormTools\Submissions;
 use FormTools\Views;
 use FormTools\ViewFields;
 use FormTools\ViewTabs;
-
+use PDO, Exception;
 
 class FormGenerator
 {
@@ -26,7 +31,7 @@ class FormGenerator
      * @param integer $page an integer representing the page in the form: 1 to n (where n <= 8)
      * @param integer $submission_id this doesn't have to be passed for when the form is offline.
      */
-    public function generateFormPage($config, $page = 1, $submission_id = "")
+    public static function generateFormPage($config, $page = 1, $submission_id = "")
     {
         $published_form_id = $config["published_form_id"];
 
@@ -401,7 +406,7 @@ END;
                 $recaptcha_challenge_field = $form_data["recaptcha_challenge_field"];
                 $recaptcha_response_field  = $form_data["recaptcha_response_field"];
 
-                require_once(realpath(dirname(__FILE__) . "/../../../../global/api/recaptchalib.php"));
+                require_once(realpath(__DIR__ . "/../../../../global/api/recaptchalib.php"));
                 $resp = recaptcha_check_answer($g_api_recaptcha_private_key, $_SERVER["REMOTE_ADDR"], $recaptcha_challenge_field, $recaptcha_response_field);
 
                 if ($resp->is_valid)
@@ -461,18 +466,14 @@ END;
      * @return array [0] whether the sessions were just created or not
      *               [1] the current form data
      */
-    function fb_init_form_builder_page($form_id, $view_id, $namespace)
+    public static function initFormBuilderPage($form_id, $view_id, $namespace)
     {
-        global $g_session_type, $g_session_save_path;
-
-        $header_charset = "UTF-8";
-
         $newly_created = false;
-        if (!isset($_SESSION[$namespace]) || empty($_SESSION[$namespace]))
-        {
+
+        if (!isset($_SESSION[$namespace]) || empty($_SESSION[$namespace])) {
             $newly_created = true;
             $_SESSION[$namespace] = array();
-            $submission_id = ft_create_blank_submission($form_id, $view_id, false);
+            $submission_id = Submissions::createBlankSubmission($form_id, $view_id, false);
 
             $_SESSION[$namespace]["form_tools_form_id"]         = $form_id;
             $_SESSION[$namespace]["form_tools_view_id"]         = $view_id;
@@ -482,277 +483,255 @@ END;
 
         return array($newly_created, $_SESSION[$namespace]);
     }
-}
 
 
-
-/**
- * Clears sessions after successfully completing a form.
- *
- * @param string $namespace (optional);
- */
-function fb_clear_form_builder_form_sessions($namespace)
-{
-  $_SESSION[$namespace] = "";
-  unset($_SESSION[$namespace]);
-}
-
-
-/**
- * This is called on every published form. It checks that the form ID, View ID and all the template IDs
- * actually exist.
- *
- * @param array $config
- */
-function fb_check_live_form_conditions($config)
-{
-	global $g_table_prefix;
-
-  if (!isset($config["form_id"]) || !ft_check_form_exists($config["form_id"]))
-  {
-  	return array("success" => false, "error_code" => "FB100");
-  }
-  if (!isset($config["view_id"]) || !ft_check_view_exists($config["view_id"]))
-  {
-  	return array("success" => false, "error_code" => "FB101");
-  }
-
-  // check all the templates exist. Just do a count.
-  $template_ids = array();
-  foreach ($config["templates"] as $template_info)
-  {
-  	$template_ids[] = $template_info["template_id"];
-  }
-  $num_templates = count($template_ids);
-  $template_id_str = implode(",", $template_ids);
-  $query = mysql_query("SELECT count(*) as c FROM {$g_table_prefix}module_form_builder_templates WHERE template_id IN ($template_id_str)");
-  $result = mysql_fetch_assoc($query);
-
-  if ($num_templates != $result["c"])
-  {
-  	return array("success" => false, "error_code" => "FB102");
-  }
-
-  return "";
-}
-
-
-/**
- * Called on every published form page. This checks that the current page number being passed via the query
- * string is valid. It checks that (a) it wasn't hacked to contain any non-numeric content, (b) it's within
- * the range of pages in this form configuration and (c) they aren't skipping any pages: each page has
- * to be submitted in sequence.
- *
- * @param integer $page
- * @param array $pages
- */
-function fb_verify_page_number($page, $pages, $namespace)
-{
-	$num_pages = count($pages);
-  if (!is_numeric($page) || $page < 1)
-  {
-    $page = 1;
-  }
-  else if ($page > $num_pages)
-  {
-  	$page = $num_pages;
-  }
-
-  // now look to see what pages the user has already filled in
-  $completed_pages = (isset($_SESSION[$namespace]["form_tools_completed_pages"])) ? $_SESSION[$namespace]["form_tools_completed_pages"] : array();
-
-  // if the previous page isn't marked as complete, set the page to the highest completed page + 1
-  if ($page != 1 && !in_array($page-1, $completed_pages))
-  {
-  	if (!empty($completed_pages))
-  	{
-      $page = max($completed_pages) + 1;
-  	}
-    else
-      $page = 1;
-  }
-
-	return $page;
-}
-
-
-/**
- * Called on every published form page. This handles the scenario where the form is no longer online, either via the schedule
- * or by the user explicitly setting the published form to offline.
- *
- * @param array $config
- * @param string $namespace
- */
-function fb_check_form_offline($config, $namespace)
-{
-	$module_settings = ft_get_module_settings("", "form_builder");
-	$just_taken_offline = fb_take_scheduled_form_offline($config);
-
-  // if the form is marked as offline
-	if ($config["is_online"] == "no")
-	{
-		// the user doesn't already have any sessions created (i.e. they weren't in the midst of submitting the
-		// form!), we just display the Form Offline page
-		if (!isset($_SESSION[$namespace]["form_tools_submission_id"]))
-		{
-			fb_clear_form_builder_form_sessions($namespace);
-	    fb_generate_form_page($config, 1);
-		  exit;
-		}
-		else
-		{
-			// here we have a special fringe case: the form just went offline but the user already started putting
-			// through the form. How we handle THAT, depends on what they choose for the "Offline form behaviour" setting
-			if ($module_settings["scheduled_offline_form_behaviour"] == "cutoff")
-			{
-				fb_clear_form_builder_form_sessions($namespace);
-	      fb_generate_form_page($config, 1);
-		    exit;
-			}
-			else
-			{
-				// do nothing! For this scenario, we just allow them to proceed (i.e. let the function return nothing). As soon
-				// as they complete their form, sessions will be emptied and they won't be able to put through another
-			}
-		}
-	}
-
-	return true;
-}
-
-
-/**
- * This blithely checks a published form to figure out if it needs to be taken offline. This is called for every published
- * form on each page load, and on the Publish Tab in the admin section.
- *
- * @param array $config
- * @return boolean whether or not the form was just taken offline
- */
-function fb_take_scheduled_form_offline($config)
-{
-	global $g_table_prefix;
-
-	$just_taken_offline = false;
-
-	// first, check the form shouldn't be taken offline right now
-	if ($config["is_online"] == "yes" && $config["offline_date"] != "0000-00-00 00:00:00")
-	{
-    $default_timezone_offset = ft_get_settings("default_timezone_offset");
-
-    $now = date("U");
-		$now = $now + ($default_timezone_offset * 60 * 60);
-
-		$offline_unixtime = ft_convert_datetime_to_timestamp($config["offline_date"]);
-
-		// is the offline datetime just passed, take the sucker offline
-    if ($now > $offline_unixtime)
+    /**
+     * Clears sessions after successfully completing a form.
+     *
+     * @param string $namespace (optional);
+     */
+    public static function clearFormBuilderFormSessions($namespace)
     {
-    	$published_form_id = $config["published_form_id"];
-      mysql_query("
-        UPDATE {$g_table_prefix}module_form_builder_forms
-        SET    is_online = 'no',
-               offline_date = '0000-00-00 00:00:00'
-        WHERE  published_form_id = $published_form_id
-      ");
-      $just_taken_offline = true;
+        $_SESSION[$namespace] = "";
+        unset($_SESSION[$namespace]);
     }
-	}
-
-	return $just_taken_offline;
-}
 
 
-function fb_init_sessions()
-{
-	global $g_session_type, $g_session_save_path, $g_api_header_charset;
-
-	$header_charset = "utf-8";
-	if (isset($g_api_header_charset) && !empty($g_api_header_charset))
-    $header_charset = $g_api_header_charset;
-
-  if (!isset($_SESSION))
-  {
-    if ($g_session_type == "database")
-      $sess = new SessionManager();
-
-    if (!empty($g_session_save_path))
-      session_save_path($g_session_save_path);
-
-    session_start();
-    header("Cache-control: private");
-    header("Content-Type: text/html; charset=$header_charset");
-  }
-}
-
-
-/**
- * Deletes all unfinalized submissions and any associated files that have been uploaded. For safety,
- * it only deletes incomplete submissions that are 24 hours old.
- *
- * @return integer the number of unfinalized submissions that were just deleted, or false if it failed.
- */
-function fb_delete_unfinalized_submissions($form_id)
-{
-  global $g_table_prefix;
-
-  if (!ft_check_form_exists($form_id))
-    return false;
-
-  $query = mysql_query("
-    SELECT *
-    FROM   {$g_table_prefix}form_{$form_id}
-    WHERE  is_finalized = 'no' AND
-    DATE_ADD(submission_date, INTERVAL 24 HOUR) < curdate()
-      ");
-
-  if (mysql_num_rows($query) == 0)
-    return 0;
-
-  // find out which of this form are file fields
-  $form_fields = ft_get_form_fields($form_id, array("include_field_type_info" => true));
-
-  $file_field_info = array(); // a hash of col_name => file upload dir
-  foreach ($form_fields as $field_info)
-  {
-    if ($field_info["is_file_field"] == "file")
+    /**
+     * This is called on every published form. It checks that the form ID, View ID and all the template IDs
+     * actually exist.
+     *
+     * @param array $config
+     */
+    public static function checkLiveFormConditions($config)
     {
-      $field_id = $field_info["field_id"];
-      $col_name = $field_info["col_name"];
-      $extended_settings = ft_get_extended_field_settings($field_id);
-      $file_field_info[$col_name] = $extended_settings["file_upload_dir"];
+        $db = Core::$db;
+
+        if (!isset($config["form_id"]) || !CoreForms::checkFormExists($config["form_id"])) {
+            return array("success" => false, "error_code" => "FB100");
+        }
+        if (!isset($config["view_id"]) || !Views::checkViewExists($config["view_id"])) {
+            return array("success" => false, "error_code" => "FB101");
+        }
+
+        // check all the templates exist. Just do a count.
+        $template_ids = array();
+        foreach ($config["templates"] as $template_info) {
+            $template_ids[] = $template_info["template_id"];
+        }
+        $num_templates = count($template_ids);
+        $template_id_str = implode(",", $template_ids);
+
+        $db->query("
+            SELECT count(*)
+            FROM {PREFIX}module_form_builder_templates
+            WHERE template_id IN ($template_id_str)
+        ");
+        $db->execute();
+
+        if ($num_templates != $db->fetch(PDO::FETCH_COLUMN)) {
+            return array("success" => false, "error_code" => "FB102");
+        }
+
+        return "";
     }
-  }
 
-  // now delete the info
-  while ($submission_info = mysql_fetch_assoc($query))
-  {
-    $submission_id = $submission_info["submission_id"];
 
-    // delete any files associated with the submission
-    while (list($col_name, $file_upload_dir) = each($file_field_info))
+    /**
+     * Called on every published form page. This checks that the current page number being passed via the query
+     * string is valid. It checks that (a) it wasn't hacked to contain any non-numeric content, (b) it's within
+     * the range of pages in this form configuration and (c) they aren't skipping any pages: each page has
+     * to be submitted in sequence.
+     *
+     * @param integer $page
+     * @param array $pages
+     */
+    public static function verifyPageNumber($page, $pages, $namespace)
     {
-      if (!empty($submission_info[$col_name]))
-        @unlink("{$file_upload_dir}/{$submission_info[$col_name]}");
+        $num_pages = count($pages);
+        if (!is_numeric($page) || $page < 1) {
+            $page = 1;
+        } else if ($page > $num_pages) {
+            $page = $num_pages;
+        }
+
+        // now look to see what pages the user has already filled in
+        $completed_pages = (isset($_SESSION[$namespace]["form_tools_completed_pages"])) ? $_SESSION[$namespace]["form_tools_completed_pages"] : array();
+
+        // if the previous page isn't marked as complete, set the page to the highest completed page + 1
+        if ($page != 1 && !in_array($page-1, $completed_pages)) {
+            if (!empty($completed_pages)) {
+                $page = max($completed_pages) + 1;
+            } else {
+                $page = 1;
+            }
+        }
+
+        return $page;
     }
-    reset($file_field_info);
-
-    mysql_query("DELETE FROM {$g_table_prefix}form_{$form_id} WHERE submission_id = $submission_id");
-  }
-
-  return mysql_num_rows($query);
-}
 
 
-/**
- * Used in the generated forms to figure out whether the submission needs to be finalized. Finalization is always done
- * on the penultimate step - right before redirecting to the thankyou page. Figuring out
- *
- * @param unknown_type $page
- * @param unknown_type $pages
- */
-function fb_is_final_step($current_page, $pages)
-{
-	echo $page;
-	print_r($pages);
-	exit;
+    /**
+     * Called on every published form page. This handles the scenario where the form is no longer online, either via the schedule
+     * or by the user explicitly setting the published form to offline.
+     *
+     * @param array $config
+     * @param string $namespace
+     */
+    public static function checkFormOffline($config, $namespace)
+    {
+        $module_settings = Modules::getModuleSettings();
+        self::maybeTakeScheduledFormOffline($config);
+
+        // if the form is marked as offline
+        if ($config["is_online"] == "yes") {
+            return true;
+        }
+
+        // the user doesn't already have any sessions created (i.e. they weren't in the midst of submitting the
+        // form!), we just display the Form Offline page
+        if (!isset($_SESSION[$namespace]["form_tools_submission_id"])) {
+            self::clearFormBuilderFormSessions($namespace);
+            self::generateFormPage($config, 1);
+            exit;
+        } else {
+            // here we have a special fringe case: the form just went offline but the user already started putting
+            // through the form. How we handle THAT, depends on what they choose for the "Offline form behaviour" setting
+            if ($module_settings["scheduled_offline_form_behaviour"] == "cutoff") {
+                self::clearFormBuilderFormSessions($namespace);
+                self::generateFormPage($config, 1);
+                exit;
+            } else {
+                // do nothing! For this scenario, we just allow them to proceed (i.e. let the function return nothing). As soon
+                // as they complete their form, sessions will be emptied and they won't be able to put through another
+            }
+        }
+    }
+
+
+    /**
+     * This blithely checks a published form to figure out if it needs to be taken offline. This is called for every published
+     * form on each page load, and on the Publish Tab in the admin section.
+     *
+     * @param array $config
+     * @return boolean whether or not the form was just taken offline
+     */
+    public static function maybeTakeScheduledFormOffline($config)
+    {
+        $db = Core::$db;
+        $just_taken_offline = false;
+
+        // first, check the form shouldn't be taken offline right now
+        if ($config["is_online"] == "yes" && $config["offline_date"] != "0000-00-00 00:00:00") {
+            $default_timezone_offset = Settings::get("default_timezone_offset");
+
+            $now = date("U");
+            $now = $now + ($default_timezone_offset * 60 * 60);
+
+            $offline_unixtime = CoreGeneral::convertDatetimeToTimestamp($config["offline_date"]);
+
+            // is the offline datetime just passed, take the sucker offline
+            if ($now > $offline_unixtime) {
+                $published_form_id = $config["published_form_id"];
+                $db->query("
+                    UPDATE {PREFIX}module_form_builder_forms
+                    SET    is_online = 'no',
+                           offline_date = '0000-00-00 00:00:00'
+                    WHERE  published_form_id = :published_form_id
+                ");
+                $db->bind("published_form_id", $published_form_id);
+                $db->execute();
+
+                $just_taken_offline = true;
+            }
+        }
+
+        return $just_taken_offline;
+    }
+
+
+    public static function initSessions()
+    {
+        global $g_session_type, $g_session_save_path, $g_api_header_charset;
+
+        $header_charset = "utf-8";
+        if (isset($g_api_header_charset) && !empty($g_api_header_charset))
+            $header_charset = $g_api_header_charset;
+
+        if (!isset($_SESSION)) {
+            if ($g_session_type == "database")
+                $sess = new SessionManager();
+
+            if (!empty($g_session_save_path))
+                session_save_path($g_session_save_path);
+
+            session_start();
+            header("Cache-control: private");
+            header("Content-Type: text/html; charset=$header_charset");
+        }
+    }
+
+
+    /**
+     * Deletes all unfinalized submissions and any associated files that have been uploaded. For safety,
+     * it only deletes incomplete submissions that are 24 hours old.
+     *
+     * @return integer the number of unfinalized submissions that were just deleted, or false if it failed.
+     */
+    public static function deleteUnfinalizedSubmissions($form_id)
+    {
+        $db = Core::$db;
+
+        if (!CoreForms::checkFormExists($form_id)) {
+            return false;
+        }
+
+        $db->query("
+            SELECT *
+            FROM   {PREFIX}form_{$form_id}
+            WHERE  is_finalized = 'no' AND
+              DATE_ADD(submission_date, INTERVAL 24 HOUR) < curdate()
+        ");
+        $db->execute();
+        $submissions_to_delete = $db->fetchAll();
+
+        if ($db->numRows() == 0) {
+            return 0;
+        }
+
+        // find out which fields in this form are file fields
+        $form_fields = Fields::getFormFields($form_id, array("include_field_type_info" => true));
+
+        $file_field_info = array(); // a hash of col_name => file upload dir
+        foreach ($form_fields as $field_info) {
+            if ($field_info["is_file_field"] == "file") {
+                $field_id = $field_info["field_id"];
+                $col_name = $field_info["col_name"];
+                $extended_settings = Fields::getExtendedFieldSettings($field_id);
+                $file_field_info[$col_name] = $extended_settings["file_upload_dir"];
+            }
+        }
+
+        // now delete the info
+        foreach ($submissions_to_delete as $submission_info) {
+            $submission_id = $submission_info["submission_id"];
+
+            // delete any files associated with the submission
+            while (list($col_name, $file_upload_dir) = each($file_field_info)) {
+                if (!empty($submission_info[$col_name])) {
+                    @unlink("{$file_upload_dir}/{$submission_info[$col_name]}");
+                }
+            }
+            reset($file_field_info);
+
+            $db->query("
+                DELETE FROM {PREFIX}form_{$form_id}
+                WHERE submission_id = :submission_id
+            ");
+            $db->bind("submission_id", $submission_id);
+            $db->execute();
+        }
+
+        return count($submissions_to_delete);
+    }
 }

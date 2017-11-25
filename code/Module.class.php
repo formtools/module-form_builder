@@ -19,7 +19,7 @@ class Module extends CoreModule
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "https://formtools.org";
     protected $version = "2.0.0";
-    protected $date = "2017-11-21";
+    protected $date = "2017-11-24";
     protected $originLanguage = "en_us";
     protected $jsFiles = array(
         "{MODULEROOT}/scripts/manage_template_sets.js",
@@ -215,10 +215,10 @@ class Module extends CoreModule
         CoreHooks::registerHook("template", "form_builder", "admin_forms_form_type_label", "", "displayFormBuilderLabel", 50, true);
         CoreHooks::registerHook("template", "form_builder", "admin_edit_form_content", "", "displayPublishTab", 50, true);
 
-        CoreHooks::registerHook("code", "form_builder", "start", "ft_module_override_data", "inlineDataOverride", 50, true);
+        CoreHooks::registerHook("code", "form_builder", "start", "FormTools\\Modules::moduleOverrideData", "inlineDataOverride", 50, true);
         CoreHooks::registerHook("code", "form_builder", "end", "FormTools\\General::displayCustomPageMessage", "displayFormCreatedMessage", 50, true);
-        CoreHooks::registerHook("code", "form_builder", "start", "ft_delete_form", "deleteForm");
-        CoreHooks::registerHook("code", "form_builder", "end", "ft_delete_view", "deleteView");
+        CoreHooks::registerHook("code", "form_builder", "start", "FormTools\\Forms::deleteForm", "deleteForm");
+        CoreHooks::registerHook("code", "form_builder", "end", "FormTools\\Views::deleteView", "deleteView");
     }
 
 
@@ -376,6 +376,8 @@ END;
         $root_dir = Core::getRootDir();
         $LANG = Core::$L;
 
+        echo "!";
+
         $form_id = $vars["form_info"]["form_id"];
         $published_forms = Forms::getPublishedForms($form_id);
 
@@ -383,7 +385,7 @@ END;
         $at_least_one_form_just_taken_offline = false; // yes, this variable name ROCKS!!!!!
         foreach ($published_forms["results"] as $config) {
             if ($config["is_online"] == "yes" && $config["offline_date"] != "0000-00-00 00:00:00") {
-                $taken_offline = fb_take_scheduled_form_offline($config);
+                $taken_offline = FormGenerator::maybeTakeScheduledFormOffline($config);
                 if ($taken_offline) {
                     $at_least_one_form_just_taken_offline = true;
                 }
@@ -449,17 +451,17 @@ END;
             return;
         }
 
-        $L = ft_get_module_lang_file_contents("form_builder");
+        $module = Modules::getModuleInstance("form_builder");
+        $L = $module->getLangStrings();
 
-        switch ($vars["location"])
-        {
+        switch ($vars["location"]) {
             // this adds the "Publish" tab to the Edit Form pages
             case "admin_edit_form_tabs":
                 $tabs = $vars["data"];
                 $tabs["publish"] = array(
-                "tab_label" => $L["word_publish"],
-                "tab_link"  => "?page=publish",
-                "pages"     => array("publish")
+                    "tab_label" => $L["word_publish"],
+                    "tab_link"  => "index.php?page=publish",
+                    "pages"     => array("publish")
                 );
                 return array("data" => $tabs);
                 break;
@@ -467,8 +469,7 @@ END;
             // this ensures the right code page is called when the user clicks on the Publish tab
             case "admin_edit_form_page_name_include":
                 $request = array_merge($_POST, $_GET);
-                if (isset($request["page"]) && $request["page"] == "publish")
-                {
+                if (isset($request["page"]) && $request["page"] == "publish") {
                     $file = realpath(dirname(__FILE__) . "/../../admin/tab_publish.php");
                     return array("data" => array("page_name" => $file));
                 }

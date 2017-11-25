@@ -1,7 +1,9 @@
 <?php
 
 require_once("../../global/session_start.php");
+
 ft_init_module_page();
+
 $permissions = ft_check_permission("admin", false); // TODO
 $request = array_merge($_POST, $_GET);
 

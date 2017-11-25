@@ -19,7 +19,7 @@ header("Content-Type: text/css");
 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 
 $g_check_ft_sessions = false;
-require_once(realpath(dirname(__FILE__) . "/../../../../global/library.php"));
+require_once(realpath(__DIR__ . "/../../../../global/library.php"));
 
 Modules::includeModule("form_builder");
 
