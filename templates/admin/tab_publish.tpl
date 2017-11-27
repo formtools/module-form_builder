@@ -65,7 +65,7 @@
 		              <ul>
 		                <li class="col1 sort_col">{$i}</li>
 		                <li class="col2"><a href="?page=edit_view&view_id={$info.view_id}">{display_view_name view_id=$info.view_id}</a></li>
-		                <li class="col3"><a href="../../modules/form_builder/template_sets/index.php?set_id={$info.set_id}">{display_template_set_name set_id=$info.set_id}</a></li>
+		                <li class="col3"><a href="../../../modules/form_builder/template_sets/index.php?page=info&set_id={$info.set_id}">{display_template_set_name set_id=$info.set_id}</a></li>
 		                <li class="col4">
 		                  {if $info.is_published == "yes"}
 		                    <span class="green">{$LANG.word_yes}</span>

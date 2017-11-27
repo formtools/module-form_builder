@@ -1,3 +1,5 @@
 .idea*
 .DS_Store
+published/*
+!published/index.html
 

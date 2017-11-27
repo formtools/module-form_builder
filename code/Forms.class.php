@@ -149,10 +149,6 @@ class Forms
         $db->bind("form_id", $published_form_id);
         $db->execute();
 
-        $db->query("DELETE FROM {PREFIX}module_form_builder_form_pages WHERE published_form_id = :form_id");
-        $db->bind("form_id", $published_form_id);
-        $db->execute();
-
         $db->query("DELETE FROM {PREFIX}module_form_builder_form_placeholders WHERE published_form_id = :form_id");
         $db->bind("form_id", $published_form_id);
         $db->execute();
@@ -161,7 +157,7 @@ class Forms
         $db->bind("form_id", $published_form_id);
         $db->execute();
 
-        self::updatePublishedFormOrder($form_id);
+        self::updatePublishedFormOrder($form_id, $L);
 
         return array(true, $L["notify_form_configuration_deleted"]);
     }
@@ -635,7 +631,7 @@ class Forms
      * @param integer $form_id
      * @param array $info
      */
-    public static function updatePublishedFormOrder($form_id, $info = array(), $L)
+    public static function updatePublishedFormOrder($form_id, $L, $info = array())
     {
         $db = Core::$db;
 
@@ -769,7 +765,6 @@ class Forms
                 ");
                 $db->bindAll(array(
                     "is_online" => $is_online,
-                    "is_published" => "no",
                     "form_id" => $info["form_id"],
                     "view_id" => $info["view_id"],
                     "set_id" => $info["template_set_id"],
@@ -854,7 +849,7 @@ class Forms
             $db->bindAll(array(
                 "published_form_id" => $published_form_id,
                 "placeholder_id" => $placeholder_id,
-                "placeholder_value" => $values
+                "placeholder_values" => $values
             ));
             $db->execute();
         }
@@ -875,12 +870,15 @@ class Forms
 <?php
 
 /**
- * This page was created by the Form Tools Form Builder module.
+ * This file was created by the Form Tools Form Builder module.
  */
 require_once("$root_dir/global/library.php");
+use FormTools\Core;
+Core::init(array("start_sessions" => false));
+\$root_dir = Core::getRootDir();
 \$published_form_id = $published_form_id;
 \$filename  = "$filename";
-require_once("\$g_root_dir/modules/form_builder/form.php");
+require_once("\$root_dir/modules/form_builder/form.php");
 END;
 
         return $content;

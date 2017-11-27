@@ -213,14 +213,8 @@ class Placeholders
         ");
         $db->bind("set_id", $set_id);
         $db->execute();
-        $result = $db->fetch(PDO::FETCH_COLUMN);
 
-        $next_order = 1;
-        if (!empty($result)) {
-            $next_order = $result["field_order"] + 1;
-        }
-
-        return $next_order;
+        return $db->fetch(PDO::FETCH_COLUMN) + 1;
     }
 
 
@@ -362,11 +356,10 @@ class Placeholders
     /**
      * Called by the Form Builder to generate the markup for the Placeholders section in the sidebar.
      *
-     * @param integer $set_id
      * @param array $placeholders
      * @param array $placeholder_hash
      */
-    public static function generateTemplateSetPlaceholdersHtml($set_id, $placeholders, $placeholder_hash = array(), $L)
+    public static function generateTemplateSetPlaceholdersHtml($placeholders, $placeholder_hash = array(), $L)
     {
         $smarty = General::createNewSmartyInstance("single");
         $smarty->assign("placeholders", $placeholders);

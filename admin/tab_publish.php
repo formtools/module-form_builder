@@ -34,7 +34,7 @@ if (isset($_POST["set_as_form_builder"])) {
             $_GET["delete_form_config"], $override);
         } else {
             if (isset($_POST["update_order"])) {
-                list($success, $message) = Forms::updatePublishedFormOrder($form_id, $_POST, $L);
+                list($success, $message) = Forms::updatePublishedFormOrder($form_id, $L, $_POST);
             }
         }
     }

@@ -1,5 +1,6 @@
 <?php
 
+use FormTools\Core;
 use FormTools\General as CoreGeneral;
 use FormTools\Modules;
 use FormTools\Modules\FormBuilder\Forms;
@@ -25,7 +26,8 @@ if (!empty($error_code)) {
     exit;
 }
 
-FormGenerator::initSessions();
+Core::startSessions();
+//FormGenerator::initSessions();
 
 if (isset($_GET["clear"])) {
     FormGenerator::clearFormBuilderFormSessions($namespace);

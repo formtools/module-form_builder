@@ -126,7 +126,7 @@ class TemplateSets
         // deleting as well, which takes more work to identify the records
         $placeholders = Placeholders::getPlaceholders($set_id);
         foreach ($placeholders as $placeholder_info) {
-            Placeholders::deletePlaceholder($placeholder_info["placeholder_id"]);
+            Placeholders::deletePlaceholder($placeholder_info["placeholder_id"], $L);
         }
 
         $db->query("DELETE FROM {PREFIX}module_form_builder_template_sets WHERE set_id = :set_id");

@@ -10,7 +10,7 @@ use FormTools\Modules;
  */
 function smarty_function_display_template_usage($params, &$smarty)
 {
-    $module = Modules::getModuleInstance("form_builde");
+    $module = Modules::getModuleInstance("form_builder");
     $L = $module->getLangStrings();
 
     $usage = $params["usage"];

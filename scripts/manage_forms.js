@@ -75,7 +75,7 @@ fb_ns.delete_form_configuration = function(el) {
         {
           text: g.messages["word_yes"],
           click: function() {
-            window.location = 'edit.php?page=publish&delete=' + published_form_id;
+            window.location = '?page=publish&delete=' + published_form_id;
           }
         },
         {

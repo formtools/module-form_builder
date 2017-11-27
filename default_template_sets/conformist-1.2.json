@@ -64,7 +64,7 @@
     "navigation": [
       {
         "template_name": "Navigation - Arrows",
-        "content": "<ul id=\"css_nav\" class=\"nav_{{$nav_pages|@count}}_pages\">\n  {{foreach from=$nav_pages item=page_info name=row}}\n    {{assign var=i value=$smarty.foreach.row.iteration}}\n    {{assign var=a value=\" "
+        "content": "<ul id=\"css_nav\" class=\"nav_{{$nav_pages|@count}}_pages\">\n  {{foreach from=$nav_pages item=page_info name=row}}\n    {{assign var=i value=$smarty.foreach.row.iteration}}\n    {{if $current_page > $i && $current_page != $num_pages}}\n      <li class=\"completed_page\"><a href=\"{{$filename}}?page={{$i}}\">&raquo; {{$page_info.page_name}}</a></li>\n    {{elseif $i != $current_page && $current_page == $num_pages}}\n      <li class=\"completed_page\"><span>&raquo; {{$page_info.page_name}}</span></li>\n    {{elseif $current_page == $i || $current_page == $num_pages}}\n      <li class=\"css_nav_current_page\">&raquo; {{$page_info.page_name}}</li>\n    {{else}}\n      <li>&raquo; {{$page_info.page_name}}</li>\n    {{/if}}\n  {{/foreach}}\n</ul>"
       },
       {
         "template_name": "Navigation - Numbered",
@@ -217,6 +217,13 @@
           "option_text": "60px"
         }
       ]
+    },
+    {
+      "placeholder_label": "Footer content",
+      "placeholder": "footer_content",
+      "field_type": "textbox",
+      "field_orientation": "na",
+      "default_value": ""
     }
   ]
 }

@@ -21,6 +21,10 @@ class Module extends CoreModule
     protected $version = "2.0.0";
     protected $date = "2017-11-24";
     protected $originLanguage = "en_us";
+
+    // important! This needs to be updated any time the default template set filename changes
+    protected $defaultTemplateSet = "default-1.1.json";
+
     protected $jsFiles = array(
         "{MODULEROOT}/scripts/manage_template_sets.js",
         "{FTROOT}/global/scripts/sortable.js",
@@ -271,6 +275,7 @@ class Module extends CoreModule
             return array(false, "You appear to be missing the default_template_sets folder, or your \$g_root_dir settings is invalid.");
         }
 
+        $template_set_files = array();
         while (($file = readdir($dh)) !== false) {
             $parts = pathinfo($file);
             if ($parts["extension"] !== "json") {
@@ -282,10 +287,20 @@ class Module extends CoreModule
             $response = Schemas::validateSchema($template_set, $schema);
 
             if ($response["is_valid"]) {
-                TemplateSets::importTemplateSetData($template_set);
+                $template_set_files[$file] = $template_set;
             } else {
                 // TODO
             }
+        }
+
+        // now install the template sets. Ensure the "default-*.json" one is set first
+        TemplateSets::importTemplateSetData($template_set_files[$this->defaultTemplateSet]);
+
+        foreach ($template_set_files as $filename => $template_set) {
+            if ($filename === $this->defaultTemplateSet) {
+                continue;
+            }
+            TemplateSets::importTemplateSetData($template_set);
         }
     }
     

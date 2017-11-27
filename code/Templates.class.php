@@ -316,7 +316,7 @@ class Templates
         $smarty->assign("selected_templates", $selected_templates);
         $smarty->assign("L", $L);
 
-        $html = $smarty->fetch("./smarty_plugins/templates_html.tpl");
+        $html = $smarty->fetch("../../modules/form_builder/smarty_plugins/templates_html.tpl");
 
         return $html;
     }

@@ -614,7 +614,7 @@ builder_js.close_window = function (e) {
 
   // if the parent window is still on the publish tab, refresh the page to ensure it has the latest content
   if ($(window.opener.document).find("#publish_tab_identifier").length) {
-    window.opener.location = g.root_url + "/admin/forms/edit.php?page=publish";
+    window.opener.location = g.root_url + "/admin/forms/edit/?page=publish";
   }
   try {
     if (e.data.close) {
@@ -668,7 +668,7 @@ builder_js.publish_form_check = function () {
 
 builder_js.publish_form = function () {
   $.ajax({
-    url: g.root_url + "/modules/form_builder/global/code/actions.php",
+    url: g.root_url + "/modules/form_builder/code/actions.php",
     type: "POST",
     data: {
       action: "publish_form",

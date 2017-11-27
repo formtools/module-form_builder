@@ -26,8 +26,9 @@
         <div>
             <select name="header_template_id" id="header_template_id" class="full">
                 {foreach from=$grouped_templates.header item=template name=row}
-                    <option value="{$template.template_id}"
-                            {if $selected_templates.header == $template.template_id}selected="selected"{/if}>{$template.template_name}</option>
+                    <option value="{$template.template_id}" {if isset($selected_templates.header) && $selected_templates.header == $template.template_id}selected="selected"{/if}>
+                        {$template.template_name}
+                    </option>
                 {/foreach}
             </select>
         </div>

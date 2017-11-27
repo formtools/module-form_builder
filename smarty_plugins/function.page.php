@@ -50,8 +50,8 @@ function smarty_function_page($params, &$smarty)
 
         // get whatever validation is needed for this page
         $validation_js = FieldValidation::generateSubmissionJsValidation($grouped_fields, array(
-        "form_element_id" => "ts_form_element_id",
-        "custom_error_handler" => "fb_validate"
+            "form_element_id" => "ts_form_element_id",
+            "custom_error_handler" => "fb_validate"
         ));
 
         $get_view_field_info = true;
@@ -73,12 +73,13 @@ function smarty_function_page($params, &$smarty)
                     continue;
                 }
 
-                // a hack for a complicated scenario. The {display_custom_field} template doesn't set the settings param like with the main
-                // program, so we re-use the {edit_custom_field} template and just tell it that nothing is editable
+                // a hack for a complicated scenario. The {display_custom_field} template doesn't set the settings
+                // param like with the main program, so we re-use the {edit_custom_field} template and just tell it
+                // that nothing is editable
                 if ($page_type == "review_page") {
                     $field_info["is_editable"] = "no";
                     $field_info["submission_info"] = array();
-                    $field_info["submission_info"]["value"] = $field_info["submission_value"];
+                    $field_info["submission_info"]["value"] = isset($field_info["submission_value"]) ? $field_info["submission_value"] : "";
                 }
 
                 $fields[] = $field_info;
@@ -86,8 +87,8 @@ function smarty_function_page($params, &$smarty)
 
             if (!empty($fields)) {
                 $updated_grouped_fields[] = array(
-                "group" => $group,
-                "fields" => $fields
+                    "group" => $group,
+                    "fields" => $fields
                 );
             }
         }
@@ -110,6 +111,10 @@ function smarty_function_page($params, &$smarty)
     $smarty->assign("eval_str", $template_info["content"]);
     $smarty->assign("page_name", $template_vars["nav_pages"][$current_page - 1]["page_name"]);
     $smarty->assign("page_type", $page_type);
+
+    // used in the form action attribute. This'll cause nice "/" paths for index.php to get redirected to index.php on
+    // the next redirect, which is a pity
+    $smarty->assign("page_url", basename($_SERVER["SCRIPT_NAME"]));
 
     $page = $smarty->fetch("../../modules/form_builder/smarty_plugins/eval.tpl");
     if (!empty($validation_js)) {

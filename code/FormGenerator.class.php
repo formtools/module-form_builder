@@ -150,8 +150,7 @@ class FormGenerator
         } else {
             $page_type = Forms::getCurrentPageType($current_page, $view_tabs, $include_review_page);
 
-            switch ($page_type)
-            {
+            switch ($page_type) {
                 case "form_page":
                     $templates["page"] = Templates::getTemplate($settings["form_page_template_id"]);
                     break;
@@ -196,10 +195,8 @@ class FormGenerator
         $smarty->assign("thankyou_page_content", $settings["thankyou_page_content"]);
         $smarty->assign("form_offline_page_content", $settings["form_offline_page_content"]);
 
-        if (isset($settings["submission_id"]) && !empty($settings["submission_id"])) {
-            $smarty->assign("submission_id", $settings["submission_id"]);
-        }
-
+        // submission ID is always set - it's just blank when building the form
+        $smarty->assign("submission_id", $settings["submission_id"]);
 
         // TODO, only include codemirror if needed. It's a fringe case.
         $required_resources =<<< END
@@ -218,7 +215,11 @@ class FormGenerator
     <script src="$root_url/global/scripts/field_types.php"></script>
     <link rel="stylesheet" href="$root_url/global/css/field_types.php" type="text/css" />
     <script src="$root_url/global/codemirror/lib/codemirror.js"></script>
+    <script src="$root_url/global/codemirror/mode/xml/xml.js"></script>
+    <script src="$root_url/global/codemirror/mode/css/css.js"></script>
+    <script src="$root_url/global/codemirror/mode/javascript/javascript.js"></script>
     <script src="$root_url/global/scripts/jquery-ui-timepicker-addon.js"></script>
+    <link rel="stylesheet" href="$root_url/global/codemirror/lib/codemirror.css" type="text/css" />
     <script src="$root_url/global/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
     <link rel="stylesheet" href="$root_url/global/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 END;
@@ -332,41 +333,36 @@ END;
 
         $namespace          = $params["namespace"];
         $submission_id      = $params["submission_id"];
-        $config             = $params["config"];
         $page               = $params["page"];
         $page_type          = $params["page_type"];
         $form_id            = $params["form_id"];
         $view_id            = $params["view_id"];
         $form_data          = $params["form_data"];
-        $no_sessions_url    = $params["no_sessions_url"];
-        $submit_button_name = $params["submit_button"];
         $next_page          = $params["next_page"];
-        $file_data          = $params["file_data"];
         $finalize           = isset($params["finalize"]) ? $params["finalize"] : false;
 
-        $form_info = CoreForms::getForm($form_id);
+//        $form_info = CoreForms::getForm($form_id);
 
         $failed_validation = false;
         $validation_error = "";
-        $update_successful = "";
         if ($page_type == "form") {
             $tabs = ViewTabs::getViewTabs($view_id, true);
             $curr_page = $page;
-            if (empty($tabs))
+            if (empty($tabs)) {
                 $curr_page = "";
+            }
 
             $view_fields = ViewFields::getGroupedViewFields($view_id, $curr_page);
 
             $field_ids = array();
             $editable_field_ids = array();
-            foreach ($view_fields as $view_field_group)
-            {
-                foreach ($view_field_group["fields"] as $field_info)
-                {
+            foreach ($view_fields as $view_field_group) {
+                foreach ($view_field_group["fields"] as $field_info) {
                     $field_id = $field_info["field_id"];
                     $field_ids[] = $field_id;
-                    if ($field_info["is_editable"] == "yes")
+                    if ($field_info["is_editable"] == "yes") {
                         $editable_field_ids[] = $field_id;
+                    }
                 }
             }
 
@@ -376,67 +372,64 @@ END;
             $form_data["field_ids"] = implode(",", $field_ids); // *sigh*
             $form_data["editable_field_ids"] = $editable_field_ids;
 
-            list($update_successful, $validation_error) = ft_update_submission($form_id, $submission_id, $form_data);
+            list($update_successful, $validation_error) = Submissions::updateSubmission($form_id, $submission_id, $form_data);
 
             // if there was any problem udpating this submission, make a special note of it: we'll use that info to merge the current POST request
             // info with the original field values to ensure the page contains the latest data (i.e. for cases where they fail server-side validation)
-            if (!$update_successful)
-            {
+            if (!$update_successful) {
                 $failed_validation = true;
             }
         }
 
+
+        // TODO once the API is back in business
+
         // the reCAPTCHA can be placed on the form or review page (only!)
-        $has_captcha = isset($form_data["recaptcha_response_field"]) ? true : false;
-        if ($has_captcha && ($page_type == "form" || $page_type == "review"))
-        {
-            // was there a reCAPTCHA response? If so, a recaptcha was just submitted, check it was entered correctly
-            $passes_captcha = true;
-            if ($has_captcha)
-            {
-                $passes_captcha = false;
-                $recaptcha_challenge_field = $form_data["recaptcha_challenge_field"];
-                $recaptcha_response_field  = $form_data["recaptcha_response_field"];
+//        $has_captcha = isset($form_data["recaptcha_response_field"]) ? true : false;
+//        if ($has_captcha && ($page_type == "form" || $page_type == "review")) {
+//            // was there a reCAPTCHA response? If so, a recaptcha was just submitted, check it was entered correctly
+//            $passes_captcha = true;
+//            if ($has_captcha)
+//            {
+//                $passes_captcha = false;
+//                $recaptcha_challenge_field = $form_data["recaptcha_challenge_field"];
+//                $recaptcha_response_field  = $form_data["recaptcha_response_field"];
+//
+//                require_once(realpath(__DIR__ . "/../../../../global/api/recaptchalib.php"));
+//                $resp = recaptcha_check_answer($g_api_recaptcha_private_key, $_SERVER["REMOTE_ADDR"], $recaptcha_challenge_field, $recaptcha_response_field);
+//
+//                if ($resp->is_valid)
+//                {
+//                    // keep track of the fact that the user has entered the CAPTCHA properly so they aren't shown the captcha again
+//                    $passes_captcha = true;
+//                    $_SESSION[$namespace]["passed_captcha"] = true;
+//                }
+//                else
+//                {
+//                    // if the main update was successful, but they failed validation, just display the single "wrong captcha" error
+//                    if ($update_successful)
+//                    {
+//                        $validation_error = "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
+//                    }
+//                    else
+//                    {
+//                        $br = (!empty($validation_error)) ? "<br />" : "";
+//                        $validation_error .= $br . "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
+//                    }
+//
+//                    $failed_validation = true;
+//                }
+//            }
+//        }
 
-                require_once(realpath(__DIR__ . "/../../../../global/api/recaptchalib.php"));
-                $resp = recaptcha_check_answer($g_api_recaptcha_private_key, $_SERVER["REMOTE_ADDR"], $recaptcha_challenge_field, $recaptcha_response_field);
-
-                if ($resp->is_valid)
-                {
-                    // keep track of the fact that the user has entered the CAPTCHA properly so they aren't shown the captcha again
-                    $passes_captcha = true;
-                    $_SESSION[$namespace]["passed_captcha"] = true;
-                }
-                else
-                {
-                    // if the main update was successful, but they failed validation, just display the single "wrong captcha" error
-                    if ($update_successful)
-                    {
-                        $validation_error = "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
-                    }
-                    else
-                    {
-                        $br = (!empty($validation_error)) ? "<br />" : "";
-                        $validation_error .= $br . "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
-                    }
-
-                    $failed_validation = true;
-                }
-            }
-        }
-
-        if (!$failed_validation)
-        {
+        if (!$failed_validation) {
             // this automatically sends any emails set to the on_submission trigger.
-            if ($finalize)
-            {
-                ft_finalize_submission($form_id, $submission_id);
+            if ($finalize) {
+                Submissions::finalizeSubmission($form_id, $submission_id);
             }
 
-            if (!empty($next_page))
-            {
-                if (!in_array($page, $_SESSION[$namespace]["form_tools_completed_pages"]))
-                {
+            if (!empty($next_page)) {
+                if (!in_array($page, $_SESSION[$namespace]["form_tools_completed_pages"])) {
                     $_SESSION[$namespace]["form_tools_completed_pages"][] = $page;
                 }
                 header("location: $next_page");
@@ -642,26 +635,27 @@ END;
     }
 
 
-    public static function initSessions()
-    {
-        global $g_session_type, $g_session_save_path, $g_api_header_charset;
-
-        $header_charset = "utf-8";
-        if (isset($g_api_header_charset) && !empty($g_api_header_charset))
-            $header_charset = $g_api_header_charset;
-
-        if (!isset($_SESSION)) {
-            if ($g_session_type == "database")
-                $sess = new SessionManager();
-
-            if (!empty($g_session_save_path))
-                session_save_path($g_session_save_path);
-
-            session_start();
-            header("Cache-control: private");
-            header("Content-Type: text/html; charset=$header_charset");
-        }
-    }
+//    public static function initSessions()
+//    {
+//        global $g_session_type, $g_session_save_path, $g_api_header_charset;
+//
+//        $header_charset = "utf-8";
+//        if (isset($g_api_header_charset) && !empty($g_api_header_charset))
+//            $header_charset = $g_api_header_charset;
+//
+//        if (!isset($_SESSION)) {
+//            if ($g_session_type == "database") {
+//                $sess = new SessionManager();
+//            }
+//
+//            if (!empty($g_session_save_path))
+//                session_save_path($g_session_save_path);
+//
+//            session_start();
+//            header("Cache-control: private");
+//            header("Content-Type: text/html; charset=$header_charset");
+//        }
+//    }
 
 
     /**

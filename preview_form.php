@@ -25,6 +25,7 @@ foreach ($placeholder_ids as $placeholder_id) {
 // pulled from the database
 $_SESSION["ft"]["form_builder"]["placeholders"] = $placeholders;
 
+
 // creating a new array here isn't strictly needed, since we COULD just tweak and pass along the POST request,
 // but it helps to see precisely what info is being sent
 $settings = array(

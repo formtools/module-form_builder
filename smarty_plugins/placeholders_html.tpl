@@ -10,7 +10,7 @@
 	    <label>{$info.placeholder_label}</label>
       <div>
         {if $info.field_type == "textbox"}
-          <input type="text" name="placeholder_{$pid}" value="{$placeholder_hash.$pid|escape}" class="full" />
+          <input type="text" name="placeholder_{$pid}" value="{if isset($placeholder_hash.$pid)}{$placeholder_hash.$pid|escape}{/if}" class="full" />
         {elseif $info.field_type == "textarea"}
           <textarea name="placeholder_{$pid}" style="width:98%; height: 60px">{$placeholder_hash.$pid}</textarea>
         {elseif $info.field_type == "password"}
