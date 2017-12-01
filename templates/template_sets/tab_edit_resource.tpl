@@ -39,7 +39,7 @@
     </div>
 
     <script>
-      var html_editor = new CodeMirror.fromTextArea(document.getElementById("resource_content"), {literal}{{/literal}
+      var codemirror_resource_content = new CodeMirror.fromTextArea(document.getElementById("resource_content"), {literal}{{/literal}
         mode: "css"
       {literal}});{/literal}
     </script>

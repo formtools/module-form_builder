@@ -377,3 +377,8 @@ fb_ns.display_template_status_dialog = function(e) {
   return false;
 }
 
+$(function () {
+  $("input[name=resource_type]").bind("click", function (e) {
+    //codemirror_resource_content.
+  });
+});

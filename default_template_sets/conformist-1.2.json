@@ -24,19 +24,19 @@
     "footer": [
       {
         "template_name": "Footer",
-        "content": "  <div class=\"ts_footer\">{{$P.footer_html}}</div>\n</div> <!-- ends class=\"ts_page\" div -->\n\n</body>\n</html>"
+        "content": "  <div class=\"ts_footer\"></div>\n</div> <!-- ends class=\"ts_page\" div -->\n\n</body>\n</html>"
       }
     ],
     "form_page": [
       {
         "template_name": "Form Page",
-        "content": "{{navigation}}\n\n<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n\n  <h2>{{$page_name}}</h2>\n\n  {{error_message}}\n\n  <form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\"\n    id=\"ts_form_element_id\" name=\"edit_submission_form\">\n    <input type=\"hidden\" id=\"form_tools_published_form_id\" value=\"{{$published_form_id}}\" />\n  {{foreach from=$grouped_fields key=k item=curr_group name=row}}\n    {{assign var=group value=$curr_group.group}}\n    {{assign var=fields value=$curr_group.fields}}\n\n      <a name=\"s{{$group.group_id}}\"></a>\n    {{if $group.group_name}}\n      <h3>{{$group.group_name}}</h3>\n    {{else}}\n      <br />\n    {{/if}}\n\n    {{if $fields|@count > 0}}\n    <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"798\">\n    {{/if}}\n    \n    {{foreach from=$fields item=curr_field}}\n      {{assign var=field_id value=$field.field_id}}\n      <tr>\n        <td width=\"180\" valign=\"top\">\n          {{$curr_field.field_title}}\n          <span class=\"req\">{{if $curr_field.is_required}}*{{/if}}</span>\n        </td>\n        <td class=\"answer\" valign=\"top\">\n          <div class=\"pad_left\">\n          {{edit_custom_field form_id=$form_id field_info=$curr_field field_types=$field_types\n            settings=$settings submission_id=$submission_id}}\n          </div>\n        </td>\n      </tr>\n    {{/foreach}}\n\n    {{if $fields|@count > 0}}\n      </table>  \n    {{/if}}\n\n  {{/foreach}}\n\n  {{continue_block}}\n\n  </form>\n    \n  </div>\n</div>\n"
+        "content": "{{navigation}}\n\n<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n\n  <h2>{{$page_name}}</h2>\n\n  {{error_message}}\n\n  <form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\"\n    id=\"ts_form_element_id\" name=\"edit_submission_form\">\n    <input type=\"hidden\" id=\"form_tools_published_form_id\" value=\"{{$published_form_id}}\" />\n  {{foreach from=$grouped_fields key=k item=curr_group name=row}}\n    {{assign var=group value=$curr_group.group}}\n    {{assign var=fields value=$curr_group.fields}}\n\n      <a name=\"s{{$group.group_id}}\"></a>\n    {{if $group.group_name}}\n      <h3>{{$group.group_name}}</h3>\n    {{else}}\n      <br />\n    {{/if}}\n\n    {{if $fields|@count > 0}}\n    <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"798\">\n    {{/if}}\n    \n    {{foreach from=$fields item=curr_field}}\n      <tr>\n        <td width=\"180\" valign=\"top\">\n          {{$curr_field.field_title}}\n          <span class=\"req\">{{if $curr_field.is_required}}*{{/if}}</span>\n        </td>\n        <td class=\"answer\" valign=\"top\">\n          <div class=\"pad_left\">\n          {{edit_custom_field form_id=$form_id field_info=$curr_field field_types=$field_types\n            settings=$settings submission_id=$submission_id}}\n          </div>\n        </td>\n      </tr>\n    {{/foreach}}\n\n    {{if $fields|@count > 0}}\n      </table>  \n    {{/if}}\n\n  {{/foreach}}\n\n  {{continue_block}}\n\n  </form>\n    \n  </div>\n</div>\n"
       }
     ],
     "review_page": [
       {
         "template_name": "Review Page",
-        "content": "{{navigation}}\n\n<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n\n  <h2>{{$review_page_title}}</h2>\n\n  <form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\">\n  {{foreach from=$grouped_fields item=curr_group}}\n    {{assign var=group value=$curr_group.group}}\n    {{assign var=fields value=$curr_group.fields}}\n\n    {{if $fields|@count > 0}}\n      <h3>\n        <a href=\"?page={{$group.custom_data}}#s{{$group.group_id}}\">EDIT</a>\n        {{$group.group_name}}\n      </h3>\n  \n      <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"798\">\n    {{/if}}\n\n    {{foreach from=$fields item=curr_field}}\n      {{assign var=field_id value=$field.field_id}}\n      <tr>\n        <td width=\"200\" class=\"pad_left_small\" valign=\"top\">{{$curr_field.field_title}}</td>\n        <td class=\"answer\" valign=\"top\">\n          <div class=\"pad_left\">\n          {{edit_custom_field form_id=$form_id submission_id=$submission_id\n            field_info=$curr_field field_types=$field_types settings=$settings}}\n          </div>\n        </td>\n      </tr>\n    {{/foreach}}\n\n    {{if $fields|@count > 0}}\n      </table>    \n    {{/if}}\n  {{/foreach}}\n\n  {{continue_block}}\n\n  </form>\n\n  </div>\n</div>\n\n"
+        "content": "{{navigation}}\n\n<div class=\"ts_content\">\n  <div class=\"ts_content_inner\">\n\n  <h2>{{$review_page_title}}</h2>\n\n  <form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\">\n  {{foreach from=$grouped_fields item=curr_group}}\n    {{assign var=group value=$curr_group.group}}\n    {{assign var=fields value=$curr_group.fields}}\n\n    {{if $fields|@count > 0}}\n      <h3>\n        <a href=\"?page={{$group.custom_data}}#s{{$group.group_id}}\">EDIT</a>\n        {{$group.group_name}}\n      </h3>\n  \n      <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"798\">\n    {{/if}}\n\n    {{foreach from=$fields item=curr_field}}\n      <tr>\n        <td width=\"200\" class=\"pad_left_small\" valign=\"top\">{{$curr_field.field_title}}</td>\n        <td class=\"answer\" valign=\"top\">\n          <div class=\"pad_left\">\n          {{edit_custom_field form_id=$form_id submission_id=$submission_id\n            field_info=$curr_field field_types=$field_types settings=$settings}}\n          </div>\n        </td>\n      </tr>\n    {{/foreach}}\n\n    {{if $fields|@count > 0}}\n      </table>    \n    {{/if}}\n  {{/foreach}}\n\n  {{continue_block}}\n\n  </form>\n\n  </div>\n</div>\n\n"
       }
     ],
     "thankyou_page": [
@@ -217,13 +217,6 @@
           "option_text": "60px"
         }
       ]
-    },
-    {
-      "placeholder_label": "Footer content",
-      "placeholder": "footer_content",
-      "field_type": "textbox",
-      "field_orientation": "na",
-      "default_value": ""
     }
   ]
 }

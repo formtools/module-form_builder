@@ -602,7 +602,6 @@ END;
         $template_set_order = self::getNewTemplateSetOrder();
 
         try {
-
             // insert the new template set
             $set_id = self::addTemplateSet($template_set->template_set_name, $template_set->template_set_version,
                 $template_set->description, "yes", $template_set_order);
@@ -638,11 +637,10 @@ END;
             // placeholders
             if (isset($template_set->placeholders)) {
                 foreach ($template_set->placeholders as $placeholder_info) {
+                    $options = isset($placeholder_info->options) ? $placeholder_info->options : array();
                     Placeholders::addPlaceholder($set_id, $placeholder_info->placeholder_label,
-                        $placeholder_info->placeholder,
-                        $placeholder_info->field_type, $placeholder_info->field_orientation,
-                        $placeholder_info->default_value,
-                    $placeholder_info->options);
+                        $placeholder_info->placeholder, $placeholder_info->field_type, $placeholder_info->field_orientation,
+                        $placeholder_info->default_value, $options);
                 }
             }
         } catch (Exception $e) {

@@ -635,29 +635,6 @@ END;
     }
 
 
-//    public static function initSessions()
-//    {
-//        global $g_session_type, $g_session_save_path, $g_api_header_charset;
-//
-//        $header_charset = "utf-8";
-//        if (isset($g_api_header_charset) && !empty($g_api_header_charset))
-//            $header_charset = $g_api_header_charset;
-//
-//        if (!isset($_SESSION)) {
-//            if ($g_session_type == "database") {
-//                $sess = new SessionManager();
-//            }
-//
-//            if (!empty($g_session_save_path))
-//                session_save_path($g_session_save_path);
-//
-//            session_start();
-//            header("Cache-control: private");
-//            header("Content-Type: text/html; charset=$header_charset");
-//        }
-//    }
-
-
     /**
      * Deletes all unfinalized submissions and any associated files that have been uploaded. For safety,
      * it only deletes incomplete submissions that are 24 hours old.

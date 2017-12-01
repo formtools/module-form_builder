@@ -141,7 +141,7 @@
             <select name="continue_block_template_id" id="continue_block_template_id" class="full">
                 {foreach from=$grouped_templates.continue_block item=template name=row}
                     <option value="{$template.template_id}"
-                            {if $selected_templates.continue_block == $template.template_id}selected="selected"{/if}>{$template.template_name}</option>
+                            {if isset($selected_templates.continue_block) && $selected_templates.continue_block == $template.template_id}selected="selected"{/if}>{$template.template_name}</option>
                 {/foreach}
             </select>
         </div>

@@ -7,11 +7,32 @@ use FormTools\Modules\FormBuilder\Forms;
 use FormTools\Modules\FormBuilder\FormGenerator;
 use FormTools\ViewTabs;
 
+/**
+ * If the user uninstalls the Form Builder or disables it, any public forms will stop working. This is called at the
+ * top of the forms to output a simple "Offline" message. It's really just to prevent an ugly error.
+ *
+ * Note: this is DIFFERENT from the form offline message which is configured per form.
+ */
+if (!Modules::checkModuleUsable("form_builder")) {
+    echo <<< END
+<!DOCTYPE html>
+<html><head></head>
+<body>
+    <p>
+        This form is unavailable. 
+    </p>
+</body>
+</html>
+END;
+    exit;
+}
+
 $module = Modules::getModuleInstance("form_builder");
 $namespace = "form_builder_{$published_form_id}";
 
 // find out about the page: form / review / thanks. That determines what values we pass to ft_api_process_form_builder_page()
 $config = Forms::getFormConfiguration($published_form_id);
+
 $form_id = $config["form_id"];
 $view_id = $config["view_id"];
 

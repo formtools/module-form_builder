@@ -1,7 +1,7 @@
 <?php
 
 /**
- * For used in actually generating the form based on a template set.
+ * Used in actually generating the form based on a template set.
  *
  * @param array $params
  * @param object $smarty
