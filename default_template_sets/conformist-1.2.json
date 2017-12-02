@@ -14,11 +14,11 @@
     "header": [
       {
         "template_name": "Header",
-        "content": "<html>\n<head>\n  <title>{{$form_name}}</title>\n  <link href=\"http://fonts.googleapis.com/css?family={{$P.font|regex_replace:'/[ ]/':'+'}}\" rel='stylesheet' type='text/css'>  \n  {{$required_resources}}\n  {{$R.styles}}\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:900px\">\n    <div class=\"ts_header\">\n      {{form_builder_edit_link}}\n      <h1>{{$form_name}}</h1>\n    </div>\n\n"
+        "content": "<!DOCTYPE html>\n<html>\n<head>\n  <title>{{$form_name}}</title>\n  <link href=\"http://fonts.googleapis.com/css?family={{$P.font|regex_replace:'/[ ]/':'+'}}\" rel='stylesheet' type='text/css'>  \n  {{$required_resources}}\n  {{$R.styles}}\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:900px\">\n    <div class=\"ts_header\">\n      {{form_builder_edit_link}}\n      <h1>{{$form_name}}</h1>\n    </div>\n\n"
       },
       {
         "template_name": "No Header",
-        "content": "<html>\n<head>\n  <title>{{$form_name}}</title>\n  {{$required_resources}}\n  {{$R.styles}}\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:900px\">\n\n"
+        "content": "<!DOCTYPE html>\n<html>\n<head>\n  <title>{{$form_name}}</title>\n  {{$required_resources}}\n  {{$R.styles}}\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:900px\">\n\n"
       }
     ],
     "footer": [

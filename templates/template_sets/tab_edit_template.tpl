@@ -39,10 +39,18 @@
         <textarea id="template_content" name="template_content" style="width: 686px; height: 350px">{$template_info.content|escape}</textarea>
     </div>
     <script>
-      var html_editor = new CodeMirror.fromTextArea(document.getElementById("template_content"), {literal}{{/literal}
-        mode: "smarty",
+      {literal}
+      var html_editor = new CodeMirror.fromTextArea(document.getElementById("template_content"), {
+        mode: {
+          name: "smarty",
+          leftDelimiter: "{{",
+          rightDelimiter: "}}",
+          baseMode: "text/html",
+          version: 3
+        },
         electricChars: false
-      {literal}});{/literal}
+      });
+      {/literal}
     </script>
 
     <div class="grey_box margin_bottom_large template_type_placeholders">

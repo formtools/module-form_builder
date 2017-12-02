@@ -14,7 +14,7 @@
     "header": [
       {
         "template_name": "Header",
-        "content": "<html>\n<head>\n  <title>{{$form_name}}</title>\n  {{$required_resources}}\n  {{$R.styles}}\n  <script>\n  $(function() {\n    $(\"input,textarea,select\").bind(\"focus\", function() {\n      $(this).closest(\"form\").find(\".ts_field\").removeClass(\"ts_field_row_selected\");\n      $(this).closest(\".ts_field\").addClass(\"ts_field_row_selected\");\n    });\n    $(\":text:visible:enabled:first\").focus();\n  });\n  </script>\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:800px\">\n    <div class=\"ts_content\">\n"
+        "content": "<!DOCTYPE html>\n<html>\n<head>\n  <title>{{$form_name}}</title>\n  {{$required_resources}}\n  {{$R.styles}}\n  <script>\n  $(function() {\n    $(\"input,textarea,select\").bind(\"focus\", function() {\n      $(this).closest(\"form\").find(\".ts_field\").removeClass(\"ts_field_row_selected\");\n      $(this).closest(\".ts_field\").addClass(\"ts_field_row_selected\");\n    });\n    $(\":text:visible:enabled:first\").focus();\n  });\n  </script>\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:800px\">\n    <div class=\"ts_content\">\n"
       }
     ],
     "footer": [

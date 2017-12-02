@@ -14,11 +14,11 @@
     "header": [
       {
         "template_name": "Header",
-        "content": "<html>\n<head>\n  <title>{{$form_name}}</title>\n  {{$required_resources}}\n  <link href=\"http://fonts.googleapis.com/css?family=Trykker\" rel=\"stylesheet\" type=\"text/css\">\n  {{$R.styles}}\n</head>\n<body>\n  <div class=\"ts_head_bg\"></div>\n  <div class=\"ts_page\" style=\"width:960px\">\n    <div class=\"ts_header\"><h1>{{$form_name}}</h1></div>\n    {{form_builder_edit_link}}\n\n    <div class=\"ts_content\">\n      \n\n"
+        "content": "<!DOCTYPE html>\n<html>\n<head>\n  <title>{{$form_name}}</title>\n  {{$required_resources}}\n  <link href=\"http://fonts.googleapis.com/css?family=Trykker\" rel=\"stylesheet\" type=\"text/css\">\n  {{$R.styles}}\n</head>\n<body>\n  <div class=\"ts_head_bg\"></div>\n  <div class=\"ts_page\" style=\"width:960px\">\n    <div class=\"ts_header\"><h1>{{$form_name}}</h1></div>\n    {{form_builder_edit_link}}\n\n    <div class=\"ts_content\">\n      \n\n"
       },
       {
         "template_name": "No Header",
-        "content": "<html>\n<head>\n  <title>{{$form_name}}</title>\n  {{$required_resources}}\n  <link href=\"http://fonts.googleapis.com/css?family=Trykker\" rel=\"stylesheet\" type=\"text/css\">\n  {{$R.styles}}\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:960px\">\n    {{form_builder_edit_link}}\n    <div class=\"ts_content\">"
+        "content": "<!DOCTYPE html>\n<html>\n<head>\n  <title>{{$form_name}}</title>\n  {{$required_resources}}\n  <link href=\"http://fonts.googleapis.com/css?family=Trykker\" rel=\"stylesheet\" type=\"text/css\">\n  {{$R.styles}}\n</head>\n<body>\n  <div class=\"ts_page\" style=\"width:960px\">\n    {{form_builder_edit_link}}\n    <div class=\"ts_content\">"
       }
     ],
     "footer": [
