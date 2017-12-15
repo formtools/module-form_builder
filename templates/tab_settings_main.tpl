@@ -1,6 +1,6 @@
 <div class="subtitle margin_top_large underline">{$L.phrase_default_publish_folder|upper}</div>
 
-{include file="messages.tpl"}
+{ft_include file="messages.tpl"}
 
 <form method="post" action="{$same_page}">
     <table cellspacing="0" cellpadding="1" class="list_table margin_bottom_large">

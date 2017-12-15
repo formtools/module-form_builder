@@ -1,4 +1,4 @@
-{include file='modules_header.tpl'}
+{ft_include file='modules_header.tpl'}
 
 <table cellpadding="0" cellspacing="0" class="margin_bottom_large">
     <tr>
@@ -13,7 +13,7 @@
     </tr>
 </table>
 
-{include file='tabset_open.tpl'}
+{ft_include file='tabset_open.tpl'}
 
 {if $page == "main"}
     {include file='./tab_settings_main.tpl'}
@@ -25,6 +25,6 @@
     {include file='./tab_settings_main.tpl'}
 {/if}
 
-{include file='tabset_close.tpl'}
+{ft_include file='tabset_close.tpl'}
 
-{include file='modules_footer.tpl'}
+{ft_include file='modules_footer.tpl'}

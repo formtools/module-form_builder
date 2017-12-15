@@ -1,6 +1,6 @@
 <div class="subtitle margin_top_large underline">{$L.phrase_form_offline_settings|upper}</div>
 
-{include file="messages.tpl"}
+{ft_include file="messages.tpl"}
 
 <form method="post" action="{$same_page}">
 

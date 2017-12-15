@@ -18,8 +18,8 @@ class Module extends CoreModule
     protected $author = "Ben Keen";
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "https://formtools.org";
-    protected $version = "2.0.0";
-    protected $date = "2017-12-02";
+    protected $version = "2.0.1";
+    protected $date = "2017-12-14";
     protected $originLanguage = "en_us";
 
     // important! This needs to be updated any time the default template set filename changes
@@ -502,17 +502,19 @@ END;
     public function deleteForm($info)
     {
         $form_id = $info["form_id"];
+        $L = $this->getLangStrings();
+
         $published_forms = Forms::getPublishedForms($form_id);
         foreach ($published_forms["results"] as $config)
         {
             $published_form_id = $config["published_form_id"];
-            list($success, $message) = Forms::deletePublishedForm($form_id, $published_form_id, "yes");
+            list($success, $message) = Forms::deletePublishedForm($form_id, $published_form_id, "yes", $L);
 
             // if there was a problem with the last function call, there was probably just a problem deleting
             // one of the files. Ignore this: just re-call the function with override "on". This ensures the configuration
             // is at least deleted
             if (!$success) {
-                Forms::deletePublishedForm($form_id, $published_form_id, "yes", true);
+                Forms::deletePublishedForm($form_id, $published_form_id, "yes", $L, true);
             }
         }
     }
@@ -527,6 +529,7 @@ END;
     public function fb_hook_delete_view($info)
     {
         $db = Core::$db;
+        $L = $this->getLangStrings();
 
         if (!isset($info["view_id"]) || !is_numeric($info["view_id"])) {
             return;
@@ -548,7 +551,7 @@ END;
             // always attempt to delete the published form as well as the config first. If that fails, just delete the configuration
             list($success, $message) = Forms::deletePublishedForm($form_id, $published_form_id, "yes", $L);
             if (!$success) {
-                Forms::deletePublishedForm($form_id, $published_form_id, "yes", true);
+                Forms::deletePublishedForm($form_id, $published_form_id, "yes", $L, true);
             }
         }
     }

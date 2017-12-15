@@ -1,6 +1,6 @@
 <div class="subtitle margin_top_large underline">{$L.phrase_thankyou_page|upper}</div>
 
-{include file="messages.tpl"}
+{ft_include file="messages.tpl"}
 
 <div class="margin_bottom_large">
     {$L.text_default_thankyou_page_desc}

@@ -171,7 +171,7 @@ class Forms
      * @param string $delete_form_config "yes" / "no"
      * @param boolean $override
      */
-    public static function deletePublishedForm($form_id, $published_form_id, $delete_form_config, $override = false, $L)
+    public static function deletePublishedForm($form_id, $published_form_id, $delete_form_config, $L, $override = false)
     {
         $db = Core::$db;
 

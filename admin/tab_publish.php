@@ -30,8 +30,7 @@ if (isset($_POST["set_as_form_builder"])) {
         if (isset($_GET["delete_published_form"])) {
             $override = (isset($_GET["override"])) ? true : false;
             $published_form_id = $_GET["delete_published_form"];
-            list($success, $message) = $module->deletePublishedForm($form_id, $published_form_id,
-            $_GET["delete_form_config"], $override);
+            list($success, $message) = $module->deletePublishedForm($form_id, $published_form_id, $_GET["delete_form_config"], $L, $override);
         } else {
             if (isset($_POST["update_order"])) {
                 list($success, $message) = Forms::updatePublishedFormOrder($form_id, $L, $_POST);
