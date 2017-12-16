@@ -18,8 +18,8 @@ class Module extends CoreModule
     protected $author = "Ben Keen";
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "https://formtools.org";
-    protected $version = "2.0.1";
-    protected $date = "2017-12-14";
+    protected $version = "2.0.2";
+    protected $date = "2017-12-15";
     protected $originLanguage = "en_us";
 
     // important! This needs to be updated any time the default template set filename changes
@@ -214,6 +214,7 @@ class Module extends CoreModule
     public static function resetHooks()
     {
         CoreHooks::unregisterModuleHooks("form_builder");
+
         CoreHooks::registerHook("template", "form_builder", "add_form_page", "", "displayAddFormOption", 50, true);
         CoreHooks::registerHook("template", "form_builder", "admin_edit_form_main_tab_form_type_dropdown", "", "displayFormTypeOption", 50, true);
         CoreHooks::registerHook("template", "form_builder", "admin_forms_form_type_label", "", "displayFormBuilderLabel", 50, true);
@@ -221,8 +222,8 @@ class Module extends CoreModule
 
         CoreHooks::registerHook("code", "form_builder", "start", "FormTools\\Modules::moduleOverrideData", "inlineDataOverride", 50, true);
         CoreHooks::registerHook("code", "form_builder", "end", "FormTools\\General::displayCustomPageMessage", "displayFormCreatedMessage", 50, true);
-        CoreHooks::registerHook("code", "form_builder", "start", "FormTools\\Forms::deleteForm", "deleteForm");
-        CoreHooks::registerHook("code", "form_builder", "end", "FormTools\\Views::deleteView", "deleteView");
+        CoreHooks::registerHook("code", "form_builder", "start", "FormTools\\Forms::deleteForm", "deleteForm", 50);
+        CoreHooks::registerHook("code", "form_builder", "end", "FormTools\\Views::deleteView", "deleteView", 50);
     }
 
 
