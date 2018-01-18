@@ -95,7 +95,7 @@ fb_ns.delete_form_configuration = function(el) {
           text: g.messages["word_yes"],
           click: function() {
         	var delete_form_config = ($("#delete_form_config").attr("checked")) ? "yes" : "no";
-            window.location = 'edit.php?page=publish&delete_published_form=' + published_form_id + "&delete_form_config=" + delete_form_config;
+            window.location = '?page=publish&delete_published_form=' + published_form_id + "&delete_form_config=" + delete_form_config;
           }
         },
         {

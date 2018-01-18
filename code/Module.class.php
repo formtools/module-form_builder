@@ -526,6 +526,10 @@ END;
         }
     }
 
+    public function deletePublishedForm($form_id, $published_form_id, $delete_form_config, $L, $override)
+    {
+        return Forms::deletePublishedForm($form_id, $published_form_id, $delete_form_config, $L, $override);
+    }
 
     /**
      * This is called whenever the administrator deletes a View. It checks to see if the View is being used for a published form.
