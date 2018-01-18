@@ -186,7 +186,7 @@ class Module extends CoreModule
             "demo_mode"                         => "off"
         ));
 
-        self::resetHooks();
+        $this->resetHooks();
 
         return array(true, "");
     }
@@ -211,7 +211,13 @@ class Module extends CoreModule
     }
 
 
-    public static function resetHooks()
+    public function upgrade($module_id, $old_module_version)
+    {
+        $this->resetHooks();
+    }
+
+
+    public function resetHooks()
     {
         CoreHooks::unregisterModuleHooks("form_builder");
 

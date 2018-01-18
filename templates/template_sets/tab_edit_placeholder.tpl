@@ -2,7 +2,7 @@
     <a href="?page=placeholders">{$L.word_placeholders|upper}</a> &raquo; {$L.phrase_edit_placeholder|upper}
   </div>
 
-  {include file='messages.tpl'}
+  {ft_include file='messages.tpl'}
 
   <form action="{$same_page}" method="post" onsubmit="return rsv.validate(this, rules)">
     <input type="hidden" name="placeholder_id" id="placeholder_id" value="{$placeholder_id}" />

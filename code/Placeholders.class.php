@@ -39,16 +39,17 @@ class Placeholders
             $field_order = 1;
 
             foreach ($placeholder_options as $row) {
-                if (empty($row->option_text)) {
+                if (empty($row["option_text"])) {
                     continue;
                 }
+
                 $db->query("
                     INSERT INTO {PREFIX}module_form_builder_template_set_placeholder_opts (placeholder_id, option_text, field_order)
                     VALUES (:placeholder_id, :option_text, :field_order)
                 ");
                 $db->bindAll(array(
                     "placeholder_id" => $placeholder_id,
-                    "option_text" => $row->option_text,
+                    "option_text" => $row["option_text"],
                     "field_order" => $field_order
                 ));
                 $db->execute();

@@ -1,6 +1,6 @@
   <div class="subtitle margin_top_large underline">{$L.phrase_template_set_info|upper}</div>
 
-  {include file="messages.tpl"}
+  {ft_include file="messages.tpl"}
 
   <form action="{$same_page}" method="post">
     <input type="hidden" name="set_id" id="set_id" value="{$set_id}" />

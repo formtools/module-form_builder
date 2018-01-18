@@ -1,4 +1,4 @@
-{include file='modules_header.tpl'}
+{ft_include file='modules_header.tpl'}
 
   <div style="float:right">
     {if $template_set_info.is_complete == "yes"}
@@ -45,4 +45,4 @@
 
   {ft_include file='tabset_close.tpl'}
 
-{include file='modules_footer.tpl'}
+{ft_include file='modules_footer.tpl'}

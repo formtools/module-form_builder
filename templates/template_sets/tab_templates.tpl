@@ -1,6 +1,6 @@
   <div class="subtitle margin_top_large underline">{$L.word_templates|upper}</div>
 
-  {include file='messages.tpl'}
+  {ft_include file='messages.tpl'}
 
   <div class="margin_bottom_large">
     {$L.text_template_list_desc}

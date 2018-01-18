@@ -2,7 +2,7 @@
     <a href="?page=resources">{$L.word_resources|upper}</a> &raquo; {$L.phrase_edit_resource|upper}
 </div>
 
-{include file='messages.tpl'}
+{ft_include file='messages.tpl'}
 
 <form action="{$same_page}" method="post">
     <input type="hidden" name="resource_id" id="resource_id" value="{$resource_id}"/>

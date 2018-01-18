@@ -6,7 +6,7 @@
     </div>
 </div>
 
-{include file='messages.tpl'}
+{ft_include file='messages.tpl'}
 
 <form action="{$same_page}" method="post">
     <input type="hidden" name="template_id" value="{$template_info.template_id}"/>
