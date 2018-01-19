@@ -61,8 +61,8 @@
     {foreach from=$usage key=form_id item=data}
       {foreach from=$data.usage item=i}
       <tr>
-        <td class="pad_left_small"><a href="../../../admin/forms/edit.php?form_id={$form_id}&page=publish">{$data.form_name}</a></td>
-        <td class="pad_left_small"><a href="../../../admin/forms/edit.php?form_id={$i.view_name}&page=publish">{$i.view_name}</a></td>
+        <td class="pad_left_small"><a href="../../../admin/forms/edit/?form_id={$form_id}&page=publish">{$data.form_name}</a></td>
+        <td class="pad_left_small"><a href="../../../admin/forms/edit/?form_id={$form_id}&view_id={$i.view_id}&page=edit_view">{$i.view_name}</a></td>
         <td class="pad_left_small">
           <a title="{$LANG.phrase_open_form_in_dialog}" target="_blank" class="show_form" href="{$i.full_url}"></a>
           <div class="published_form_url">{$i.filename}</div>
