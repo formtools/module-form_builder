@@ -24,13 +24,13 @@ switch ($action) {
         $template_set_name = $request["template_set_name"];
         $original_set_id = isset($request["original_set_id"]) ? $request["original_set_id"] : "";
         $results = TemplateSets::createNewTemplateSet($template_set_name, $original_set_id);
-        echo json_encode($results);
+        echo returnJSON($results);
         break;
 
     case "create_new_template":
         $results = Templates::createNewTemplate($request["set_id"], $request["template_name"], $request["template_type"],
             $request["new_template_source"], $request["source_template_id"]);
-        echo json_encode($results);
+        echo returnJSON($results);
         break;
 
     case "add_resource":
@@ -39,12 +39,12 @@ switch ($action) {
         $placeholder = $request["placeholder"];
         $resource_type = $request["resource_type"];
         $result = Resources::addNewResource($set_id, $resource_name, $placeholder, $resource_type);
-        echo json_encode($result);
+        echo returnJSON($result);
         break;
 
     case "save_builder_settings":
         $result = Forms::saveBuilderSettings($request);
-        echo json_encode($result);
+        echo returnJSON($result);
         break;
 
     case "get_template_set_templates_html":
@@ -68,15 +68,21 @@ switch ($action) {
         $module_settings = $module->getSettings();
         if ($module_settings["demo_mode"] != "on") {
             $result = Forms::publishForm($request, $L);
-            echo json_encode($result);
+            echo returnJSON($result);
         }
         break;
 
     case "update_publish_settings":
         $module_settings = $module->getSettings();
         if ($module_settings["demo_mode"] != "on") {
-            $result = fb_update_publish_settings($request);
-            echo json_encode($result);
+            $result = Forms::updatePublishSettings($request, $L);
+            echo returnJSON($result);
         }
         break;
+}
+
+function returnJSON($php)
+{
+    header("Content-Type: application/json");
+    return json_encode($php);
 }

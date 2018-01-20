@@ -766,7 +766,7 @@ builder_js.update_publish_settings = function (params) {
   }, params);
 
   $.ajax({
-    url: g.root_url + "/modules/form_builder/global/code/actions.php",
+    url: g.root_url + "/modules/form_builder/code/actions.php",
     type: "POST",
     data: {
       action: "update_publish_settings",
@@ -781,7 +781,8 @@ builder_js.update_publish_settings = function (params) {
     },
     dataType: "json",
     success: function (json) {
-      if (json.success == 1) {
+
+      if (json.success) {
         $("#publish_url").find("a").attr("href", json.url).html(json.url);
         $("#publish_dialog_open_form_link").attr("href", json.url);
         $("#publish_settings_response .large_textbox").val(json.url);

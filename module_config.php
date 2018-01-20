@@ -47,14 +47,14 @@ $HOOKS = array(
         "hook_type" => "code",
         "action_location" => "start",
         "function_name" => "FormTools\\Forms::deleteForm",
-        "hook_function" => "deleteForm",
+        "hook_function" => "onDeleteForm",
         "priority" => "50"
     ),
     array(
         "hook_type" => "code",
         "action_location" => "end",
         "function_name" => "FormTools\\Views::deleteView",
-        "hook_function" => "deleteView",
+        "hook_function" => "onDeleteView",
         "priority" => "50"
     )
 );

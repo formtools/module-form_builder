@@ -9,7 +9,7 @@ use FormTools\Module as CoreModule;
 use FormTools\Modules;
 use FormTools\Schemas;
 
-use PDO, Exception;
+use Exception;
 
 class Module extends CoreModule
 {
@@ -18,8 +18,8 @@ class Module extends CoreModule
     protected $author = "Ben Keen";
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "https://formtools.org";
-    protected $version = "2.0.2";
-    protected $date = "2017-12-15";
+    protected $version = "2.0.3";
+    protected $date = "2018-01-20";
     protected $originLanguage = "en_us";
 
     // important! This needs to be updated any time the default template set filename changes

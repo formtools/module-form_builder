@@ -507,8 +507,8 @@ class Forms
                 SET    is_published = 'yes',
                        publish_date = :publish_date,
                        filename = :filename,
-                       folder_path = :new_folder_path,
-                       folder_url = :new_folder_url
+                       folder_path = :folder_path,
+                       folder_url = :folder_url
                 WHERE  published_form_id = :published_form_id
             ");
             $db->bindAll(array(
@@ -521,8 +521,8 @@ class Forms
             $db->execute();
 
             return array(
-                "success"     => true,
-                "url"         => $url
+                "success" => true,
+                "url"     => $url
             );
         }
 
