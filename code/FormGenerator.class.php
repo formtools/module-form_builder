@@ -12,8 +12,6 @@ use FormTools\Forms as CoreForms;
 use FormTools\General as CoreGeneral;
 use FormTools\Hooks as CoreHooks;
 use FormTools\Modules;
-use FormTools\Modules\FormBuilder\Placeholders;
-use FormTools\Modules\FormBuilder\Resources;
 use FormTools\Settings;
 use FormTools\Submissions;
 use FormTools\Views;
@@ -108,6 +106,8 @@ class FormGenerator
      */
     public static function generateForm($settings)
     {
+        global $api;
+
         $root_dir = Core::getRootDir();
         $root_url = Core::getRootUrl();
 
@@ -174,6 +174,11 @@ class FormGenerator
         $nav_pages = Forms::getNavPages($params);
 
         $smarty = General::createNewSmartyInstance();
+
+        if (Core::isAPIAvailable()) {
+            $smarty->assign("api", $api);
+        }
+
         $smarty->assign("mode", $mode);
         $smarty->assign("template_set_id", $template_set_id);
         $smarty->assign("namespace", "form_builder_{$published_form_id}");
@@ -325,23 +330,21 @@ END;
      */
     public static function processFormBuilderPage($params)
     {
-        //global $g_table_prefix, $g_root_url, $g_multi_val_delimiter, $LANG, $g_api_recaptcha_private_key;
+        global $api;
 
         if (!isset($params["form_data"][$params["submit_button"]])) {
             return;
         }
 
-        $namespace          = $params["namespace"];
-        $submission_id      = $params["submission_id"];
-        $page               = $params["page"];
-        $page_type          = $params["page_type"];
-        $form_id            = $params["form_id"];
-        $view_id            = $params["view_id"];
-        $form_data          = $params["form_data"];
-        $next_page          = $params["next_page"];
-        $finalize           = isset($params["finalize"]) ? $params["finalize"] : false;
-
-//        $form_info = CoreForms::getForm($form_id);
+        $namespace      = $params["namespace"];
+        $submission_id  = $params["submission_id"];
+        $page           = $params["page"];
+        $page_type      = $params["page_type"];
+        $form_id        = $params["form_id"];
+        $view_id        = $params["view_id"];
+        $form_data      = $params["form_data"];
+        $next_page      = $params["next_page"];
+        $finalize       = isset($params["finalize"]) ? $params["finalize"] : false;
 
         $failed_validation = false;
         $validation_error = "";
@@ -381,49 +384,31 @@ END;
             }
         }
 
+        // TODO. This is insufficient - can be bypassed!
+        $has_captcha = isset($form_data["g-recaptcha-response"]) ? true : false;
 
-        // TODO once the API is back in business
+        // the reCAPTCHA can be placed on the form or review page only
+        if ($has_captcha && ($page_type == "form" || $page_type == "review")) {
 
-        // the reCAPTCHA can be placed on the form or review page (only!)
-//        $has_captcha = isset($form_data["recaptcha_response_field"]) ? true : false;
-//        if ($has_captcha && ($page_type == "form" || $page_type == "review")) {
-//            // was there a reCAPTCHA response? If so, a recaptcha was just submitted, check it was entered correctly
-//            $passes_captcha = true;
-//            if ($has_captcha)
-//            {
-//                $passes_captcha = false;
-//                $recaptcha_challenge_field = $form_data["recaptcha_challenge_field"];
-//                $recaptcha_response_field  = $form_data["recaptcha_response_field"];
-//
-//                require_once(realpath(__DIR__ . "/../../../../global/api/recaptchalib.php"));
-//                $resp = recaptcha_check_answer($g_api_recaptcha_private_key, $_SERVER["REMOTE_ADDR"], $recaptcha_challenge_field, $recaptcha_response_field);
-//
-//                if ($resp->is_valid)
-//                {
-//                    // keep track of the fact that the user has entered the CAPTCHA properly so they aren't shown the captcha again
-//                    $passes_captcha = true;
-//                    $_SESSION[$namespace]["passed_captcha"] = true;
-//                }
-//                else
-//                {
-//                    // if the main update was successful, but they failed validation, just display the single "wrong captcha" error
-//                    if ($update_successful)
-//                    {
-//                        $validation_error = "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
-//                    }
-//                    else
-//                    {
-//                        $br = (!empty($validation_error)) ? "<br />" : "";
-//                        $validation_error .= $br . "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
-//                    }
-//
-//                    $failed_validation = true;
-//                }
-//            }
-//        }
+            // was there a reCAPTCHA response? If so, a recaptcha was just submitted, check it was entered correctly
+            $resp = $api->validateRecaptcha($params["form_data"]["g-recaptcha-response"]);
 
+            if ($resp->isSuccess()) {
+                $_SESSION[$namespace]["passed_captcha"] = true;
+            } else {
+                // if the main update was successful, but they failed validation, just display the single "wrong captcha" error
+                if ($update_successful) {
+                    $validation_error = "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
+                } else {
+                    $br = (!empty($validation_error)) ? "<br />" : "";
+                    $validation_error .= $br . "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
+                }
+                $failed_validation = true;
+            }
+        }
+
+        // this automatically sends any emails set to the on_submission trigger.
         if (!$failed_validation) {
-            // this automatically sends any emails set to the on_submission trigger.
             if ($finalize) {
                 Submissions::finalizeSubmission($form_id, $submission_id);
             }

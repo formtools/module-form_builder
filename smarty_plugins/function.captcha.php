@@ -1,5 +1,7 @@
 <?php
 
+use FormTools\Core;
+
 /**
  * Includes a reCAPTCHA in the page. It only includes it ONCE. If the user fills it in successfully,
  * they aren't bothered again when returning to the same page.
@@ -9,7 +11,12 @@
  */
 function smarty_function_captcha($params, &$smarty)
 {
-    include_once(realpath(__FILE__ . "/../../../global/api/api.php"));
+    if (!Core::isAPIAvailable()) {
+        echo "API not available.";
+        exit;
+    }
+
+    require_once(__DIR__ . "/../../../global/api/API.class.php");
 
     $form_namespace = $smarty->getTemplateVars("namespace");
 
@@ -18,19 +25,17 @@ function smarty_function_captcha($params, &$smarty)
         return;
     }
 
-    $error_message = "";
-    if (function_exists("ft_api_display_captcha")) {
-        $GLOBALS["g_api_debug"] = false;
-        $response = ft_api_display_captcha();
+    $_SESSION[$form_namespace]["has_captcha"] = true;
 
-        if (is_array($response) && $response[0] === false) {
-            $error_message = "You need to define the reCAPTCHA public and private keys.";
-        }
-    } else {
-        $error_message = "The Form Tools API must be installed in order to add a reCAPTCHA to your form.";
-    }
+    $api = $smarty->getTemplateVars("api");
+    $response = $api->displayCaptcha();
 
-    if (!empty($error_message)) {
-        echo "<div class=\"ft_error\">$error_message</div>";
-    }
+//    $error_message = "";
+//    if (is_array($response) && $response[0] === false) {
+//        $error_message = "You need to define the reCAPTCHA public and private keys.";
+//    }
+//
+//    if (!empty($error_message)) {
+//        echo "<div class=\"ft_error\">$error_message</div>";
+//    }
 }

@@ -7,6 +7,12 @@ use FormTools\Modules\FormBuilder\Forms;
 use FormTools\Modules\FormBuilder\FormGenerator;
 use FormTools\ViewTabs;
 
+
+if (Core::isAPIAvailable()) {
+    require_once(__DIR__ . "/../../global/api/API.class.php");
+    $api = new FormTools\API(array("init_core" => false));
+}
+
 /**
  * If the user uninstalls the Form Builder or disables it, any public forms will stop working. This is called at the
  * top of the forms to output a simple "Offline" message. It's really just to prevent an ugly error.
@@ -16,7 +22,8 @@ use FormTools\ViewTabs;
 if (!Modules::checkModuleUsable("form_builder")) {
     echo <<< END
 <!DOCTYPE html>
-<html><head></head>
+<html>
+<head></head>
 <body>
     <p>
         This form is unavailable. 
@@ -36,7 +43,6 @@ $config = Forms::getFormConfiguration($published_form_id);
 $form_id = $config["form_id"];
 $view_id = $config["view_id"];
 
-// clears out old, dud unfinalized submissions
 FormGenerator::deleteUnfinalizedSubmissions($form_id);
 
 // check that we have all the info we need (configured form, View etc)
@@ -46,9 +52,6 @@ if (!empty($error_code)) {
     FormGenerator::generateFormPage($config);
     exit;
 }
-
-Core::startSessions();
-//FormGenerator::initSessions();
 
 if (isset($_GET["clear"])) {
     FormGenerator::clearFormBuilderFormSessions($namespace);
@@ -85,6 +88,7 @@ $page = FormGenerator::verifyPageNumber($page, $all_pages, $namespace);
 $next_page = $page + 1;
 $page_info = $all_pages[$page - 1];
 $page_type = $page_info["page_type"];
+
 
 $post_values = array();
 $params = array();
