@@ -874,7 +874,7 @@ class Forms
  */
 require_once("$root_dir/global/library.php");
 use FormTools\Core;
-Core::init(array("start_sessions" => false));
+Core::init(array("auto_logout" => false));
 \$root_dir = Core::getRootDir();
 \$published_form_id = $published_form_id;
 \$filename  = "$filename";

@@ -1,12 +1,10 @@
 <?php
 
-//require_once("../../global/session_start.php");
 require_once("../../global/library.php");
 
 use FormTools\Modules;
 use FormTools\Modules\FormBuilder\Forms;
 use FormTools\Modules\FormBuilder\General;
-use FormTools\Modules\FormBuilder\FormGenerator;
 use FormTools\Modules\FormBuilder\Placeholders;
 use FormTools\Modules\FormBuilder\TemplateSets;
 use FormTools\Views;

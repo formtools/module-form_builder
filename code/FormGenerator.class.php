@@ -347,6 +347,7 @@ END;
         $finalize       = isset($params["finalize"]) ? $params["finalize"] : false;
 
         $failed_validation = false;
+        $update_successful = true;
         $validation_error = "";
         if ($page_type == "form") {
             $tabs = ViewTabs::getViewTabs($view_id, true);
@@ -384,28 +385,34 @@ END;
             }
         }
 
-        // TODO. This is insufficient - can be bypassed!
-        $has_captcha = isset($form_data["g-recaptcha-response"]) ? true : false;
+        // reCAPTCHA just adds a "g-recaptcha-response" key to the POST form values. Looking for that isn't sufficient
+        // because a hacker could just simulate the request without the property and bypass it. So instead the {{captcha}}
+        // function makes a note in sessions that the page contains a CAPTCHA - which can't be bypassed
+        $has_captcha = isset($_SESSION[$namespace]["has_captcha"]) ? $_SESSION[$namespace]["has_captcha"] : false;
 
         // the reCAPTCHA can be placed on the form or review page only
         if ($has_captcha && ($page_type == "form" || $page_type == "review")) {
+            $recaptcha_error_msg = "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
 
-            // was there a reCAPTCHA response? If so, a recaptcha was just submitted, check it was entered correctly
-            $resp = $api->validateRecaptcha($params["form_data"]["g-recaptcha-response"]);
-
-            if ($resp->isSuccess()) {
-                $_SESSION[$namespace]["passed_captcha"] = true;
-            } else {
-                // if the main update was successful, but they failed validation, just display the single "wrong captcha" error
-                if ($update_successful) {
-                    $validation_error = "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
+            if (isset($params["form_data"]["g-recaptcha-response"])) {
+                $resp = $api->validateRecaptcha($params["form_data"]["g-recaptcha-response"]);
+                if ($resp->isSuccess()) {
+                    $_SESSION[$namespace]["passed_captcha"] = true;
                 } else {
-                    $br = (!empty($validation_error)) ? "<br />" : "";
-                    $validation_error .= $br . "&bull;&nbsp; Sorry, you didn't enter the reCAPTCHA correctly. Please try again.";
+                    // if the main update was successful, but they failed validation, just display the single "wrong captcha" error
+                    if ($update_successful) {
+                        $validation_error = $recaptcha_error_msg;
+                    } else {
+                        $br = (!empty($validation_error)) ? "<br />" : "";
+                        $validation_error .= $br . $recaptcha_error_msg;
+                    }
+                    $failed_validation = true;
                 }
-                $failed_validation = true;
             }
         }
+
+        // always reset the has_captcha flag for the next page load
+        $_SESSION[$namespace]["has_captcha"] = false;
 
         // this automatically sends any emails set to the on_submission trigger.
         if (!$failed_validation) {

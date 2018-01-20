@@ -8,10 +8,16 @@
 
 require_once("../../global/library.php");
 
+use FormTools\Core;
 use FormTools\Modules;
 use FormTools\Modules\FormBuilder\FormGenerator;
 
 $module = Modules::initModulePage("admin");
+
+if (Core::isAPIAvailable()) {
+    require_once(__DIR__ . "/../../global/api/API.class.php");
+    $api = new FormTools\API(array("init_core" => false));
+}
 
 // convert the placeholder info in the request into a simple hash of placeholder_id => value
 $placeholders = array();
@@ -24,7 +30,6 @@ foreach ($placeholder_ids as $placeholder_id) {
 // we store the placeholders in sessions so that any resources (CSS/JS) in Smarty format can access the info. Normally it's just
 // pulled from the database
 $_SESSION["ft"]["form_builder"]["placeholders"] = $placeholders;
-
 
 // creating a new array here isn't strictly needed, since we COULD just tweak and pass along the POST request,
 // but it helps to see precisely what info is being sent

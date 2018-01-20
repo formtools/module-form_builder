@@ -12,8 +12,8 @@ use FormTools\Core;
 function smarty_function_captcha($params, &$smarty)
 {
     if (!Core::isAPIAvailable()) {
-        echo "API not available.";
-        exit;
+        echo "<div class=\"error\"><div style=\"padding: 8px\">You need to install the Form Tools API to use the {{captcha}} tag.</div></div>";
+        return;
     }
 
     require_once(__DIR__ . "/../../../global/api/API.class.php");
@@ -28,14 +28,5 @@ function smarty_function_captcha($params, &$smarty)
     $_SESSION[$form_namespace]["has_captcha"] = true;
 
     $api = $smarty->getTemplateVars("api");
-    $response = $api->displayCaptcha();
-
-//    $error_message = "";
-//    if (is_array($response) && $response[0] === false) {
-//        $error_message = "You need to define the reCAPTCHA public and private keys.";
-//    }
-//
-//    if (!empty($error_message)) {
-//        echo "<div class=\"ft_error\">$error_message</div>";
-//    }
+    $api->displayCaptcha();
 }

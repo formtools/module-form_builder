@@ -37,7 +37,7 @@ END;
 $module = Modules::getModuleInstance("form_builder");
 $namespace = "form_builder_{$published_form_id}";
 
-// find out about the page: form / review / thanks. That determines what values we pass to ft_api_process_form_builder_page()
+// find out about the page: form / review / thanks. That determines what values we pass to processFormBuilderPage
 $config = Forms::getFormConfiguration($published_form_id);
 
 $form_id = $config["form_id"];
