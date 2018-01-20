@@ -228,8 +228,8 @@ class Module extends CoreModule
 
         CoreHooks::registerHook("code", "form_builder", "start", "FormTools\\Modules::moduleOverrideData", "inlineDataOverride", 50, true);
         CoreHooks::registerHook("code", "form_builder", "end", "FormTools\\General::displayCustomPageMessage", "displayFormCreatedMessage", 50, true);
-        CoreHooks::registerHook("code", "form_builder", "start", "FormTools\\Forms::deleteForm", "deleteForm", 50);
-        CoreHooks::registerHook("code", "form_builder", "end", "FormTools\\Views::deleteView", "deleteView", 50);
+        CoreHooks::registerHook("code", "form_builder", "start", "FormTools\\Forms::deleteForm", "onDeleteForm", 50);
+        CoreHooks::registerHook("code", "form_builder", "end", "FormTools\\Views::deleteView", "onDeleteView", 50);
     }
 
 
@@ -506,7 +506,7 @@ END;
      *
      * @param array $info
      */
-    public function deleteForm($info)
+    public function onDeleteForm($info)
     {
         $form_id = $info["form_id"];
         $L = $this->getLangStrings();
@@ -537,7 +537,7 @@ END;
      *
      * @param array $info
      */
-    public function fb_hook_delete_view($info)
+    public function onDeleteView($info)
     {
         $db = Core::$db;
         $L = $this->getLangStrings();

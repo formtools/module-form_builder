@@ -22,8 +22,7 @@ function smarty_function_form_builder_edit_link($params, &$smarty)
     if ($smarty->getTemplateVars("mode") != "live") {
         return;
     }
-
-    global $g_root_url;
+    $root_url = Core::getRootUrl();
 
     $published_form_id = $smarty->getTemplateVars("published_form_id");
     $form_id = $smarty->getTemplateVars("form_id");
@@ -31,5 +30,5 @@ function smarty_function_form_builder_edit_link($params, &$smarty)
     $action = Modules::getModuleSettings("edit_form_builder_link_action", "form_builder");
     $target = ($action == "new_window") ? "target=\"_blank\"" : "";
 
-    echo "<a href=\"$g_root_url/admin/forms/edit.php?form_id=$form_id&published_form_id=$published_form_id&page=publish&action=auto_open\" id=\"form_builder__edit_link\" $target>EDIT IN FORM BUILDER</a>";
+    echo "<a href=\"$root_url/admin/forms/edit/?form_id=$form_id&published_form_id=$published_form_id&page=publish&action=auto_open\" id=\"form_builder__edit_link\" $target>EDIT IN FORM BUILDER</a>";
 }
