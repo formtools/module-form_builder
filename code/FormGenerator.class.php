@@ -248,7 +248,7 @@ END;
         $resources = Resources::getResources($template_set_id);
         $resource_placeholders = array();
 
-        // TODO to prevent caching in "real" browsers
+        // simple cache prevention
         $now = date("U");
 
         // used when editing in the Form Builder. Placeholders info needs to be passed to the css.php generation file
@@ -261,7 +261,13 @@ END;
         foreach ($resources as $resource_info) {
             $resource_id = $resource_info["resource_id"];
             $placeholder = $resource_info["placeholder"];
-            $link = "<link type=\"text/css\" rel=\"stylesheet\" href=\"$root_url/modules/form_builder/form_resources/css.php?resource_id=$resource_id&nocache=$now{$query_str}\">";
+            $resource_type = $resource_info["resource_type"];
+
+            if ($resource_type == "css") {
+                $link = "<link type=\"text/css\" rel=\"stylesheet\" href=\"$root_url/modules/form_builder/form_resources/css.php?resource_id=$resource_id&nocache=$now{$query_str}\">";
+            } else {
+                $link = "<script src=\"$root_url/modules/form_builder/form_resources/js.php?resource_id=$resource_id&nocache=$now{$query_str}\"></script>";
+            }
             $resource_placeholders[$placeholder] = $link;
         }
         $smarty->assign("R", $resource_placeholders);
