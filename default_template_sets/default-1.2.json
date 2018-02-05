@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0.0",
+  "template_set_name": "Default Template Set",
+  "template_set_version": "1.2",
+  "description": "A neutral, grey-themed set of templates that lets you choose a highlight colour to match your site.",
+  "last_updated": "2018-02-04 16:45:00",
+  "templates": {
+    "page_layout": [
+      {
+        "template_name": "Page Layout",
+        "content": "{{header}}\n{{page}}\n{{footer}}"
+      }
+    ],
+    "header": [
+      {
+        "template_name": "Header",
+        "content": "<!DOCTYPE html>\n<html>\n<head>\n<title>{{$form_name}}</title>\n  {{$required_resources}}\n  {{$R.styles}}\n</head>\n<body>\n<div class=\"ts_page\" style=\"width:900px\">\n  <div class=\"ts_header\">\n    <h1>{{$form_name}}</h1>\n  </div>\n  <div class=\"ts_content\">\n    <div class=\"ts_content_inner\">"
+      },
+      {
+        "template_name": "No Header",
+        "content": "<!DOCTYPE html>\n<html>\n<head>\n<title>{{$form_name}}</title>\n  {{$required_resources}}\n  {{$R.styles}}\n</head>\n<body>\n<div class=\"ts_page\" style=\"width:900px\">\n  <div class=\"ts_content\">\n    <div class=\"ts_content_inner\">"
+      }
+    ],
+    "footer": [
+      {
+        "template_name": "Footer",
+        "content": "    </div>\n  </div>\n</div>\n\n</body>\n</html>"
+      }
+    ],
+    "form_page": [
+      {
+        "template_name": "Form Page",
+        "content": "{{navigation}}\n\n<h2>{{$page_name}}</h2>\n\n{{error_message}}\n\n<form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\"\n  id=\"ts_form_element_id\" name=\"edit_submission_form\">\n  <input type=\"hidden\" id=\"form_tools_published_form_id\" value=\"{{$published_form_id}}\" />\n{{foreach from=$grouped_fields key=k item=curr_group name=row}}\n  {{assign var=group value=$curr_group.group}}\n  {{assign var=fields value=$curr_group.fields}}\n\n    <a name=\"s{{$group.group_id}}\"></a>\n  {{if $group.group_name}}\n    <h3>{{$group.group_name}}</h3>\n  {{else}}\n    <br />\n  {{/if}}\n\n  {{if $fields|@count > 0}}\n  <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"798\">\n  {{/if}}\n    \n  {{foreach from=$fields item=curr_field}}\n    {{assign var=field_id value=$curr_field.field_id}}\n    <tr>\n      <td width=\"180\" valign=\"top\">\n        {{$curr_field.field_title}}\n        <span class=\"req\">{{if $curr_field.is_required}}*{{/if}}</span>\n      </td>\n      <td class=\"answer\" valign=\"top\">\n        <div class=\"pad_left\">\n        {{edit_custom_field form_id=$form_id field_info=$curr_field field_types=$field_types\n          settings=$settings submission_id=$submission_id}}\n        </div>\n      </td>\n    </tr>\n  {{/foreach}}\n\n  {{if $fields|@count > 0}}\n    </table>  \n  {{/if}}\n\n{{/foreach}}\n\n{{continue_block}}\n\n</form>"
+      }
+    ],
+    "review_page": [
+      {
+        "template_name": "Review Page",
+        "content": "{{navigation}}\n\n<h2>{{$review_page_title}}</h2>\n\n<form action=\"{{$page_url}}\" method=\"post\" enctype=\"multipart/form-data\">\n{{foreach from=$grouped_fields item=curr_group}}\n  {{assign var=group value=$curr_group.group}}\n  {{assign var=fields value=$curr_group.fields}}\n\n  {{if $fields|@count > 0}}\n    <h3>\n      <a href=\"?page={{$group.custom_data}}#s{{$group.group_id}}\">EDIT</a>\n      {{$group.group_name}}\n    </h3>\n  \n    <table class=\"table_1\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"798\">\n  {{/if}}\n\n  {{foreach from=$fields item=curr_field}}\n    {{assign var=field_id value=$curr_field.field_id}}\n    <tr>\n      <td width=\"200\" class=\"pad_left_small\" valign=\"top\">{{$curr_field.field_title}}</td>\n      <td class=\"answer\" valign=\"top\">\n        <div class=\"pad_left\">\n        {{edit_custom_field form_id=$form_id submission_id=$submission_id\n          field_info=$curr_field field_types=$field_types settings=$settings}}\n        </div>\n      </td>\n    </tr>\n  {{/foreach}}\n\n  {{if $fields|@count > 0}}\n    </table>    \n  {{/if}}\n{{/foreach}}\n\n{{continue_block}}\n\n</form>\n"
+      }
+    ],
+    "thankyou_page": [
+      {
+        "template_name": "Thankyou Page",
+        "content": "{{navigation}}\n\n{{$thankyou_page_content}}"
+      }
+    ],
+    "form_offline_page": [
+      {
+        "template_name": "Form Offline Page",
+        "content": "{{$form_offline_page_content}}"
+      }
+    ],
+    "continue_block": [
+      {
+        "template_name": "Continue - Button Only",
+        "content": "<div class=\"ts_continue_button\">\n  <input type=\"submit\" name=\"form_tools_continue\" value=\"Continue\" />\n</div>"
+      },
+      {
+        "template_name": "Continue - Detailed",
+        "content": "<div class=\"ts_continue_block\">\n  <input type=\"submit\" name=\"form_tools_continue\" value=\"Continue\" />\n  This is page <b>{{$current_page}}</b> of <b>{{$num_pages}}</b>. You must complete \n  all steps in order for your submission to be processed. Please click continue.\n</div>\n\n"
+      }
+    ],
+    "navigation": [
+      {
+        "template_name": "Navigation",
+        "content": "<ul id=\"css_nav\" class=\"nav_{{$nav_pages|@count}}_pages\">\n  {{foreach from=$nav_pages item=page_info name=row}}\n    {{assign var=i value=$smarty.foreach.row.iteration}}\n    {{if $current_page > $i && $current_page != $num_pages}}\n      <li><a href=\"?page={{$i}}\">{{$page_info.page_name}}</a></li>\n    {{elseif $current_page == $i || $current_page == $num_pages}}\n      <li class=\"css_nav_current_page\">{{$page_info.page_name}}</li>\n    {{else}}\n      <li>{{$page_info.page_name}}</li>\n    {{/if}}\n  {{/foreach}}\n</ul>"
+      },
+      {
+        "template_name": "Navigation - Numbered",
+        "content": "<ul id=\"css_nav\" class=\"nav_{{$nav_pages|@count}}_pages\">\n  {{foreach from=$nav_pages item=page_info name=row}}\n    {{assign var=i value=$smarty.foreach.row.iteration}}\n    {{if $current_page > $i && $current_page != $num_pages}}\n      <li><a href=\"{{$filename}}?page={{$i}}\">{{$i}}. {{$page_info.page_name}}</a></li>\n    {{elseif $current_page == $i || $current_page == $num_pages}}\n      <li class=\"css_nav_current_page\">{{$i}}. {{$page_info.page_name}}</li>\n    {{else}}\n      <li>{{$i}}. {{$page_info.page_name}}</li>\n    {{/if}}\n  {{/foreach}}\n</ul>"
+      },
+      {
+        "template_name": "No Navigation",
+        "content": ""
+      }
+    ],
+    "error_message": [
+      {
+        "template_name": "Error Message",
+        "content": "{{if $validation_error}}\n  <div class=\"fb_error\">{{$validation_error}}</div>\n{{/if}}"
+      }
+    ]
+  },
+  "resources": {
+    "css": [
+      {
+        "resource_name": "General Styles",
+        "placeholder": "styles",
+        "content": "body {\n  text-align: center;\n  padding: 0px;\n  margin: 0px;\n  background-color: #efefef;\n}\ntd, th, p, input, textarea, select,ul,li,div, span {\n  font-family: \"Lucida Grande\",\"Lucida Sans Unicode\", Tahoma, sans-serif;\n  font-size: 12px;\n  color: #555555;\n}\ntd, th, p, textarea, ul,li, div {\n  line-height: 22px;\n}\na:link, a:visited {\n  color: #336699;\n}\ntable {\n  empty-cells: show;\n}\n\n/* page sections */\n.ts_page:after {\n  -moz-transform: translate(0pt, 0pt);\n  background: none repeat scroll 0 0 transparent;\n  border-radius: 20px 20px 20px 20px;\n  box-shadow: 15px 0 30px rgba(0, 0, 0, 0.2);\n  content: \"\";\n  left: 0;\n  position: absolute;\n  width: 100%;\n  z-index: -2;\n}\n.ts_page {\n  margin: 40px auto;\n  position: relative;\n  text-align: left;\n}\n.ts_header {\n  background: none repeat scroll 0 0 rgba(0, 0, 0, 0.5);\n  border: 3px solid #CCCCCC;\n  height: 140px;\n  background: #3a3a3a; /* Old browsers */\n  background: -moz-linear-gradient(45deg,  #777777 0%, #999999 100%); /* FF3.6+ */\n  background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,#777777), color-stop(100%,#999999)); /* Chrome,Safari4+ */\n  background: -webkit-linear-gradient(45deg,  #777777 0%,#999999 100%); /* Chrome10+,Safari5.1+ */\n  background: -o-linear-gradient(45deg,  #777777 0%,#999999 100%); /* Opera 11.10+ */\n  background: -ms-linear-gradient(45deg,  #777777 0%,#999999 100%); /* IE10+ */\n  background: linear-gradient(45deg,  #777777 0%,#999999 100%); /* W3C */\n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#777777', endColorstr='#999999',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */\n  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.1);\n}\n.ts_header h1 {\n  margin: 56px 50px;\n  padding: 0px;\n  font-size: 20px;\n  color: white;\n}\n.ts_content {\n  background-color: white;\n  border: 1px solid #CCCCCC;\n  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);\n  padding: 25px 50px;\n}\n.ts_continue_block {\n  margin-top: 16px;\n  background-color: #ffffdd;\n  padding: 8px;\n  box-shadow:1px 2px 2px #878787;\n}\n.ts_continue_block input {\n  float: right;\n}\n.ts_continue_button {\n  margin-top: 12px;\n}\n.highlighted_cell {\n  color: #990000;\n  background-color: #ffffee;\n  text-align: center;\n}\n.light_grey {\n  color: #999999;\n}\nh2 {\n  font-size: 24px;\n}\nh3 {\n  border-top-left-radius: 4px;\n  border-top-right-radius: 4px;\n  -webkit-border-top-left-radius: 4px;\n  -webkit-border-top-right-radius: 4px;\n  -moz-border-radius-topleft: 4px;\n  -moz-border-radius-topright: 4px;\n  font-size: 12px;\n  font-weight: normal;\n  margin-bottom: 0;\n  margin-right: 1px;\n  padding: 1px 0 0 5px;\n  width: 792px;\n  height: 22px;\n}\nh3 a:link, h3 a:visited {\n  background-color: white;\n  -webkit-border-radius: 2px;\n  -moz-border-radius: 2px;\n  border-radius: 2px;\n  color: black;\n  float: right;\n  line-height: 17px;\n  margin-right: 3px;\n  margin-top: 2px;\n  padding: 0 8px;\n  text-decoration: none;\n}\nh3 a:hover {\n  -webkit-border-radius: 2px;\n  -moz-border-radius: 2px;\n  border-radius: 2px;\n}\n\n/* navigation */\nul#css_nav {\n  clear: both;\n  width:100%;\n  margin: 0px;\n  padding: 0px;\n  overflow: hidden;\n}\nul#css_nav li {\n  float: left;\n  background-color: #efefef;\n  -webkit-border-radius: 2px;\n  -moz-border-radius: 2px;\n  border-radius: 2px;\n  list-style: none;\n  text-align:center;\n  margin: 0px 2px 20px 0px;\n  color: #666666;\n  font-size: 11px;\n  line-height: 20px;\n}\nul#css_nav li span {\n  font-size: 11px;\n  line-height: 20px;\n}\n\nul#css_nav li.css_nav_current_page {\n  background-color: #999999;\n  color: white;\n}\nul#css_nav li a:link, ul#css_nav li a:visited {\n  display: block;\n  text-decoration: none;\n  color: white;\n  background-color: #999999;\n  -webkit-border-radius: 2px;\n  -moz-border-radius: 2px;\n  border-radius: 2px;\n}\nul#css_nav li a:hover {\n  -webkit-border-radius: 2px;\n  -moz-border-radius: 2px;\n  border-radius: 2px;\n}\n.nav_1_pages li {\n  width: 100%;\n}\n.nav_2_pages li {\n  width: 49.7%;\n}\n.nav_3_pages li {\n  width: 33%;\n}\n.nav_4_pages li {\n  width: 24.7%;\n}\n.nav_5_pages li {\n  width: 19.7%;\n}\n.nav_6_pages li {\n  width: 16.4%;\n}\n.nav_7_pages li {\n  width: 14%;\n}\n.nav_8_pages li {\n  width: 12.2%;\n}\n\n/* notifications */\n.notify {\n  border: 1px solid #336699;\n  background-color: #ffffee;\n  color: #336699;\n  padding: 8px;\n  width: 400px;\n}\n.notify li { color: #336699; }\n.error {\n  font-size: 8pt;\n  border: 1px solid #cc0000;\n  background-color: #ffffee;\n  color: #cc0000;\n  padding: 8px;\n  width: 550px;\n}\n.error span {\n  color: #cc0000;\n  font-weight: bold;\n  margin-bottom: 4px;\n}\n\n/* forms */\ntable.table_1 > tbody > tr > td {\n  border-bottom: 1px solid #dddddd;\n}\n.table_1_bg td {\n  padding: 1px;\n  padding-left: 1px;\n  background-color: #336699;\n  border-bottom: 1px solid #cccccc;\n}\ntd.answer {\n  background-color: #efefef;\n}\n.pad_left {\n  padding-left: 4px;\n}\n.req {\n  color: #aa0000;\n}\n.fb_error {\n  border: 1px solid #990000;\n  padding: 8px;\n  background-color: #ffefef;\n}\n\n/* for the code / markup editor */\n.editor {\n  background-color: white;\n  border: 1px solid #999999;\n  padding: 3px;\n}\n\n\n/* - - - \"Highlight Colour\" placeholder conditional CSS - - -*/\n{{if $P.colours == \"Red\"}}\nh3 {\n  background-color: #cc3131;\n  color: white;\n}\nul#css_nav li a:hover {\n  background-color: #861e1e;\n}\nh3 a:hover {\n  background-color: #fac1c1;\n  color: black;\n}\n{{elseif $P.colours == \"Orange\"}}\nh3 {\n  background-color: #ff9c00;\n  color: white;\n}\nul#css_nav li a:hover {\n  background-color: #4c3512;\n}\nh3 a:hover {\n  background-color: #ffefd5;\n  color: black;\n}\n{{elseif $P.colours == \"Yellow\"}}\nh3 {\n  background-color: #FAEC0C;\n  color: #777777;\n}\nul#css_nav li a:hover {\n  background-color: #595900;\n}\nh3 a:hover {\n  background-color: #444000;\n  color: #ffffcc;\n}\n{{elseif $P.colours == \"Green\"}}\nh3 {\n  background-color: #009211;\n  color: white;\n}\nul#css_nav li a:hover {\n  background-color: #004608;\n}\nh3 a:hover {\n  background-color: #daf4dd;\n  color: black;\n}\n{{elseif $P.colours == \"Blue\"}}\nh3 {\n  background-color: #2969c9;\n  color: white;\n}\nh3 a:hover {\n  background-color: #a6c8f0;\n  color: black;\n}\nul#css_nav li a:hover {\n  background-color: #1e4580;\n}\n{{elseif $P.colours == \"Grey\"}}\nh3 {\n  background-color: #777777;\n  color: white;\n}\nul#css_nav li a:hover {\n  background-color: #333333;\n}\nh3 a:hover {\n  background-color: #222222;\n  color: white;\n}\n{{else}}\nh3 {\n  background-color: #6D8AAC;\n  color: white;\n}\nul#css_nav li a:hover {\n  background-color: #2e425a;\n}\nh3 a:hover {\n  background-color: #c9e2ff;\n  color: black;\n}\n{{/if}}\n"
+      }
+    ]
+  },
+  "placeholders": [
+    {
+      "placeholder_label": "Highlight Colours",
+      "placeholder": "colours",
+      "field_type": "select",
+      "field_orientation": "na",
+      "default_value": "Blue-Grey",
+      "options": [
+        {
+          "option_text": "Red"
+        },
+        {
+          "option_text": "Orange"
+        },
+        {
+          "option_text": "Yellow"
+        },
+        {
+          "option_text": "Green"
+        },
+        {
+          "option_text": "Blue"
+        },
+        {
+          "option_text": "Blue-Grey"
+        },
+        {
+          "option_text": "Grey"
+        }
+      ]
+    }
+  ]
+}
