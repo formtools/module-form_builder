@@ -18,8 +18,8 @@ class Module extends CoreModule
     protected $author = "Ben Keen";
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "https://formtools.org";
-    protected $version = "2.0.4";
-    protected $date = "2018-02-04";
+    protected $version = "2.0.5";
+    protected $date = "2018-04-17";
     protected $originLanguage = "en_us";
 
     // important! This needs to be updated any time the default template set filename changes

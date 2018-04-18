@@ -872,7 +872,7 @@ class Forms
 /**
  * This file was created by the Form Tools Form Builder module.
  */
-require_once("$root_dir/global/library.php");
+require_once('$root_dir/global/library.php');
 use FormTools\Core;
 Core::init(array("auto_logout" => false));
 \$root_dir = Core::getRootDir();
