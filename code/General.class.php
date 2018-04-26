@@ -7,7 +7,7 @@ use FormTools\Fields;
 use FormTools\Forms as CoreForms;
 use FormTools\Views;
 use FormTools\ViewTabs;
-use Smarty;
+use Smarty, SmartyBC;
 
 
 class General
@@ -47,7 +47,11 @@ class General
             $right_delimiter = "}}";
         }
 
-        $smarty = new Smarty();
+        if (method_exists(new Core(), "useSmartyBC")) {
+            $smarty = Core::useSmartyBC() ? new SmartyBC() : new Smarty();
+        } else {
+            $smarty = new Smarty();
+        }
         $smarty->setTemplateDir("$root_dir/themes/default");
         $smarty->setCompileDir("$root_dir/themes/default/cache/");
         $smarty->setUseSubDirs(Core::shouldUseSmartySubDirs());
