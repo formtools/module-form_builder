@@ -18,8 +18,8 @@ class Module extends CoreModule
     protected $author = "Ben Keen";
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "https://formtools.org";
-    protected $version = "2.0.5";
-    protected $date = "2018-04-17";
+    protected $version = "2.0.6";
+    protected $date = "2018-04-25";
     protected $originLanguage = "en_us";
 
     // important! This needs to be updated any time the default template set filename changes
@@ -71,7 +71,7 @@ class Module extends CoreModule
                     form_offline_page_content mediumtext,
                     review_page_title varchar(255) DEFAULT NULL,
                     thankyou_page_title varchar(255) DEFAULT NULL,
-                    offline_date datetime NOT NULL,
+                    offline_date datetime DEFAULT NULL,
                     list_order smallint(6) NOT NULL,
                     PRIMARY KEY (published_form_id)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
@@ -214,6 +214,10 @@ class Module extends CoreModule
     public function upgrade($module_id, $old_module_version)
     {
         $this->resetHooks();
+
+        if ($this->version === "3.0.6") {
+            $this->updateOfflineDateFieldAllowNulls();
+        }
     }
 
 
@@ -565,5 +569,12 @@ END;
                 Forms::deletePublishedForm($form_id, $published_form_id, "yes", $L, true);
             }
         }
+    }
+
+    private function updateOfflineDateFieldAllowNulls()
+    {
+        $db = Core::$db;
+        $db->query("ALTER TABLE {PREFIX}module_form_builder_forms CHANGE offline_date offline_date DATETIME NULL");
+        $db->execute();
     }
 }
