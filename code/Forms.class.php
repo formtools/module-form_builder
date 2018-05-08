@@ -701,7 +701,7 @@ class Forms
         $include_review_page        = isset($info["include_review_page"]) ? "yes" : "no";
         $include_thanks_page_in_nav = isset($info["include_thanks_page_in_nav"]) ? "yes" : "no";
 
-        $offline_date = "";
+        $offline_date = null;
         if (!empty($info["offline_date"]) && preg_match("/\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}/", $info["offline_date"])) {
             list($date, $time) = explode(" ", $info["offline_date"]);
             list($month, $day, $year) = explode("/", $date);
