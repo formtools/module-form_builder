@@ -644,7 +644,7 @@ builder_js.publish_form_check = function () {
     errors.push(g.messages["validation_no_folder_url"]);
   }
   var folder_path = $.trim($("#publish_folder_path").val());
-  if (!filename) {
+  if (!folder_path) {
     errors.push(g.messages["validation_no_folder_path"]);
   }
 
@@ -678,6 +678,7 @@ builder_js.publish_form = function () {
       publish_folder_path: $("#publish_folder_path").val()
     },
     dataType: "json",
+
     success: function (json) {
       if (json.success == 1) {
         $("#publish_url").find("a").attr("href", json.url).html(json.url);
