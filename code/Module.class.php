@@ -18,8 +18,8 @@ class Module extends CoreModule
     protected $author = "Ben Keen";
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "https://formtools.org";
-    protected $version = "2.0.7";
-    protected $date = "2018-05-13";
+    protected $version = "2.0.8";
+    protected $date = "2018-05-18";
     protected $originLanguage = "en_us";
 
     // important! This needs to be updated any time the default template set filename changes
@@ -215,7 +215,7 @@ class Module extends CoreModule
     {
         $this->resetHooks();
 
-        if ($this->version === "3.0.6") {
+        if ($this->version === "2.0.8") {
             $this->updateOfflineDateFieldAllowNulls();
         }
     }
@@ -410,7 +410,7 @@ END;
         // loop through each published form and take any offline that need it
         $at_least_one_form_just_taken_offline = false; // yes, this variable name ROCKS!!!!!
         foreach ($published_forms["results"] as $config) {
-            if ($config["is_online"] == "yes" && $config["offline_date"] != "0000-00-00 00:00:00") {
+            if ($config["is_online"] == "yes" && !is_null($config["offline_date"])) {
                 $taken_offline = FormGenerator::maybeTakeScheduledFormOffline($config);
                 if ($taken_offline) {
                     $at_least_one_form_just_taken_offline = true;
@@ -575,6 +575,13 @@ END;
     {
         $db = Core::$db;
         $db->query("ALTER TABLE {PREFIX}module_form_builder_forms CHANGE offline_date offline_date DATETIME NULL");
+        $db->execute();
+
+        $db->query("
+            UPDATE {PREFIX}module_form_builder_forms
+            SET offline_date = NULL
+            WHERE offline_date = '0000-00-00 00:00:00'
+        ");
         $db->execute();
     }
 }

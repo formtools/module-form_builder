@@ -57,7 +57,7 @@ if (!empty($published_form_id)) {
     $published_folder_url = $config_info["folder_url"];
     $published_folder_path = $config_info["folder_path"];
 
-    if ($config_info["offline_date"] != "0000-00-00 00:00:00") {
+    if (!is_null($config_info["offline_date"])) {
         // convert the datetime to a friendlier format
         list($date, $time) = explode(" ", $config_info["offline_date"]);
         list($year, $month, $day) = explode("-", $date);

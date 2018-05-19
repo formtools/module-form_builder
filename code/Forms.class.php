@@ -714,16 +714,18 @@ class Forms
         }
 
         try {
+
             if (empty($published_form_id)) {
                 $list_order = self::getNextPublishedFormOrder($info["form_id"]);
 
                 $db->query("
                     INSERT INTO {PREFIX}module_form_builder_forms (is_online, is_published, form_id, view_id,
                         set_id, filename, folder_path, folder_url, include_review_page, include_thanks_page_in_nav,
-                        thankyou_page_content, form_offline_page_content, review_page_title, thankyou_page_title, list_order)
+                        thankyou_page_content, form_offline_page_content, review_page_title, thankyou_page_title, list_order,
+                        offline_date)
                     VALUES (:is_online, :is_published, :form_id, :view_id, :set_id, :filename, :folder_path, :folder_url,
                         :include_review_page, :include_thanks_page_in_nav, :thankyou_page_content, :form_offline_page_content,
-                        :review_page_title, :thankyou_page_title, :list_order)
+                        :review_page_title, :thankyou_page_title, :list_order, :offline_date)
                 ");
                 $db->bindAll(array(
                     "is_online" => $is_online,
@@ -740,7 +742,8 @@ class Forms
                     "form_offline_page_content" => $info["form_offline_page_content"],
                     "review_page_title" => $info["review_page_title"],
                     "thankyou_page_title" => $info["thankyou_page_title"],
-                    "list_order" => $list_order
+                    "list_order" => $list_order,
+                    "offline_date" => $offline_date
                 ));
                 $db->execute();
                 $published_form_id = $db->getInsertId();

@@ -78,7 +78,7 @@
 		                    <span class="light_grey">&#8212;</span>
 		                  {elseif $info.is_online == "yes"}
 		                    <span class="green">{$LANG.word_yes}</span>
-		                    {if $info.offline_date != "0000-00-00 00:00:00"}
+		                    {if !is_null($info.offline_date)}
 		                      {assign var=d value=$info.offline_date|replace:':':''}
 		                      {assign var=d value=$d|replace:' ':''}
 		                      {assign var=d value=$d|replace:'-':''}

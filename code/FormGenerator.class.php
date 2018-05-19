@@ -604,8 +604,9 @@ END;
         $db = Core::$db;
         $just_taken_offline = false;
 
-        // first, check the form shouldn't be taken offline right now
-        if ($config["is_online"] == "yes" && $config["offline_date"] != "0000-00-00 00:00:00") {
+
+        // take the form offline if it passed the offline date
+        if ($config["is_online"] == "yes" && !is_null($config["offline_date"])) {
             $default_timezone_offset = Settings::get("default_timezone_offset");
 
             $now = date("U");
@@ -619,7 +620,7 @@ END;
                 $db->query("
                     UPDATE {PREFIX}module_form_builder_forms
                     SET    is_online = 'no',
-                           offline_date = '0000-00-00 00:00:00'
+                           offline_date = NULL
                     WHERE  published_form_id = :published_form_id
                 ");
                 $db->bind("published_form_id", $published_form_id);

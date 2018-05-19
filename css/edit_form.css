@@ -27,7 +27,7 @@
 }
 .form_builder_form_list .header_row .col6 {
   width: 182px;
-  padding-left: 0px;
+  padding-left: 0;
 }
 .form_builder_form_list .col6 {
   width: 180px;
@@ -43,7 +43,7 @@ div.published_form_url {
 	white-space:nowrap;
 }
 .publish_tab_offline_date {
-	background: transparent url(../../../../global/images/clock.png) center center no-repeat;
+	background: transparent url(../../../global/images/clock.png) center center no-repeat;
 	width: 16px;
 	height: 20px;
 	margin-left: 3px;
