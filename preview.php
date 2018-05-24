@@ -47,6 +47,7 @@ if (!empty($published_form_id)) {
     $set_id = $config_info["set_id"];
     $view_id = $config_info["view_id"];
     $include_review_page = $config_info["include_review_page"];
+    $include_thanks_page_in_nav = $config_info["include_thanks_page_in_nav"];
     $thankyou_page_content = $config_info["thankyou_page_content"];
     $form_offline_page_content = $config_info["form_offline_page_content"];
 
