@@ -187,7 +187,7 @@ class Forms
         if (!$override) {
             $file = "$folder_path/$filename";
             if (!is_file($file)) {
-                $ignore_link = "edit.php?page=publish&delete_published_form=$published_form_id&delete_form_config=$delete_form_config&override=1";
+                $ignore_link = "?page=publish&delete_published_form=$published_form_id&delete_form_config=$delete_form_config&override=1";
                 $params = array(
                     "file"        => $file,
                     "ignore_link" => $ignore_link
