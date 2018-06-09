@@ -9,7 +9,7 @@
     <link href="{$g_root_url}/global/codemirror/lib/codemirror.css" rel="stylesheet" type="text/css"/>
     <script src="{$g_root_url}/global/scripts/general.js"></script>
     <script src="{$g_root_url}/global/scripts/jquery-ui-timepicker-addon.js"></script>
-    <script src="{$g_root_url}/modules/form_builder/scripts/builder.js"></script>
+    <script src="{$g_root_url}/modules/form_builder/scripts/builder.js?d=20160609"></script>
     <script src="{$g_root_url}/global/codemirror/lib/codemirror.js"></script>
     <script>
     {literal}
