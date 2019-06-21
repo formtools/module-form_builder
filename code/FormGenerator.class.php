@@ -456,7 +456,7 @@ END;
         if (!isset($_SESSION[$namespace]) || empty($_SESSION[$namespace])) {
             $newly_created = true;
             $_SESSION[$namespace] = array();
-            $submission_id = Submissions::createBlankSubmission($form_id, $view_id, false);
+            $submission_id = Submissions::createBlankSubmission($form_id, $view_id, false, Core::$user->getAccountPlaceholders());
 
             $_SESSION[$namespace]["form_tools_form_id"]         = $form_id;
             $_SESSION[$namespace]["form_tools_view_id"]         = $view_id;
