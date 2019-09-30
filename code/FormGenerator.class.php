@@ -8,6 +8,7 @@ namespace FormTools\Modules\FormBuilder;
 
 use FormTools\Core;
 use FormTools\Fields;
+use FormTools\FieldTypes;
 use FormTools\Forms as CoreForms;
 use FormTools\General as CoreGeneral;
 use FormTools\Hooks as CoreHooks;
@@ -295,6 +296,7 @@ END;
         // now generate the page content
         $smarty->assign("num_pages", count($nav_pages));
         $smarty->assign("current_page", $current_page);
+        $smarty->assign("password_type_id", FieldTypes::getFieldTypeIdByIdentifier("password"));
         $smarty->assign("eval_str", $templates["page_layout"]["content"]);
         $page_content = $smarty->fetch("../../modules/form_builder/smarty_plugins/eval.tpl");
 
@@ -438,7 +440,7 @@ END;
         return array(false, $validation_error);
     }
 
-
+    
     /**
      * Initializes a Form Builder page. If the sessions are being newly created (i.e. they just arrived at the form)
      * the first return array index contains true. False otherwise.
