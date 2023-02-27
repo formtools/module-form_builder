@@ -19,7 +19,7 @@ function smarty_function_display_template_usage($params, &$smarty)
         echo "<span class=\"light_grey pad_left_small\">{$L["phrase_not_used"]}</span>";
     } else {
         echo "<select>";
-        while (list($form_id, $data) = each($usage)) {
+        foreach ($usage as $form_id => $data) {
             $form_name = htmlspecialchars($data["form_name"]);
             $usage = $data["usage"];
             echo "<optgroup label=\"$form_name\"></optgroup>";

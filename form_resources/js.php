@@ -50,7 +50,7 @@ if ($source == "sessions") {
 
     $placeholder_id_to_values = $_SESSION["ft"]["form_builder"]["placeholders"];
 
-    while (list($placeholder_id, $value) = each($placeholder_id_to_values)) {
+    foreach ($placeholder_id_to_values as $placeholder_id => $value) {
         if (!isset($placeholder_hash[$placeholder_id])) {
             continue;
         }

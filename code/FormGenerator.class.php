@@ -679,7 +679,7 @@ END;
             $submission_id = $submission_info["submission_id"];
 
             // delete any files associated with the submission
-            while (list($col_name, $file_upload_dir) = each($file_field_info)) {
+            foreach ($file_field_info as $col_name => $file_upload_dir) {
                 if (!empty($submission_info[$col_name])) {
                     @unlink("{$file_upload_dir}/{$submission_info[$col_name]}");
                 }

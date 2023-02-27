@@ -263,8 +263,8 @@ class TemplateSets
         $templateTypes = self::getTemplateTypes();
 
         $name = "";
-        while (list($group_name, $types) = each($templateTypes))  {
-            while (list($key, $lang_key) = each($types)) {
+        foreach ($templateTypes as $group_name => $types)  {
+            foreach ($types as $key => $lang_key) {
                 if ($key == $template_type) {
                     $name = CoreGeneral::evalSmartyString("{\$" . $lang_key . "}", $L);
                 }

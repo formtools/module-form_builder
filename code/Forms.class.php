@@ -77,7 +77,7 @@ class Forms
         $configured_forms = $db->fetchAll();
 
         $db->query("
-            SELECT count(*) 
+            SELECT count(*)
             FROM   {PREFIX}module_form_builder_forms
         ");
         $db->execute();
@@ -124,7 +124,7 @@ class Forms
             "error_message"  => $info["error_message_template_id"]
         );
 
-        while (list($key, $template_id) = each($template_data)) {
+        foreach ($template_data as $key => $template_id) {
             $db->query("
                 INSERT INTO {PREFIX}module_form_builder_form_templates (published_form_id, template_type, template_id)
                 VALUES (:form_id, :template_type, :template_id)
@@ -809,7 +809,7 @@ class Forms
             "form_offline_page" => $info["form_offline_page_template_id"]
         );
 
-        while (list($key, $template_id) = each($template_data)) {
+        foreach ($template_data as $key => $template_id) {
             $db->query("
                 INSERT INTO {PREFIX}module_form_builder_form_templates (published_form_id, template_type, template_id)
                 VALUES (:published_form_id, :template_type, :template_id)

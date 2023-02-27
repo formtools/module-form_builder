@@ -10,9 +10,9 @@ function smarty_function_display_template_set_type($params, &$smarty)
 
     $type = $params["type"];
 
-    while (list($group_name, $vals) = each($template_types)) {
+    foreach ($template_types as $group_name => $vals) {
         $found = false;
-        while (list($section_key, $section_name) = each($vals)) {
+        foreach ($vals as $section_key => $section_name) {
             if ($section_key == $type) {
                 echo "<span class=\"set_type_$section_key\">$section_name</span>";
                 $found = true;

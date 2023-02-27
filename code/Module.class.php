@@ -18,8 +18,8 @@ class Module extends CoreModule
     protected $author = "Ben Keen";
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "https://formtools.org";
-    protected $version = "2.0.10";
-    protected $date = "2018-06-09";
+    protected $version = "2.1.0";
+    protected $date = "2023-02-26";
     protected $originLanguage = "en_us";
 
     // important! This needs to be updated any time the default template set filename changes
@@ -314,7 +314,7 @@ class Module extends CoreModule
             TemplateSets::importTemplateSetData($template_set);
         }
     }
-    
+
 
     /**
      * This adds the "Form Builder" section on the Add Form page.

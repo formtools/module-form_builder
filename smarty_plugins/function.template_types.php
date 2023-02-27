@@ -28,9 +28,10 @@ function smarty_function_template_types($params, &$smarty)
 
     $lines[] = "<option value=\"\">{$LANG["phrase_please_select"]}</option>";
 
-    while (list($group_name, $group_sections) = each($template_types)) {
+    foreach ($template_types as $group_name => $group_section) {
         $lines[] = "<optgroup label=\"$group_name\">";
-        while (list($key, $value) = each($group_sections)) {
+
+        foreach ($group_sections as $key => $value) {
             $template_type_label = General::evalSmartyString("{\$" . $value . "}", $L);
             $selected = ($key == $default_value) ? "selected" : "";
             $lines[] = "<option value=\"$key\" {$selected}>$template_type_label</option>";
