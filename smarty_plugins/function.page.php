@@ -109,7 +109,7 @@ function smarty_function_page($params, &$smarty)
     $smarty->right_delimiter = '}}';
 
     $smarty->assign("eval_str", $template_info["content"]);
-    $smarty->assign("page_name", $template_vars["nav_pages"][$current_page - 1]["page_name"]);
+    $smarty->assign("page_name", $template_vars["nav_pages"][(int)$current_page - 1]["page_name"]);
     $smarty->assign("page_type", $page_type);
 
     // used in the form action attribute. This'll cause nice "/" paths for index.php to get redirected to index.php on
