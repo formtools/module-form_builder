@@ -28,7 +28,7 @@ function smarty_function_template_types($params, &$smarty)
 
     $lines[] = "<option value=\"\">{$LANG["phrase_please_select"]}</option>";
 
-    foreach ($template_types as $group_name => $group_section) {
+    foreach ($template_types as $group_name => $group_sections) {
         $lines[] = "<optgroup label=\"$group_name\">";
 
         foreach ($group_sections as $key => $value) {
